@@ -1,39 +1,38 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF‑8">
-<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>教师端｜完整课上练习</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system‑ui}
-body{background:#f7f8fa;padding:14px;max‑width:1200px;margin:0 auto;}
-.nav{background:#222;color:#fff;padding:12px;border‑radius:8px;margin‑bottom:14px;}
-.card{background:#fff;padding:18px;border‑radius:8px;box‑shadow:0 1px 4px #00000018;margin:12px 0;}
-button{padding:9px 15px;border‑radius:6px;border:1px solid #bbb;margin:5px;cursor:pointer;font‑size:15px;}
-button.primary{background:#2563eb;color:#fff;border‑color:#2563eb;}
-button.success{background:#059669;color:#fff;border‑color:#059669;}
-button.danger{background:#dc2626;color:#fff;border‑color:#dc2626;}
-input,select{width:100%;padding:10px;border‑radius:6px;border:1px solid #bbb;margin:7px 0;font‑size:16px;}
-.module‑grid{display:grid;grid‑template‑columns:repeat(auto‑fill,minmax(230px,1fr));gap:12px;margin:15px 0;}
-.module‑card{background:#fff;border:1px solid #cccccc;padding:16px;border‑radius:8px;cursor:pointer;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#f7f8fa;padding:14px;max-width:1200px;margin:0 auto;}
+.nav{background:#222;color:#fff;padding:12px;border-radius:8px;margin-bottom:14px;}
+.card{background:#fff;padding:18px;border-radius:8px;box-shadow:0 1px 4px #00000018;margin:12px 0;}
+button{padding:9px 15px;border-radius:6px;border:1px solid #bbb;margin:5px;cursor:pointer;font-size:15px;}
+button.primary{background:#2563eb;color:#fff;border-color:#2563eb;}
+button.success{background:#059669;color:#fff;border-color:#059669;}
+button.danger{background:#dc2626;color:#fff;border-color:#dc2626;}
+input,select{width:100%;padding:10px;border-radius:6px;border:1px solid #bbb;margin:7px 0;font-size:16px;}
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:15px 0;}
+.module-card{background:#fff;border:1px solid #cccccc;padding:16px;border-radius:8px;cursor:pointer;}
 .hidden{display:none !important;}
-.text‑center{text‑align:center;}
-.battle‑score{background:#111827;color:#fff;padding:12px;border‑radius:8px;margin‑bottom:10px;}
-.word‑cloud‑box{min‑height:240px;border:1px solid #aaa;padding:10px;background:#fff;}
-.flip‑wrap{width:280px;height:190px;perspective:700px;margin:20px auto;}
-.flip‑card{width:100%;height:100%;position:relative;transform‑style:preserve‑3d;transition:0.6s;}
-.flip‑card.flipped{transform:rotateY(180deg);}
-.face{position:absolute;width:100%;height:100%;backface‑visibility:hidden;display:flex;align‑items:center;justify‑content:center;padding:12px;border‑radius:8px;font‑size:28px;}
-.face‑front{background:#2563eb;color:white;}
-.face‑back{background:#fff;color:#111;transform:rotateY(180deg);border:1px solid #aaa;font‑size:22px;}
-.tile‑fixed{display:inline‑block;width:70px;height:70px;border:1px solid #333;line‑height:70px;text‑align:center;font‑size:26px;margin:4px;border‑radius:6px;user‑select:none;}
+.text-center{text-align:center;}
+.battle-score{background:#111827;color:#fff;padding:12px;border-radius:8px;margin-bottom:10px;}
+.word-cloud-box{min-height:240px;border:1px solid #aaa;padding:10px;background:#fff;}
+.flip-wrap{width:280px;height:190px;perspective:700px;margin:20px auto;}
+.flip-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:0.6s;}
+.flip-card.flipped{transform:rotateY(180deg);}
+.face{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;padding:12px;border-radius:8px;font-size:28px;}
+.face-front{background:#2563eb;color:white;}
+.face-back{background:#fff;color:#111;transform:rotateY(180deg);border:1px solid #aaa;font-size:22px;}
+.tile-fixed{display:inline-block;width:70px;height:70px;border:1px solid #333;line-height:70px;text-align:center;font-size:26px;margin:4px;border-radius:6px;user-select:none;}
 </style>
 </head>
 <body>
 <div id="app"></div>
 
 <script>
-// ========== MQTT 配置（浏览器WSS） ==========
 let mqttClient=null;
 const MQTT_TOPIC_PREFIX="hsk/classroom";
 async function initMqtt(){
@@ -63,12 +62,11 @@ function mqttSub(topic,cb){
     })
 }
 
-// ========== 学生名单、第4课课程数据 ==========
 const studentList = [
 "ALEKSEENKO DENIS","BAKAEVA MARGARITA","GODOVIKOV MATVEI","DUBININA VASILISA",
 "ERSHOV KIRILL","ZEYNALOV FARIZ","KORCHUGANOV NIKITA","MNATSAKANIAN DAVID",
 "NEPRINTSEVA ANNA","PARCHAK ANASTASIIA","SAFONOV PAVEL","SIMONOV DANIIL",
-"AHMED RAAD","ABDULWAHID AL‑RAHMANI"
+"AHMED RAAD","ABDULWAHID AL-RAHMANI"
 ];
 
 const lesson4={
@@ -102,7 +100,6 @@ const lesson4={
     pairWords:[{w1:"假期",w2:"holiday"},{w1:"地方",w2:"place"},{w1:"外卖",w2:"takeout"}]
 };
 
-//本地模拟存储
 const mockStorage={
     get(key){const s=localStorage.getItem(key);try{return s?JSON.parse(s):null}catch{return null}},
     set(key,obj){localStorage.setItem(key,JSON.stringify(obj));},
@@ -111,7 +108,6 @@ const mockStorage={
     saveWord(name,text){let arr=this.get("wc")||[];arr.push({name,text,ts:Date.now()});this.set("wc",arr);}
 };
 
-//全局状态
 let appState={
     page:"home",
     battle:{groups:[],scores:{}},
@@ -123,7 +119,6 @@ let appState={
     const $=s=>document.querySelector(s);
     const app=$("#app");
 
-    //监听学生消息
     mqttSub("battle/rap",payload=>{
         const log=$("#battleLog");
         let gIdx=-1;
@@ -159,16 +154,16 @@ let appState={
             html+=`
             <div class="card">
                 <h2>📝课上练习（全部模块）</h2>
-                <div class="module‑grid">
-                    <div class="module‑card" onclick="switchPage('singleGroup')">🔤单字组词</div>
-                    <div class="module‑card" onclick="switchPage('flip')">🃏翻牌子</div>
-                    <div class="module‑card" onclick="switchPage('listenWord')">🎧听音选生词</div>
-                    <div class="module‑card" onclick="switchPage('pair')">🔗生词配对</div>
-                    <div class="module‑card" onclick="switchPage('lianCi')">📜连词成句</div>
-                    <div class="module‑card" onclick="switchPage('fill')">📋选词填空</div>
-                    <div class="module‑card" onclick="switchPage('findDiff')">👀大家来找茬</div>
-                    <div class="module‑card" onclick="switchPage('wordCloud')">☁词云</div>
-                    <div class="module‑card" onclick="switchPage('battle')">🏆争霸赛抢答</div>
+                <div class="module-grid">
+                    <div class="module-card" onclick="switchPage('singleGroup')">🔤单字组词</div>
+                    <div class="module-card" onclick="switchPage('flip')">🃏翻牌子</div>
+                    <div class="module-card" onclick="switchPage('listenWord')">🎧听音选生词</div>
+                    <div class="module-card" onclick="switchPage('pair')">🔗生词配对</div>
+                    <div class="module-card" onclick="switchPage('lianCi')">📜连词成句</div>
+                    <div class="module-card" onclick="switchPage('fill')">📋选词填空</div>
+                    <div class="module-card" onclick="switchPage('findDiff')">👀大家来找茬</div>
+                    <div class="module-card" onclick="switchPage('wordCloud')">☁词云</div>
+                    <div class="module-card" onclick="switchPage('battle')">🏆争霸赛抢答</div>
                 </div>
             </div>
             `
@@ -179,9 +174,8 @@ let appState={
             <button onclick="switchPage('home')">返回课上练习</button>
             </div>`
         }
-        // 单字组词：汉字位置固定不动
         else if(appState.page==="singleGroup"){
-            const tiles=lesson4.singleCharGroup.map(ch=>`<span class="tile‑fixed">${ch}</span>`).join("");
+            const tiles=lesson4.singleCharGroup.map(ch=>`<span class="tile-fixed">${ch}</span>`).join("");
             html+=`
             <div class="card">
                 <h3>🔤单字组词（选中汉字位置固定不移动）</h3>
@@ -194,15 +188,14 @@ let appState={
             window.pushExercise=()=>mqttPublish("exercise/push",{mod:"singleGroup"});
             window.nextExercise=()=>mqttPublish("exercise/next",{mod:"singleGroup"});
         }
-        //翻牌子：翻开默认只显示词，无拼音，语音不自动播放
         else if(appState.page==="flip"){
             html+=`
             <div class="card">
                 <h3>🃏翻牌子｜翻开只显示生词，不自动播放语音</h3>
-                <div class="flip‑wrap">
-                    <div class="flip‑card" id="fc">
-                        <div class="face face‑front">点击翻开</div>
-                        <div class="face face‑back">${lesson4.flipCardWords[0]}</div>
+                <div class="flip-wrap">
+                    <div class="flip-card" id="fc">
+                        <div class="face face-front">点击翻开</div>
+                        <div class="face face-back">${lesson4.flipCardWords[0]}</div>
                     </div>
                 </div>
                 <button onclick="document.querySelector('#fc').classList.toggle('flipped')">教师点击翻牌</button>
@@ -213,7 +206,6 @@ let appState={
             window.pushExercise=()=>mqttPublish("exercise/push",{mod:"flip"});
             window.nextExercise=()=>mqttPublish("exercise/next",{mod:"flip"});
         }
-        //听音选生词：教师手动点击才出现答案
         else if(appState.page==="listenWord"){
             html+=`
             <div class="card">
@@ -228,7 +220,6 @@ let appState={
             window.pushExercise=()=>mqttPublish("exercise/push",{mod:"listenWord"});
             window.nextExercise=()=>mqttPublish("exercise/next",{mod:"listenWord"});
         }
-        //生词配对，默认无拼音，点击发音
         else if(appState.page==="pair"){
             html+=`
             <div class="card">
@@ -241,7 +232,6 @@ let appState={
             window.pushExercise=()=>mqttPublish("exercise/push",{mod:"pair"});
             window.nextExercise=()=>mqttPublish("exercise/next",{mod:"pair"});
         }
-        //连词成句，>=3词，打乱，忽略标点判分
         else if(appState.page==="lianCi"){
             html+=`
             <div class="card">
@@ -255,7 +245,6 @@ let appState={
             window.pushExercise=()=>mqttPublish("exercise/push",{mod:"lianCi"});
             window.nextExercise=()=>mqttPublish("exercise/next",{mod:"lianCi"});
         }
-        //选词填空 ≥15道
         else if(appState.page==="fill"){
             html+=`
             <div class="card">
@@ -284,7 +273,7 @@ let appState={
             html+=`
             <div class="card">
                 <h3>☁词云｜学生多次提交，教师一键清空</h3>
-                <div class="word‑cloud‑box" id="wcDom"></div>
+                <div class="word-cloud-box" id="wcDom"></div>
                 <button class="danger" onclick="clearWC()">一键清空全部词云</button>
                 <button onclick="switchPage('home')">返回</button>
             </div>`;
@@ -297,7 +286,7 @@ let appState={
                 <h3>🏆争霸赛抢答｜教师设置每组人数自动分组，学生不可自选队伍</h3>
                 <div>每组学生人数：<input id="perNum" value="4" type="number"></div>
                 <button class="primary" onclick="createGroups()">自动随机分组下发给学生端</button>
-                <div class="battle‑score" id="scorePanel"></div>
+                <div class="battle-score" id="scorePanel"></div>
                 <hr>
                 <button class="success" onclick="pushBattleQ()">推送抢答题目</button>
                 <div id="battleLog"></div>
@@ -305,7 +294,7 @@ let appState={
             </div>`;
             window.createGroups=()=>{
                 const per=Number($("#perNum").value);
-                const shuffle=[...studentList].sort(()=>Math.random()‑0.5);
+                const shuffle=[...studentList].sort(()=>Math.random()-0.5);
                 const groups=[];
                 for(let i=0;i<shuffle.length;){groups.push(shuffle.slice(i,i+per));i+=per;}
                 appState.battle.groups=groups;
