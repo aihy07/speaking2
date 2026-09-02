@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF‑8">
-<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>学生端</title>
 <style>
-*{margin:0;padding:0;box‑sizing:border‑box;font‑family:system‑ui;}
-body{background:#f7f8fa;padding:14px;max‑width:750px;margin:0 auto;}
-.card{background:#fff;padding:18px;border‑radius:8px;box‑shadow:0 1px 4px #00000018;margin:12px 0;}
-button{padding:9px 15px;border‑radius:6px;border:1px solid #bbb;margin:5px;cursor:pointer;font‑size:15px;}
-button.danger{background:#dc2626;color:#fff;border‑color:#dc2626;}
-button.big‑race{width:100%;padding:26px;font‑size:24px;background:#dc2626;color:#fff;border:none;border‑radius:10px;}
-input{width:100%;padding:11px;border‑radius:6px;border:1px solid #bbb;margin:7px 0;font‑size:16px;}
-.name‑item{padding:10px;border:1px solid #aaa;margin:5px;border‑radius:6px;cursor:pointer;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui;}
+body{background:#f7f8fa;padding:14px;max-width:750px;margin:0 auto;}
+.card{background:#fff;padding:18px;border-radius:8px;box-shadow:0 1px 4px #00000018;margin:12px 0;}
+button{padding:9px 15px;border-radius:6px;border:1px solid #bbb;margin:5px;cursor:pointer;font-size:15px;}
+button.danger{background:#dc2626;color:#fff;border-color:#dc2626;}
+button.big-race{width:100%;padding:26px;font-size:24px;background:#dc2626;color:#fff;border:none;border-radius:10px;}
+input{width:100%;padding:11px;border-radius:6px;border:1px solid #bbb;margin:7px 0;font-size:16px;}
+.name-item{padding:10px;border:1px solid #aaa;margin:5px;border-radius:6px;cursor:pointer;}
 .hidden{display:none !important;}
 </style>
 </head>
@@ -20,7 +20,6 @@ input{width:100%;padding:11px;border‑radius:6px;border:1px solid #bbb;margin:7
 <div id="app"></div>
 
 <script>
-//MQTT WSS
 let mqttClient=null;
 const MQTT_TOPIC_PREFIX="hsk/classroom";
 async function initMqtt(){
@@ -53,7 +52,7 @@ const studentList = [
 "ALEKSEENKO DENIS","BAKAEVA MARGARITA","GODOVIKOV MATVEI","DUBININA VASILISA",
 "ERSHOV KIRILL","ZEYNALOV FARIZ","KORCHUGANOV NIKITA","MNATSAKANIAN DAVID",
 "NEPRINTSEVA ANNA","PARCHAK ANASTASIIA","SAFONOV PAVEL","SIMONOV DANIIL",
-"AHMED RAAD","ABDULWAHID AL‑RAHMANI"
+"AHMED RAAD","ABDULWAHID AL-RAHMANI"
 ];
 
 let myName=null;
@@ -63,7 +62,6 @@ let myGroupNumber=null;
     await initMqtt();
     const app=document.querySelector("#app");
 
-    //教师下发争霸赛分组
     mqttSub("battle/setup",payload=>{
         myGroupNumber=null;
         payload.groups.forEach((g,i)=>{
@@ -71,19 +69,17 @@ let myGroupNumber=null;
         })
         renderMain();
     })
-    //教师推送争霸赛题目，出现抢答大按钮
     mqttSub("battle/question",()=>{
         const btn=document.querySelector("#raceBtn");
         if(btn) btn.classList.remove("hidden");
     })
-    //教师推送课上练习、下一题，自动切换题目
     mqttSub("exercise/push",payload=>{renderExercise(payload.mod)});
     mqttSub("exercise/next",payload=>{renderExercise(payload.mod)});
 
     function renderSelectName(){
         let html=`<div class="card"><h2>👩‍🎓学生端：请选择你的名字</h2>`;
         studentList.forEach(n=>{
-            html+=`<div class="name‑item" onclick="setStudent('${n}')">${n}</div>`
+            html+=`<div class="name-item" onclick="setStudent('${n}')">${n}</div>`
         })
         html+=`</div>`;
         app.innerHTML=html;
@@ -102,7 +98,7 @@ let myGroupNumber=null;
             <hr>
             <div class="card">
                 <h4>🏆争霸赛</h4>
-                <button id="raceBtn" class="big‑race hidden" onclick="sendRap()">🔔抢答</button>
+                <button id="raceBtn" class="big-race hidden" onclick="sendRap()">🔔抢答</button>
             </div>
             <div class="card">
                 <h4>☁词云输入，可以多次提交</h4>
@@ -129,7 +125,6 @@ let myGroupNumber=null;
     function renderExercise(mod){
         const box=document.querySelector("#exerciseBox");
         if(!box)return;
-        //全部学生端练习：不给答案，不给提示
         switch(mod){
             case "singleGroup": box.innerHTML=`<h4>🔤单字组词</h4><p>请完成组词作答</p>`;break;
             case "flip":box.innerHTML=`<h4>🃏翻牌子</h4><p>观察生词，等待老师操作翻牌</p>`;break;
