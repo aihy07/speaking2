@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>学生端 · 词云提交</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js">
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+            background: linear-gradient(145deg, #f0f4f8 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+            padding: 32px 28px 40px;
+        }
+        .header { text-align: center; margin-bottom: 28px; }
+        .header .icon { font-size: 48px; }
+        .header h1 { font-size: 26px; font-weight: 700; color: #1a2634; margin-top: 6px; }
+        .header p { color: #6a7b8c; font-size: 15px; margin-top: 4px; }
+        .mqtt-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 40px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .mqtt-status .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .mqtt-status .dot.online { background: #0b6e4f; }
+        .mqtt-status .dot.offline { background: #b91c1c; }
+        .mqtt-status .status-text { color: #2c3e50; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; color: #1a2634; margin-bottom: 6px; font-size: 15px; }
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #dce2ea;
+            border-radius: 16px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.15s;
+            background: #f8fafc;
+            appearance: auto;
+        }
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: #3b7cff;
+            background: #ffffff;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 40px;
+            background: #3b7cff;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 16px rgba(59, 124, 255, 0.30);
+        }
+        .btn-submit:hover { background: #2a6ae0; transform: translateY(-2px); }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .message {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+            min-height: 50px;
+        }
+        .message.success { background: #e0f2e6; color: #0b6e4f; }
+        .message.error { background: #fee2e2; color: #991b1b; }
+        .message.info { background: #e0edff; color: #1a56db; }
+        .footer { text-align: center; margin-top: 20px; font-size: 13px; color: #8a9aa8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">📝</div>
+            <h1>课堂词云</h1>
+            <p>选择你的姓名，输入词汇分享给全班</p>
+        </div>
+
+        <div class="mqtt-status">
+            <span class="dot offline" id="statusDot"></span>
+            <span class="status-text" id="statusText">连接中...</span>
+        </div>
+
+        <div class="form-group">
+            <label for="studentName">选择你的姓名</label>
+            <select id="studentName">
+                <option value="">— 请选择 —</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="wordInput">输入一个词或短语</label>
+            <input type="text" id="wordInput" placeholder="例如：苹果、旅行、很喜欢" maxlength="50" />
+        </div>
+
+        <button class="btn-submit" id="submitBtn">📤 提交</button>
+        <div id="messageBox" class="message info">等待连接…</div>
+        <div class="footer"><span>提交后，教师端将实时显示</span></div>
+    </div>
+
+    <script>
+        // 学生名单（与点名系统一致）
+        const STUDENT_NAMES = [
+            'ALEKSEENKO DENIS', 'BAKAEVA MARGARITA', 'GODOVIKOV MATVEI',
+            'DUBININA VASILISA', 'ERSHOV KIRILL', 'ZEYNALOV FARIZ',
+            'KORCHUGANOV NIKITA', 'MNATSAKANIAN DAVID', 'NEPRINTSEVA ANNA',
+            'PARCHAK ANASTASIIA', 'SAFONOV PAVEL', 'SIMONOV DANIIL',
+            'AHMED RAAD ABDULWAHID AL-RAHMANI'
+        ];
+
+        const MQTT_BROKER = 'wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
+        const MQTT_USER = 'aihuayu';
+        const MQTT_PASS = 'Huyu6180';
+        const TOPIC_STUDENT_CLOUD = 'classroom/student/wordcloud';
+
+        const nameSelect = document.getElementById('studentName');
+        const wordInput = document.getElementById('wordInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageBox = document.getElementById('messageBox');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        let mqttClient = null;
+        let mqttConnected = false;
+
+        // 填充下拉列表
+        STUDENT_NAMES.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            nameSelect.appendChild(opt);
+        });
+
+        function setStatus(connected, msg) {
+            mqttConnected = connected;
+            statusDot.className = 'dot ' + (connected ? 'online' : 'offline');
+            statusText.textContent = connected ? '已连接' : '未连接';
+            submitBtn.disabled = !connected;
+            if (msg) {
+                messageBox.textContent = msg;
+                messageBox.className = 'message ' + (connected ? 'info' : 'error');
+            }
+        }
+
+        function showMessage(text, type = 'info') {
+            messageBox.textContent = text;
+            messageBox.className = 'message ' + type;
+        }
+
+        function connectMqtt() {
+            const clientId = 'student_' + Math.random().toString(16).substr(2, 8);
+            mqttClient = new Paho.MQTT.Client(MQTT_BROKER, clientId);
+            mqttClient.onConnectionLost = function(resp) {
+                setStatus(false, '连接已断开，请刷新页面重试');
+                console.warn('MQTT 断开', resp);
+            };
+            const options = {
+                userName: MQTT_USER,
+                password: MQTT_PASS,
+                useSSL: true,
+                onSuccess: function() {
+                    setStatus(true, '✅ 已连接到课堂，可以提交了');
+                    console.log('MQTT 连接成功');
+                },
+                onFailure: function(err) {
+                    setStatus(false, '❌ 连接失败：' + (err.errorMessage || '请检查网络'));
+                    console.error('MQTT 连接失败', err);
+                }
+            };
+            mqttClient.connect(options);
+        }
+
+        function submitWord() {
+            const name = nameSelect.value;
+            const text = wordInput.value.trim();
+            if (!name) { showMessage('请先选择你的姓名', 'error'); nameSelect.focus(); return; }
+            if (!text) { showMessage('请先输入一个词或短语', 'error'); wordInput.focus(); return; }
+            if (!mqttConnected || !mqttClient) { showMessage('MQTT 未连接，请稍后重试', 'error'); return; }
+
+            const payload = JSON.stringify({ name, text });
+            const msg = new Paho.MQTT.Message(payload);
+            msg.destinationName = TOPIC_STUDENT_CLOUD;
+            try {
+                mqttClient.send(msg);
+                showMessage(`✅ 提交成功！("${text}") 已发送`, 'success');
+                wordInput.value = '';
+                wordInput.focus();
+            } catch (e) {
+                showMessage('❌ 发送失败：' + e.message, 'error');
+            }
+        }
+
+        submitBtn.addEventListener('click', submitWord);
+        wordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); submitWord(); }
+        });
+
+        setStatus(false, '正在连接课堂…');
+        connectMqtt();
+        nameSelect.focus();
+        console.log('📱 学生端已启动');
+    </script>
+</body>
+</html>
