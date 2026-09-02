@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>教师端 · 练习模块（全生词表）</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+            background: #f2f6fc;
+            padding: 24px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 12px 40px rgba(0,20,40,0.10);
+            padding: 28px 32px 36px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a2634;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        h1 small { font-size: 16px; font-weight: 400; color: #6a7b8c; }
+        .mqtt-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #f1f5f9;
+            padding: 10px 20px;
+            border-radius: 60px;
+            margin-bottom: 24px;
+        }
+        .mqtt-bar .status { font-weight: 600; font-size: 14px; }
+        .mqtt-bar .status.online { color: #0b6e4f; }
+        .mqtt-bar .status.offline { color: #b91c1c; }
+        .btn {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.15s;
+            background: #e9edf2;
+            color: #1a2634;
+        }
+        .btn:hover { background: #dce2ea; }
+        .btn-primary { background: #3b7cff; color: #fff; }
+        .btn-primary:hover { background: #2a6ae0; transform: translateY(-1px); }
+        .btn-success { background: #0b6e4f; color: #fff; }
+        .btn-success:hover { background: #095a40; }
+        .btn-outline { background: transparent; border: 2px solid #dce2ea; }
+        .btn-outline:hover { border-color: #b0c0d0; background: #f8fafc; }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            background: transparent;
+            color: #5a6c7d;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab.active { background: #ffffff; color: #1a2634; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .panel { display: none; animation: fade 0.2s; }
+        .panel.active { display: block; }
+        @keyframes fade { 0% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        /* 组词 */
+        .char-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            padding: 20px 0 28px;
+            min-height: 100px;
+        }
+        .char-btn {
+            width: 68px;
+            height: 68px;
+            border-radius: 16px;
+            border: 2px solid #dce2ea;
+            background: #fff;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a2634;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .char-btn:hover { background: #f1f5f9; border-color: #b0c0d0; }
+        .char-btn.selected { border-color: #3b7cff; background: #e0edff; }
+        .progress-area { text-align: center; margin: 8px 0 16px; font-size: 16px; color: #5a6c7d; }
+        .progress-area strong { color: #1a2634; }
+        .word-result {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 12px 0 20px;
+        }
+        .word-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 12px 18px;
+            border: 1px solid #e9edf2;
+            min-width: 160px;
+            text-align: center;
+        }
+        .word-card .word { font-size: 24px; font-weight: 700; color: #1a2634; }
+        .word-card .pinyin { font-size: 14px; color: #5a6c7d; }
+        .word-card .trans { font-size: 13px; color: #6a7b8c; margin-top: 2px; }
+
+        /* 配对 */
+        .pair-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+            padding: 20px 0;
+            flex-wrap: wrap;
+        }
+        .pair-col { flex: 1; min-width: 160px; }
+        .pair-item {
+            padding: 12px 18px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border: 2px solid #dce2ea;
+            background: #fff;
+            cursor: pointer;
+            transition: 0.1s;
+            font-weight: 500;
+            text-align: center;
+        }
+        .pair-item:hover { background: #f1f5f9; }
+        .pair-item.active { border-color: #3b7cff; background: #e0edff; }
+        .pair-item.matched { opacity: 0.3; pointer-events: none; border-color: #b8d9b0; }
+        .pair-item .sub { font-weight: 400; font-size: 14px; color: #5a6c7d; }
+        .pair-status { text-align: center; margin: 12px 0; font-size: 15px; color: #0b6e4f; }
+        .pair-batch-info { text-align: center; font-size: 15px; color: #5a6c7d; margin-bottom: 12px; }
+
+        /* 词云 */
+        .wordcloud-area { padding: 12px 0; }
+        .wordcloud-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 24px;
+            padding: 24px 16px;
+            background: #f8fafc;
+            border-radius: 24px;
+            min-height: 200px;
+            border: 2px dashed #dce2ea;
+            justify-content: center;
+            align-items: center;
+        }
+        .cloud-item {
+            background: #ffffff;
+            padding: 10px 20px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #e9edf2;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cloud-item .student { font-weight: 700; color: #3b7cff; }
+        .cloud-item .text { color: #1a2634; }
+        .no-msg { color: #8a9aa8; font-size: 16px; }
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border-radius: 20px;
+        }
+        .qr-section #qrCode { background: #fff; padding: 12px; border-radius: 16px; display: inline-block; }
+        .qr-section .info { font-size: 15px; color: #2c3e50; }
+        .qr-section .info strong { display: block; font-size: 18px; color: #1a2634; }
+
+        .flex-center { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .mt-8 { margin-top: 8px; }
+        .text-center { text-align: center; }
+        .hidden { display: none; }
+
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .tabs { flex-wrap: wrap; }
+            .tab { flex: none; width: 100%; }
+            .pair-area { flex-direction: column; gap: 20px; }
+            .char-btn { width: 56px; height: 56px; font-size: 22px; }
+            .qr-section { flex-direction: column; align-items: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📘 练习模块 <small>全生词表（含单字）</small></h1>
+
+    <!-- MQTT 状态 -->
+    <div class="mqtt-bar">
+        <span class="status offline" id="mqttStatus">MQTT: 未连接</span>
+        <button class="btn btn-primary" id="mqttConnectBtn">连接</button>
+        <span style="font-size:13px; color:#6a7b8c;">broker: hivemq</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" data-tab="tab1">🧩 单字组词</button>
+        <button class="tab" data-tab="tab2">🔗 词汇配对</button>
+        <button class="tab" data-tab="tab3">☁️ 词云</button>
+    </div>
+
+    <!-- ===== 单字组词（仅多字词） ===== -->
+    <div id="tab1" class="panel active">
+        <div class="flex-center mt-8">
+            <button class="btn btn-success" id="newWordGroup">🔄 新的一组（5词）</button>
+            <span style="color:#5a6c7d;">本轮已练: <strong id="usedCount">0</strong> / <span id="totalCountDisplay">0</span> 词</span>
+        </div>
+        <div class="char-grid" id="charGrid"></div>
+        <div class="progress-area" id="progressMsg">点击汉字按顺序组成词语</div>
+        <div class="word-result" id="wordResult"></div>
+        <div class="text-center" id="wordCompleteMsg" style="font-weight:600;font-size:18px;color:#0b6e4f;"></div>
+    </div>
+
+    <!-- ===== 词汇配对（全词库，含单字） ===== -->
+    <div id="tab2" class="panel">
+        <div class="flex-center mt-8">
+            <button class="btn btn-success" id="newPairGroup">🔄 新的一组（5词）</button>
+            <span style="color:#5a6c7d;">本轮已练: <strong id="pairUsedCount">0</strong> / <span id="pairTotalCount">0</span> 词</span>
+        </div>
+        <div class="pair-batch-info" id="pairBatchInfo">点击左边词，再点击右边对应项配对</div>
+        <div class="pair-area" id="pairArea">
+            <div class="pair-col" id="leftCol"></div>
+            <div class="pair-col" id="rightCol"></div>
+        </div>
+        <div class="pair-status" id="pairStatus">配对进度 0/5</div>
+        <div class="text-center" id="pairCompleteMsg" style="font-weight:600;font-size:18px;color:#0b6e4f;"></div>
+    </div>
+
+    <!-- ===== 词云（含清空按钮） ===== -->
+    <div id="tab3" class="panel">
+        <div class="wordcloud-area">
+            <div class="qr-section">
+                <div id="qrCode"></div>
+                <div class="info">
+                    <strong>📱 学生扫码参与</strong>
+                    学生扫描二维码进入学生端，选择姓名后提交词汇，实时显示在此。
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+                <span style="font-weight:600; color:#1a2634;">📝 学生提交的词</span>
+                <button class="btn btn-outline" id="clearCloudBtn">🗑️ 清空所有</button>
+            </div>
+            <div class="wordcloud-display" id="cloudDisplay">
+                <span class="no-msg">等待学生输入…</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ================================================================
+//  1. 全生词表（含单字词，来自口语3、4课生词）
+// ================================================================
+const FULL_WORD_POOL = [
+    // ---- 第3课生词（含单字） ----
+    { word: '唱', pinyin: 'chàng', en: 'sing', ru: 'петь' },
+    { word: '歌', pinyin: 'gē', en: 'song', ru: 'песня' },
+    { word: '听', pinyin: 'tīng', en: 'listen', ru: 'слушать' },
+    { word: '得', pinyin: 'de', en: 'particle', ru: 'частица' },
+    { word: '太', pinyin: 'tài', en: 'too', ru: 'слишком' },
+    { word: '打', pinyin: 'dǎ', en: 'play (sports)', ru: 'играть' },
+    { word: '会', pinyin: 'huì', en: 'can', ru: 'уметь' },
+    { word: '教', pinyin: 'jiāo', en: 'teach', ru: 'учить' },
+    { word: '啊', pinyin: 'a', en: 'particle', ru: 'частица' },
+    { word: '请', pinyin: 'qǐng', en: 'please', ru: 'пожалуйста' },
+    { word: '进', pinyin: 'jìn', en: 'enter', ru: 'войти' },
+    { word: '坐', pinyin: 'zuò', en: 'sit', ru: 'сидеть' },
+    { word: '说', pinyin: 'shuō', en: 'speak', ru: 'говорить' },
+    // 双字/多字
+    { word: '唱歌', pinyin: 'chàng gē', en: 'sing', ru: 'петь' },
+    { word: '听歌', pinyin: 'tīng gē', en: 'listen to songs', ru: 'слушать песни' },
+    { word: '电影', pinyin: 'diàn yǐng', en: 'movie', ru: 'фильм' },
+    { word: '旅游', pinyin: 'lǚ yóu', en: 'travel', ru: 'путешествовать' },
+    { word: '网球', pinyin: 'wǎng qiú', en: 'tennis', ru: 'теннис' },
+    { word: '爱好', pinyin: 'ài hào', en: 'hobby', ru: 'хобби' },
+    { word: '不过', pinyin: 'bú guò', en: 'but', ru: 'однако' },
+    { word: '功夫', pinyin: 'gōng fu', en: 'kung fu', ru: 'кунг-фу' },
+    { word: '语言', pinyin: 'yǔ yán', en: 'language', ru: 'язык' },
+    { word: '这些', pinyin: 'zhè xiē', en: 'these', ru: 'эти' },
+    { word: '除了', pinyin: 'chú le', en: 'except', ru: 'кроме' },
+    { word: '还是', pinyin: 'hái shì', en: 'or / still', ru: 'или / всё ещё' },
+    { word: '特长', pinyin: 'tè cháng', en: 'special skill', ru: 'особый навык' },
+    { word: '不错', pinyin: 'bú cuò', en: 'not bad', ru: 'неплохо' },
+    { word: '还可以', pinyin: 'hái kě yǐ', en: 'well enough', ru: 'сносно' },
+    // ---- 第4课生词（含单字） ----
+    { word: '去', pinyin: 'qù', en: 'go', ru: 'идти' },
+    { word: '过', pinyin: 'guò', en: 'aspect particle', ru: 'частица' },
+    { word: '订', pinyin: 'dìng', en: 'order', ru: 'заказать' },
+    { word: '送', pinyin: 'sòng', en: 'deliver', ru: 'доставить' },
+    { word: '没', pinyin: 'méi', en: 'not (have)', ru: 'не' },
+    { word: '试', pinyin: 'shì', en: 'try', ru: 'попробовать' },
+    { word: '辣', pinyin: 'là', en: 'spicy', ru: 'острый' },
+    { word: '菜', pinyin: 'cài', en: 'dish', ru: 'блюдо' },
+    // 双字/多字
+    { word: '假期', pinyin: 'jià qī', en: 'holiday', ru: 'каникулы' },
+    { word: '以前', pinyin: 'yǐ qián', en: 'before', ru: 'раньше' },
+    { word: '地方', pinyin: 'dì fang', en: 'place', ru: 'место' },
+    { word: '外卖', pinyin: 'wài mài', en: 'takeout', ru: 'еда на вынос' },
+    { word: '上网', pinyin: 'shàng wǎng', en: 'surf Internet', ru: 'выходить в интернет' },
+    { word: '味道', pinyin: 'wèi dào', en: 'taste', ru: 'вкус' },
+    { word: '特别', pinyin: 'tè bié', en: 'particularly', ru: 'особенно' },
+    { word: '有名', pinyin: 'yǒu míng', en: 'famous', ru: 'известный' },
+    { word: '可以', pinyin: 'kě yǐ', en: 'can', ru: 'можно' },
+    { word: '西餐厅', pinyin: 'xī cān tīng', en: 'western restaurant', ru: 'западный ресторан' },
+];
+
+// 用于单字组词的词库（仅保留长度>=2的词）
+const WORD_POOL_FOR_WORD = FULL_WORD_POOL.filter(w => w.word.length >= 2);
+
+// ================================================================
+//  2. 工具函数
+// ================================================================
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function pickWords(pool, usedSet, count = 5) {
+    const available = pool.filter(w => !usedSet.has(w.word));
+    let selected = [];
+    if (available.length >= count) {
+        selected = shuffle(available).slice(0, count);
+    } else {
+        usedSet.clear();
+        const all = shuffle([...pool]);
+        selected = all.slice(0, count);
+    }
+    selected.forEach(w => usedSet.add(w.word));
+    return selected;
+}
+
+// ================================================================
+//  3. MQTT 连接
+// ================================================================
+const MQTT_BROKER = 'wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
+const MQTT_USER = 'aihuayu';
+const MQTT_PASS = 'Huyu6180';
+const TOPIC_STUDENT_CLOUD = 'classroom/student/wordcloud';
+
+let mqttClient = null;
+let mqttConnected = false;
+const mqttStatusEl = document.getElementById('mqttStatus');
+const mqttBtn = document.getElementById('mqttConnectBtn');
+
+function updateMqttStatus(connected) {
+    mqttConnected = connected;
+    mqttStatusEl.textContent = connected ? 'MQTT: 已连接 ✅' : 'MQTT: 未连接 ❌';
+    mqttStatusEl.className = 'status ' + (connected ? 'online' : 'offline');
+    mqttBtn.textContent = connected ? '断开' : '连接';
+}
+
+function connectMqtt() {
+    if (mqttClient && mqttClient.isConnected()) {
+        mqttClient.disconnect();
+        updateMqttStatus(false);
+        return;
+    }
+    const clientId = 'teacher_' + Math.random().toString(16).substr(2, 8);
+    mqttClient = new Paho.MQTT.Client(MQTT_BROKER, clientId);
+    mqttClient.onConnectionLost = function(resp) {
+        updateMqttStatus(false);
+        console.warn('MQTT 断开', resp);
+    };
+    mqttClient.onMessageArrived = function(msg) {
+        if (msg.destinationName === TOPIC_STUDENT_CLOUD) {
+            try {
+                const data = JSON.parse(msg.payloadString);
+                if (data.name && data.text) {
+                    addCloudItem(data.name, data.text);
+                }
+            } catch(e) {}
+        }
+    };
+    const options = {
+        userName: MQTT_USER,
+        password: MQTT_PASS,
+        useSSL: true,
+        onSuccess: function() {
+            updateMqttStatus(true);
+            mqttClient.subscribe(TOPIC_STUDENT_CLOUD);
+            console.log('MQTT 订阅成功');
+        },
+        onFailure: function(err) {
+            updateMqttStatus(false);
+            alert('MQTT 连接失败: ' + (err.errorMessage || '请检查网络'));
+        }
+    };
+    mqttClient.connect(options);
+}
+mqttBtn.addEventListener('click', connectMqtt);
+
+// ================================================================
+//  4. 单字组词（仅多字词，组词后单字消失）
+// ================================================================
+let wordUsedSet = new Set();
+let currentWordGroup = [];
+let wordCompleted = [];
+let charItems = [];
+let selectedChars = [];
+let currentAttempt = '';
+
+const charGrid = document.getElementById('charGrid');
+const progressMsg = document.getElementById('progressMsg');
+const wordResult = document.getElementById('wordResult');
+const usedCount = document.getElementById('usedCount');
+const totalCountDisplay = document.getElementById('totalCountDisplay');
+const wordCompleteMsg = document.getElementById('wordCompleteMsg');
+
+function initWordGroup() {
+    const group = pickWords(WORD_POOL_FOR_WORD, wordUsedSet, 5);
+    currentWordGroup = group;
+    wordCompleted = [];
+    selectedChars = [];
+    currentAttempt = '';
+    wordCompleteMsg.textContent = '';
+    usedCount.textContent = wordUsedSet.size;
+    totalCountDisplay.textContent = WORD_POOL_FOR_WORD.length;
+    buildCharItems();
+    renderWordGroup();
+}
+
+function buildCharItems() {
+    charItems = [];
+    currentWordGroup.forEach(w => {
+        const chars = w.word.split('');
+        chars.forEach(ch => {
+            charItems.push({ char: ch, word: w.word, used: false });
+        });
+    });
+    shuffle(charItems);
+}
+
+function renderWordGroup() {
+    const available = charItems.filter(item => !item.used);
+    charGrid.innerHTML = '';
+    available.forEach((item, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'char-btn';
+        btn.textContent = item.char;
+        btn.dataset.index = idx;
+        btn.addEventListener('click', () => onWordCharClick(idx));
+        charGrid.appendChild(btn);
+    });
+
+    if (available.length === 0 && wordCompleted.length === currentWordGroup.length) {
+        progressMsg.textContent = '🎉 本组5个词全部完成！';
+        wordCompleteMsg.textContent = '✅ 本组完成！点击「新的一组」继续。';
+        if (wordUsedSet.size === WORD_POOL_FOR_WORD.length) {
+            wordCompleteMsg.textContent += ' 🎊 所有词已练完，将自动重置循环。';
+        }
+    } else {
+        progressMsg.textContent = `剩余 ${currentWordGroup.length - wordCompleted.length} 个词，按顺序点击汉字组成`;
+        wordCompleteMsg.textContent = '';
+    }
+
+    wordResult.innerHTML = '';
+    wordCompleted.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'word-card';
+        card.innerHTML = `
+            <div class="word">${w.word}</div>
+            <div class="pinyin">${w.pinyin}</div>
+            <div class="trans">${w.en} · ${w.ru}</div>
+        `;
+        wordResult.appendChild(card);
+    });
+    if (wordCompleted.length === 0) {
+        wordResult.innerHTML = '<span style="color:#8a9aa8;">点击汉字组词</span>';
+    }
+
+    selectedChars = [];
+    currentAttempt = '';
+    updateWordHighlight();
+}
+
+function onWordCharClick(index) {
+    const available = charItems.filter(item => !item.used);
+    if (index >= available.length) return;
+    const clickedItem = available[index];
+    if (clickedItem.used) return;
+    if (wordCompleted.length === currentWordGroup.length) return;
+
+    const realIndex = charItems.indexOf(clickedItem);
+    if (realIndex === -1) return;
+
+    if (selectedChars.length === 0) {
+        selectedChars.push(realIndex);
+        currentAttempt = clickedItem.char;
+        updateWordHighlight();
+        return;
+    }
+
+    const newSelected = [...selectedChars, realIndex];
+    const attempt = newSelected.map(i => charItems[i].char).join('');
+
+    const matched = currentWordGroup.find(w => w.word === attempt && !wordCompleted.includes(w));
+    if (matched) {
+        newSelected.forEach(i => { charItems[i].used = true; });
+        wordCompleted.push({ ...matched });
+        selectedChars = [];
+        currentAttempt = '';
+        renderWordGroup();
+        progressMsg.textContent = `✅ 组词成功：${matched.word}`;
+    } else {
+        if (attempt.length < 2) {
+            selectedChars.push(realIndex);
+            currentAttempt = attempt;
+            updateWordHighlight();
+        } else {
+            selectedChars = [];
+            currentAttempt = '';
+            updateWordHighlight();
+            progressMsg.textContent = '❌ 不匹配，已重置';
+        }
+    }
+}
+
+function updateWordHighlight() {
+    document.querySelectorAll('.char-btn').forEach(btn => btn.classList.remove('selected'));
+    selectedChars.forEach(realIdx => {
+        const item = charItems[realIdx];
+        if (!item || item.used) return;
+        const btns = document.querySelectorAll('.char-btn');
+        for (let btn of btns) {
+            if (btn.textContent === item.char && !btn.classList.contains('used')) {
+                btn.classList.add('selected');
+                break;
+            }
+        }
+    });
+}
+
+document.getElementById('newWordGroup').addEventListener('click', initWordGroup);
+totalCountDisplay.textContent = WORD_POOL_FOR_WORD.length;
+initWordGroup();
+
+// ================================================================
+//  5. 词汇配对（全词库，含单字）
+// ================================================================
+let pairUsedSet = new Set();
+let currentPairGroup = [];
+let pairLeft = [];
+let pairRight = [];
+let pairMatchedCount = 0;
+let pairSelectedLeft = null;
+
+const leftCol = document.getElementById('leftCol');
+const rightCol = document.getElementById('rightCol');
+const pairStatus = document.getElementById('pairStatus');
+const pairUsedCount = document.getElementById('pairUsedCount');
+const pairTotalCount = document.getElementById('pairTotalCount');
+const pairBatchInfo = document.getElementById('pairBatchInfo');
+const pairCompleteMsg = document.getElementById('pairCompleteMsg');
+
+function initPairGroup() {
+    const group = pickWords(FULL_WORD_POOL, pairUsedSet, 5);
+    currentPairGroup = group;
+    pairLeft = shuffle([...group.map(w => ({ ...w, matched: false }))]);
+    pairRight = shuffle([...group.map(w => ({
+        word: w.word,
+        pinyin: w.pinyin,
+        en: w.en,
+        ru: w.ru,
+        matched: false,
+        display: `${w.pinyin} (${w.en})`
+    }))]);
+    pairMatchedCount = 0;
+    pairSelectedLeft = null;
+    pairUsedCount.textContent = pairUsedSet.size;
+    pairTotalCount.textContent = FULL_WORD_POOL.length;
+    pairCompleteMsg.textContent = '';
+    renderPairGroup();
+}
+
+function renderPairGroup() {
+    leftCol.innerHTML = '';
+    pairLeft.forEach((w, idx) => {
+        const div = document.createElement('div');
+        div.className = 'pair-item' + (w.matched ? ' matched' : '');
+        div.textContent = w.word;
+        div.dataset.index = idx;
+        div.addEventListener('click', () => onPairLeftClick(idx));
+        leftCol.appendChild(div);
+    });
+
+    rightCol.innerHTML = '';
+    pairRight.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'pair-item' + (item.matched ? ' matched' : '');
+        div.innerHTML = item.display;
+        div.dataset.index = idx;
+        div.addEventListener('click', () => onPairRightClick(idx));
+        rightCol.appendChild(div);
+    });
+
+    const total = pairLeft.length;
+    pairStatus.textContent = `配对进度 ${pairMatchedCount}/${total}`;
+    if (pairMatchedCount === total) {
+        pairStatus.textContent = '✅ 本组配对完成！';
+        pairCompleteMsg.textContent = '🎉 本组5个词全部配对完成！点击「新的一组」继续。';
+        if (pairUsedSet.size === FULL_WORD_POOL.length) {
+            pairCompleteMsg.textContent += ' 🎊 所有词已练完，即将自动重置循环。';
+        }
+    } else {
+        pairCompleteMsg.textContent = '';
+    }
+    pairBatchInfo.textContent = `点击左边词，再点击右边对应项配对（${pairMatchedCount}/${total}）`;
+
+    document.querySelectorAll('.pair-item').forEach(el => el.classList.remove('active'));
+    if (pairSelectedLeft !== null && !pairLeft[pairSelectedLeft].matched) {
+        const leftEls = leftCol.querySelectorAll('.pair-item');
+        if (leftEls[pairSelectedLeft]) leftEls[pairSelectedLeft].classList.add('active');
+    }
+}
+
+function onPairLeftClick(idx) {
+    if (pairLeft[idx].matched) return;
+    if (pairMatchedCount === pairLeft.length) return;
+    pairSelectedLeft = idx;
+    renderPairGroup();
+}
+
+function onPairRightClick(idx) {
+    if (pairRight[idx].matched) return;
+    if (pairMatchedCount === pairLeft.length) return;
+    if (pairSelectedLeft === null) {
+        pairStatus.textContent = '⚠️ 请先在左边点击选择一个词';
+        return;
+    }
+    const leftWord = pairLeft[pairSelectedLeft];
+    const rightItem = pairRight[idx];
+    if (leftWord.word === rightItem.word) {
+        pairLeft[pairSelectedLeft].matched = true;
+        pairRight[idx].matched = true;
+        pairMatchedCount++;
+        pairSelectedLeft = null;
+        pairStatus.textContent = '✅ 配对正确！';
+        renderPairGroup();
+    } else {
+        pairStatus.textContent = '❌ 配对错误，请重试';
+        pairSelectedLeft = null;
+        renderPairGroup();
+    }
+}
+
+document.getElementById('newPairGroup').addEventListener('click', initPairGroup);
+pairTotalCount.textContent = FULL_WORD_POOL.length;
+initPairGroup();
+
+// ================================================================
+//  6. 词云（含清空功能）
+// ================================================================
+let cloudItems = [];
+const cloudDisplay = document.getElementById('cloudDisplay');
+
+function addCloudItem(name, text) {
+    cloudItems.push({ name, text });
+    renderCloud();
+}
+
+function renderCloud() {
+    if (cloudItems.length === 0) {
+        cloudDisplay.innerHTML = '<span class="no-msg">等待学生输入…</span>';
+        return;
+    }
+    cloudDisplay.innerHTML = cloudItems.map(item =>
+        `<span class="cloud-item"><span class="student">${item.name}</span><span class="text">：${item.text}</span></span>`
+    ).join('');
+}
+
+// 清空词云
+document.getElementById('clearCloudBtn').addEventListener('click', function() {
+    if (cloudItems.length === 0) return;
+    if (confirm('确定要清空所有学生提交的词吗？')) {
+        cloudItems = [];
+        renderCloud();
+    }
+});
+
+// 生成二维码
+function generateQR() {
+    const qrContainer = document.getElementById('qrCode');
+    qrContainer.innerHTML = '';
+    const url = window.location.href.replace(/[^/]*$/, '') + 'student.html';
+    try {
+        new QRCode(qrContainer, {
+            text: url,
+            width: 150,
+            height: 150,
+            colorDark: '#1a2634',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    } catch(e) {
+        qrContainer.innerHTML = '<div style="padding:20px;color:#a67c6a;">QR码生成失败</div>';
+    }
+}
+generateQR();
+
+// 模拟学生输入（演示用，教师端可删除）
+window.simulateStudent = function(name, text) {
+    if (!mqttConnected) {
+        alert('MQTT未连接');
+        return;
+    }
+    const payload = JSON.stringify({ name, text });
+    const msg = new Paho.MQTT.Message(payload);
+    msg.destinationName = TOPIC_STUDENT_CLOUD;
+    mqttClient.send(msg);
+};
+const simBtn = document.createElement('button');
+simBtn.textContent = '🧪 模拟学生输入';
+simBtn.className = 'btn btn-outline';
+simBtn.style.marginLeft = '12px';
+simBtn.addEventListener('click', function() {
+    const name = prompt('学生姓名', 'Alice') || '学生';
+    const text = prompt('输入的词', '苹果') || '苹果';
+    window.simulateStudent(name, text);
+});
+document.querySelector('.qr-section .info').appendChild(simBtn);
+
+// ================================================================
+//  7. Tab 切换
+// ================================================================
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const target = this.dataset.tab;
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(target).classList.add('active');
+    });
+});
+
+console.log('📘 教师端已加载，词云清空按钮已添加');
+</script>
+</body>
+</html>
