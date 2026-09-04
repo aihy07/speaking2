@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>学生端 · 词云提交</title>
+    <title>学生端 · 词云 & 填空</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js">
     </script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
-            background: linear-gradient(145deg, #f0f4f8 0%, #e2e8f0 100%);
+            background: linear-gradient(145deg, #f0f6fb 0%, #e2eaf2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -18,55 +22,115 @@
             padding: 20px;
         }
         .container {
-            max-width: 480px;
+            max-width: 500px;
             width: 100%;
             background: #ffffff;
             border-radius: 40px;
-            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.10);
             padding: 32px 28px 40px;
         }
-        .header { text-align: center; margin-bottom: 28px; }
-        .header .icon { font-size: 48px; }
-        .header h1 { font-size: 26px; font-weight: 700; color: #1a2634; margin-top: 6px; }
-        .header p { color: #6a7b8c; font-size: 15px; margin-top: 4px; }
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .header .icon {
+            font-size: 48px;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a2a3a;
+            margin-top: 6px;
+        }
+        .header p {
+            color: #6a7b8c;
+            font-size: 15px;
+            margin-top: 4px;
+        }
         .mqtt-status {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            background: #f1f5f9;
+            background: #f0f4f9;
             padding: 8px 16px;
             border-radius: 40px;
             margin-bottom: 24px;
             font-size: 14px;
             font-weight: 500;
         }
-        .mqtt-status .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-        .mqtt-status .dot.online { background: #0b6e4f; }
-        .mqtt-status .dot.offline { background: #b91c1c; }
-        .mqtt-status .status-text { color: #2c3e50; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-weight: 600; color: #1a2634; margin-bottom: 6px; font-size: 15px; }
+        .mqtt-status .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .mqtt-status .dot.online {
+            background: #0b6e4f;
+        }
+        .mqtt-status .dot.offline {
+            background: #b91c1c;
+        }
+        .mode-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            background: #f0f4f9;
+            border-radius: 16px;
+            padding: 4px;
+        }
+        .mode-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            font-weight: 600;
+            color: #5a6c7d;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .mode-tab.active {
+            background: #fff;
+            color: #1a2a3a;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .mode-panel {
+            display: none;
+        }
+        .mode-panel.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1a2a3a;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
         .form-group select,
         .form-group input {
             width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #dce2ea;
+            padding: 12px 16px;
+            border: 1.5px solid #dce4ec;
             border-radius: 16px;
             font-size: 16px;
             outline: none;
             transition: 0.15s;
             background: #f8fafc;
-            appearance: auto;
         }
         .form-group select:focus,
         .form-group input:focus {
             border-color: #3b7cff;
             background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.1);
         }
         .btn-submit {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             border: none;
             border-radius: 40px;
             background: #3b7cff;
@@ -75,11 +139,17 @@
             font-weight: 700;
             cursor: pointer;
             transition: 0.15s;
-            box-shadow: 0 4px 16px rgba(59, 124, 255, 0.30);
+            box-shadow: 0 4px 16px rgba(59, 124, 255, 0.25);
         }
-        .btn-submit:hover { background: #2a6ae0; transform: translateY(-2px); }
-        .btn-submit:active { transform: translateY(0); }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-submit:hover {
+            background: #2a6ae0;
+            transform: translateY(-2px);
+        }
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
         .message {
             margin-top: 16px;
             padding: 12px 16px;
@@ -89,18 +159,69 @@
             text-align: center;
             min-height: 50px;
         }
-        .message.success { background: #e0f2e6; color: #0b6e4f; }
-        .message.error { background: #fee2e2; color: #991b1b; }
-        .message.info { background: #e0edff; color: #1a56db; }
-        .footer { text-align: center; margin-top: 20px; font-size: 13px; color: #8a9aa8; }
+        .message.success {
+            background: #e0f2e6;
+            color: #0b6e4f;
+        }
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .message.info {
+            background: #e0edff;
+            color: #1a56db;
+        }
+        .fill-display {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #e6edf4;
+        }
+        .fill-sentence {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a2a3a;
+            margin-bottom: 8px;
+        }
+        .fill-sentence .blank {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 2px solid #000000;
+            margin: 0 4px;
+        }
+        .fill-translation {
+            font-size: 15px;
+            color: #5a6c7d;
+            margin-bottom: 12px;
+        }
+        .fill-input {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #dce4ec;
+            border-radius: 16px;
+            font-size: 16px;
+            outline: none;
+            background: #fff;
+        }
+        .fill-input:focus {
+            border-color: #3b7cff;
+            box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #8a9aa8;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="icon">📝</div>
-            <h1>课堂词云</h1>
-            <p>选择你的姓名，输入词汇分享给全班</p>
+            <div class="icon">📱</div>
+            <h1>课堂互动</h1>
+            <p>提交词汇 或 完成填空</p>
         </div>
 
         <div class="mqtt-status">
@@ -108,24 +229,51 @@
             <span class="status-text" id="statusText">连接中...</span>
         </div>
 
-        <div class="form-group">
-            <label for="studentName">选择你的姓名</label>
-            <select id="studentName">
-                <option value="">— 请选择 —</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="wordInput">输入一个词或短语</label>
-            <input type="text" id="wordInput" placeholder="例如：苹果、旅行、很喜欢" maxlength="50" />
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="cloud">☁️ 词云</button>
+            <button class="mode-tab" data-mode="fill">✍️ 填空</button>
         </div>
 
-        <button class="btn-submit" id="submitBtn">📤 提交</button>
-        <div id="messageBox" class="message info">等待连接…</div>
-        <div class="footer"><span>提交后，教师端将实时显示</span></div>
+        <!-- 词云模式 -->
+        <div id="mode-cloud" class="mode-panel active">
+            <div class="form-group">
+                <label for="studentName">选择你的姓名</label>
+                <select id="studentName">
+                    <option value="">— 请选择 —</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="wordInput">输入一个词或短语</label>
+                <input type="text" id="wordInput" placeholder="例如：苹果、旅行" maxlength="50" />
+            </div>
+            <button class="btn-submit" id="submitCloudBtn">📤 提交词云</button>
+            <div id="cloudMsg" class="message info">等待连接…</div>
+        </div>
+
+        <!-- 填空模式 -->
+        <div id="mode-fill" class="mode-panel">
+            <div class="form-group">
+                <label for="fillStudentName">选择你的姓名</label>
+                <select id="fillStudentName">
+                    <option value="">— 请选择 —</option>
+                </select>
+            </div>
+            <div class="fill-display" id="fillDisplay">
+                <div class="fill-sentence" id="fillSentence">等待教师同步题目…</div>
+                <div class="fill-translation" id="fillTranslation"></div>
+            </div>
+            <div class="form-group">
+                <label for="fillAnswerInput">你的答案</label>
+                <input type="text" id="fillAnswerInput" placeholder="输入答案" maxlength="50" />
+            </div>
+            <button class="btn-submit" id="submitFillBtn">📤 提交答案</button>
+            <div id="fillMsg" class="message info">等待题目…</div>
+        </div>
+
+        <div class="footer">教师端将实时接收你的提交</div>
     </div>
 
     <script>
-        // 学生名单（与点名系统一致）
         const STUDENT_NAMES = [
             'ALEKSEENKO DENIS', 'BAKAEVA MARGARITA', 'GODOVIKOV MATVEI',
             'DUBININA VASILISA', 'ERSHOV KIRILL', 'ZEYNALOV FARIZ',
@@ -138,54 +286,68 @@
         const MQTT_USER = 'aihuayu';
         const MQTT_PASS = 'Huyu6180';
         const TOPIC_STUDENT_CLOUD = 'classroom/student/wordcloud';
-
-        const nameSelect = document.getElementById('studentName');
-        const wordInput = document.getElementById('wordInput');
-        const submitBtn = document.getElementById('submitBtn');
-        const messageBox = document.getElementById('messageBox');
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
+        const TOPIC_TEACHER_FILL = 'classroom/teacher/fill';
+        const TOPIC_STUDENT_ANSWER = 'classroom/student/answer';
 
         let mqttClient = null;
         let mqttConnected = false;
+        let currentFillQuestion = null;
 
-        // 填充下拉列表
-        STUDENT_NAMES.forEach(name => {
-            const opt = document.createElement('option');
-            opt.value = name;
-            opt.textContent = name;
-            nameSelect.appendChild(opt);
-        });
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        function populateSelects() {
+            const selects = ['studentName', 'fillStudentName'];
+            selects.forEach(id => {
+                const sel = document.getElementById(id);
+                sel.innerHTML = '<option value="">— 请选择 —</option>';
+                STUDENT_NAMES.forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    opt.textContent = name;
+                    sel.appendChild(opt);
+                });
+            });
+        }
+        populateSelects();
 
         function setStatus(connected, msg) {
             mqttConnected = connected;
             statusDot.className = 'dot ' + (connected ? 'online' : 'offline');
             statusText.textContent = connected ? '已连接' : '未连接';
-            submitBtn.disabled = !connected;
+            document.querySelectorAll('.btn-submit').forEach(b => b.disabled = !connected);
             if (msg) {
-                messageBox.textContent = msg;
-                messageBox.className = 'message ' + (connected ? 'info' : 'error');
+                document.getElementById('cloudMsg').textContent = msg;
+                document.getElementById('cloudMsg').className = 'message ' + (connected ? 'info' : 'error');
             }
-        }
-
-        function showMessage(text, type = 'info') {
-            messageBox.textContent = text;
-            messageBox.className = 'message ' + type;
         }
 
         function connectMqtt() {
             const clientId = 'student_' + Math.random().toString(16).substr(2, 8);
             mqttClient = new Paho.MQTT.Client(MQTT_BROKER, clientId);
             mqttClient.onConnectionLost = function(resp) {
-                setStatus(false, '连接已断开，请刷新页面重试');
+                setStatus(false, '连接已断开');
                 console.warn('MQTT 断开', resp);
+            };
+            mqttClient.onMessageArrived = function(msg) {
+                if (msg.destinationName === TOPIC_TEACHER_FILL) {
+                    try {
+                        const data = JSON.parse(msg.payloadString);
+                        currentFillQuestion = data;
+                        showFillQuestion(data);
+                        switchMode('fill');
+                        document.getElementById('fillMsg').textContent = '📩 新题目已接收，请作答';
+                        document.getElementById('fillMsg').className = 'message info';
+                    } catch (e) {}
+                }
             };
             const options = {
                 userName: MQTT_USER,
                 password: MQTT_PASS,
                 useSSL: true,
                 onSuccess: function() {
-                    setStatus(true, '✅ 已连接到课堂，可以提交了');
+                    setStatus(true, '✅ 已连接');
+                    mqttClient.subscribe(TOPIC_TEACHER_FILL);
                     console.log('MQTT 连接成功');
                 },
                 onFailure: function(err) {
@@ -195,36 +357,65 @@
             };
             mqttClient.connect(options);
         }
+        connectMqtt();
 
-        function submitWord() {
-            const name = nameSelect.value;
-            const text = wordInput.value.trim();
-            if (!name) { showMessage('请先选择你的姓名', 'error'); nameSelect.focus(); return; }
-            if (!text) { showMessage('请先输入一个词或短语', 'error'); wordInput.focus(); return; }
-            if (!mqttConnected || !mqttClient) { showMessage('MQTT 未连接，请稍后重试', 'error'); return; }
+        function showFillQuestion(data) {
+            const sentenceDiv = document.getElementById('fillSentence');
+            const transDiv = document.getElementById('fillTranslation');
+            const blankHtml = data.sentence.replace('_____', '<span class="blank">______</span>');
+            sentenceDiv.innerHTML = blankHtml;
+            transDiv.textContent = '📖 ' + data.translation;
+            document.getElementById('fillAnswerInput').value = '';
+        }
 
+        function switchMode(mode) {
+            document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+            document.querySelectorAll('.mode-panel').forEach(p => p.classList.toggle('active', p.id === 'mode-' + mode));
+        }
+
+        document.getElementById('submitCloudBtn').addEventListener('click', function() {
+            const name = document.getElementById('studentName').value;
+            const text = document.getElementById('wordInput').value.trim();
+            if (!name) { showMsg('cloudMsg', '请选择姓名', 'error'); return; }
+            if (!text) { showMsg('cloudMsg', '请输入词汇', 'error'); return; }
+            if (!mqttConnected) { showMsg('cloudMsg', 'MQTT未连接', 'error'); return; }
             const payload = JSON.stringify({ name, text });
             const msg = new Paho.MQTT.Message(payload);
             msg.destinationName = TOPIC_STUDENT_CLOUD;
-            try {
-                mqttClient.send(msg);
-                showMessage(`✅ 提交成功！("${text}") 已发送`, 'success');
-                wordInput.value = '';
-                wordInput.focus();
-            } catch (e) {
-                showMessage('❌ 发送失败：' + e.message, 'error');
-            }
-        }
-
-        submitBtn.addEventListener('click', submitWord);
-        wordInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') { e.preventDefault(); submitWord(); }
+            mqttClient.send(msg);
+            showMsg('cloudMsg', `✅ 已提交：「${text}」`, 'success');
+            document.getElementById('wordInput').value = '';
         });
 
-        setStatus(false, '正在连接课堂…');
-        connectMqtt();
-        nameSelect.focus();
-        console.log('📱 学生端已启动');
+        document.getElementById('submitFillBtn').addEventListener('click', function() {
+            const name = document.getElementById('fillStudentName').value;
+            const answer = document.getElementById('fillAnswerInput').value.trim();
+            if (!name) { showMsg('fillMsg', '请选择姓名', 'error'); return; }
+            if (!answer) { showMsg('fillMsg', '请输入答案', 'error'); return; }
+            if (!mqttConnected) { showMsg('fillMsg', 'MQTT未连接', 'error'); return; }
+            if (!currentFillQuestion) { showMsg('fillMsg', '暂无题目', 'error'); return; }
+            const payload = JSON.stringify({ name, answer, question: currentFillQuestion.sentence });
+            const msg = new Paho.MQTT.Message(payload);
+            msg.destinationName = TOPIC_STUDENT_ANSWER;
+            mqttClient.send(msg);
+            showMsg('fillMsg', `✅ 答案已提交：「${answer}」`, 'success');
+            document.getElementById('fillAnswerInput').value = '';
+        });
+
+        function showMsg(id, text, type) {
+            const el = document.getElementById(id);
+            el.textContent = text;
+            el.className = 'message ' + type;
+        }
+
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const mode = this.dataset.mode;
+                switchMode(mode);
+            });
+        });
+
+        console.log('📱 学生端最终版已启动');
     </script>
 </body>
 </html>
