@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
     </script>
     <style>
-        /* ===== 全局样式 ===== */
+        /* ===== 全局样式（与之前相同，为节省篇幅此处省略，实际使用时请复制完整样式） ===== */
         * {
             margin: 0;
             padding: 0;
@@ -236,7 +236,6 @@
             font-size: 13px;
             color: #4a5b6c;
         }
-        /* ===== 单字组词 ===== */
         .char-grid {
             display: flex;
             flex-wrap: wrap;
@@ -311,7 +310,6 @@
             color: #6a7b8c;
             margin-top: 2px;
         }
-        /* ===== 词汇配对 ===== */
         .pair-area {
             display: flex;
             justify-content: space-between;
@@ -361,7 +359,6 @@
             color: #5a6c7d;
             margin-bottom: 12px;
         }
-        /* ===== 词云 ===== */
         .wordcloud-display {
             display: flex;
             flex-wrap: wrap;
@@ -413,7 +410,6 @@
             border-radius: 16px;
             display: inline-block;
         }
-        /* ===== 翻牌子（网格布局，每行3个） ===== */
         .flip-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -485,7 +481,6 @@
             margin: 16px 0;
             flex-wrap: wrap;
         }
-        /* ===== 选词填空 ===== */
         .fill-area {
             padding: 20px 0;
         }
@@ -757,7 +752,7 @@
         const WORD_POOL = Array.from(wordMap.values());
 
         // ================================================================
-        //  句子库（全部正确自然）
+        //  句子库
         // ================================================================
         const SENTENCE_POOL = [
             { sentence: '你 _____ 过中国菜吗？', answer: '吃', translation: 'Have you ever eaten Chinese food?' },
@@ -807,7 +802,7 @@
         }
 
         // ================================================================
-        //  MQTT
+        //  MQTT（已修复：订阅词云主题）
         // ================================================================
         const MQTT_BROKER = 'wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
         const MQTT_USER = 'aihuayu';
@@ -844,6 +839,7 @@
                 console.warn('MQTT 断开', resp);
             };
             mqttClient.onMessageArrived = function(msg) {
+                // 处理填空答案
                 if (msg.destinationName === TOPIC_STUDENT_ANSWER) {
                     try {
                         const data = JSON.parse(msg.payloadString);
@@ -851,7 +847,16 @@
                             studentAnswers[data.name] = data.answer;
                             renderStudentAnswers();
                         }
-                    } catch (e) {}
+                    } catch (e) { console.warn('解析答案失败', e); }
+                }
+                // 处理词云提交
+                else if (msg.destinationName === TOPIC_STUDENT_CLOUD) {
+                    try {
+                        const data = JSON.parse(msg.payloadString);
+                        if (data.name && data.text) {
+                            addCloudItem(data.name, data.text);
+                        }
+                    } catch (e) { console.warn('解析词云失败', e); }
                 }
             };
             const options = {
@@ -860,8 +865,10 @@
                 useSSL: true,
                 onSuccess: function() {
                     updateMqttStatus(true);
+                    // 订阅两个主题
                     mqttClient.subscribe(TOPIC_STUDENT_ANSWER);
-                    console.log('MQTT 订阅成功');
+                    mqttClient.subscribe(TOPIC_STUDENT_CLOUD);
+                    console.log('MQTT 订阅成功（答案 + 词云）');
                 },
                 onFailure: function(err) {
                     updateMqttStatus(false);
@@ -954,7 +961,7 @@
         });
 
         // ================================================================
-        //  1. 单字组词（前缀匹配，支持三字词）
+        //  1. 单字组词
         // ================================================================
         let wordUsedSet = new Set();
         let currentWordGroup = [];
@@ -1248,6 +1255,7 @@
         }
         generateQR();
 
+        // 模拟学生输入（用于测试）
         window.simulateStudent = function(name, text) {
             if (!mqttConnected) {
                 alert('MQTT未连接');
@@ -1373,13 +1381,12 @@
             container.style.display = container.style.display === 'none' ? 'block' : 'none';
         });
 
-        // ★★★ 修改：点击“下一句”时，自动同步到学生端 ★★★
+        // 下一句自动同步
         document.getElementById('nextFillBtn').addEventListener('click', function() {
             if (fillSentences.length === 0) return;
             fillCurrentIndex = (fillCurrentIndex + 1) % fillSentences.length;
             const item = fillSentences[fillCurrentIndex];
             showFillSentence(fillCurrentIndex);
-            // 自动同步
             if (item) {
                 syncFillToStudent(item.sentence, item.answer, item.translation);
             }
@@ -1388,7 +1395,6 @@
 
         document.getElementById('newFillSet').addEventListener('click', initFillSet);
 
-        // 手动同步按钮保留，用于首次同步或重新同步
         document.getElementById('syncFillBtn').addEventListener('click', function() {
             const item = fillSentences[fillCurrentIndex];
             if (!item) return;
@@ -1397,7 +1403,7 @@
 
         initFillSet();
 
-        console.log('📘 教师端已更新：翻牌子每行3个，下一句自动同步。');
+        console.log('📘 教师端已更新（词云订阅修复，下一句自动同步）');
     </script>
 </body>
 </html>
