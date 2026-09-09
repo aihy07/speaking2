@@ -101,6 +101,7 @@
         .mode-panel.active {
             display: block;
         }
+
         .form-group {
             margin-bottom: 16px;
         }
@@ -150,6 +151,7 @@
             cursor: not-allowed;
             transform: none;
         }
+
         .message {
             margin-top: 16px;
             padding: 12px 16px;
@@ -171,6 +173,7 @@
             background: #e0edff;
             color: #1a56db;
         }
+
         .fill-display {
             background: #f8fafc;
             border-radius: 16px;
@@ -214,6 +217,14 @@
             font-size: 13px;
             color: #8a9aa8;
         }
+
+        /* 新增：手动输入框显隐 */
+        .manual-input {
+            display: none;
+        }
+        .manual-input.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -241,6 +252,10 @@
                 <select id="studentName">
                     <option value="">— 请选择 —</option>
                 </select>
+                <!-- 手动输入框 -->
+                <div class="manual-input" id="manualNameContainer">
+                    <input type="text" id="manualNameInput" placeholder="请输入你的姓名" maxlength="30" style="margin-top:8px;" />
+                </div>
             </div>
             <div class="form-group">
                 <label for="wordInput">输入一个词或短语</label>
@@ -257,6 +272,10 @@
                 <select id="fillStudentName">
                     <option value="">— 请选择 —</option>
                 </select>
+                <!-- 手动输入框 -->
+                <div class="manual-input" id="manualFillNameContainer">
+                    <input type="text" id="manualFillNameInput" placeholder="请输入你的姓名" maxlength="30" style="margin-top:8px;" />
+                </div>
             </div>
             <div class="fill-display" id="fillDisplay">
                 <div class="fill-sentence" id="fillSentence">等待教师同步题目…</div>
@@ -274,14 +293,32 @@
     </div>
 
     <script>
+        // ================================================================
+        //  学生名单（新增3人 + 原有名单）
+        // ================================================================
         const STUDENT_NAMES = [
-            'ALEKSEENKO DENIS', 'BAKAEVA MARGARITA', 'GODOVIKOV MATVEI',
-            'DUBININA VASILISA', 'ERSHOV KIRILL', 'ZEYNALOV FARIZ',
-            'KORCHUGANOV NIKITA', 'MNATSAKANIAN DAVID', 'NEPRINTSEVA ANNA',
-            'PARCHAK ANASTASIIA', 'SAFONOV PAVEL', 'SIMONOV DANIIL',
-            'AHMED RAAD ABDULWAHID AL-RAHMANI'
+            'ALEKSEENKO DENIS',
+            'BAKAEVA MARGARITA',
+            'GODOVIKOV MATVEI',
+            'DUBININA VASILISA',
+            'ERSHOV KIRILL',
+            'ZEYNALOV FARIZ',
+            'KORCHUGANOV NIKITA',
+            'MNATSAKANIAN DAVID',
+            'NEPRINTSEVA ANNA',
+            'PARCHAK ANASTASIIA',
+            'SAFONOV PAVEL',
+            'SIMONOV DANIIL',
+            'AHMED RAAD ABDULWAHID AL-RAHMANI',
+            // ===== 新增3人 =====
+            'JAIPONG MISS SIRIWAN',
+            'GORDEEVA SOFIA',
+            'GRISHKINA VALERIIA'
         ];
 
+        // ================================================================
+        //  MQTT 配置（与教师端一致）
+        // ================================================================
         const MQTT_BROKER = 'wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
         const MQTT_USER = 'aihuayu';
         const MQTT_PASS = 'Huyu6180';
@@ -296,6 +333,9 @@
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
 
+        // ================================================================
+        //  填充下拉列表（包含“不在名单中”选项）
+        // ================================================================
         function populateSelects() {
             const selects = ['studentName', 'fillStudentName'];
             selects.forEach(id => {
@@ -307,10 +347,51 @@
                     opt.textContent = name;
                     sel.appendChild(opt);
                 });
+                // 添加“不在名单中”选项
+                const optOther = document.createElement('option');
+                optOther.value = '__other__';
+                optOther.textContent = '— 不在名单中 —';
+                sel.appendChild(optOther);
             });
         }
         populateSelects();
 
+        // ================================================================
+        //  控制手动输入框显隐
+        // ================================================================
+        function setupManualInput(selectId, inputContainerId, inputId) {
+            const select = document.getElementById(selectId);
+            const container = document.getElementById(inputContainerId);
+            const input = document.getElementById(inputId);
+            select.addEventListener('change', function() {
+                if (this.value === '__other__') {
+                    container.classList.add('show');
+                    input.focus();
+                } else {
+                    container.classList.remove('show');
+                    input.value = '';
+                }
+            });
+        }
+        setupManualInput('studentName', 'manualNameContainer', 'manualNameInput');
+        setupManualInput('fillStudentName', 'manualFillNameContainer', 'manualFillNameInput');
+
+        // ================================================================
+        //  获取当前选中的姓名（优先取手动输入）
+        // ================================================================
+        function getSelectedName(selectId, inputId) {
+            const select = document.getElementById(selectId);
+            const input = document.getElementById(inputId);
+            if (select.value === '__other__') {
+                return input.value.trim();
+            } else {
+                return select.value;
+            }
+        }
+
+        // ================================================================
+        //  MQTT 连接与消息处理
+        // ================================================================
         function setStatus(connected, msg) {
             mqttConnected = connected;
             statusDot.className = 'dot ' + (connected ? 'online' : 'offline');
@@ -373,10 +454,13 @@
             document.querySelectorAll('.mode-panel').forEach(p => p.classList.toggle('active', p.id === 'mode-' + mode));
         }
 
+        // ================================================================
+        //  提交词云
+        // ================================================================
         document.getElementById('submitCloudBtn').addEventListener('click', function() {
-            const name = document.getElementById('studentName').value;
+            const name = getSelectedName('studentName', 'manualNameInput');
             const text = document.getElementById('wordInput').value.trim();
-            if (!name) { showMsg('cloudMsg', '请选择姓名', 'error'); return; }
+            if (!name) { showMsg('cloudMsg', '请选择或输入姓名', 'error'); return; }
             if (!text) { showMsg('cloudMsg', '请输入词汇', 'error'); return; }
             if (!mqttConnected) { showMsg('cloudMsg', 'MQTT未连接', 'error'); return; }
             const payload = JSON.stringify({ name, text });
@@ -387,10 +471,13 @@
             document.getElementById('wordInput').value = '';
         });
 
+        // ================================================================
+        //  提交填空答案
+        // ================================================================
         document.getElementById('submitFillBtn').addEventListener('click', function() {
-            const name = document.getElementById('fillStudentName').value;
+            const name = getSelectedName('fillStudentName', 'manualFillNameInput');
             const answer = document.getElementById('fillAnswerInput').value.trim();
-            if (!name) { showMsg('fillMsg', '请选择姓名', 'error'); return; }
+            if (!name) { showMsg('fillMsg', '请选择或输入姓名', 'error'); return; }
             if (!answer) { showMsg('fillMsg', '请输入答案', 'error'); return; }
             if (!mqttConnected) { showMsg('fillMsg', 'MQTT未连接', 'error'); return; }
             if (!currentFillQuestion) { showMsg('fillMsg', '暂无题目', 'error'); return; }
@@ -408,6 +495,9 @@
             el.className = 'message ' + type;
         }
 
+        // ================================================================
+        //  手动切换模式
+        // ================================================================
         document.querySelectorAll('.mode-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 const mode = this.dataset.mode;
@@ -415,7 +505,7 @@
             });
         });
 
-        console.log('📱 学生端最终版已启动');
+        console.log('📱 学生端已启动（支持不在名单中的学生手动输入）');
     </script>
 </body>
 </html>
