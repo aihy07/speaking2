@@ -174,6 +174,7 @@
             color: #1a56db;
         }
 
+        /* 选词填空样式 —— 白色框（与教师端一致） */
         .fill-display {
             background: #f8fafc;
             border-radius: 16px;
@@ -186,12 +187,22 @@
             font-weight: 600;
             color: #1a2a3a;
             margin-bottom: 8px;
+            line-height: 2.2;
         }
         .fill-sentence .blank {
             display: inline-block;
             min-width: 80px;
-            border-bottom: 2px solid #000000;
+            padding: 0 8px;
+            border: 2px dashed #3b7cff;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1a2a3a;
+            font-weight: 600;
+            text-align: center;
+            line-height: 2;
             margin: 0 4px;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s;
         }
         .fill-translation {
             font-size: 15px;
@@ -218,11 +229,12 @@
             color: #8a9aa8;
         }
 
-        /* 新增：手动输入框显隐 */
-        .manual-input {
+        /* 自定义姓名输入 */
+        .custom-name-input {
+            margin-top: 6px;
             display: none;
         }
-        .manual-input.show {
+        .custom-name-input.active {
             display: block;
         }
     </style>
@@ -252,10 +264,9 @@
                 <select id="studentName">
                     <option value="">— 请选择 —</option>
                 </select>
-                <!-- 手动输入框 -->
-                <div class="manual-input" id="manualNameContainer">
-                    <input type="text" id="manualNameInput" placeholder="请输入你的姓名" maxlength="30" style="margin-top:8px;" />
-                </div>
+            </div>
+            <div class="custom-name-input" id="cloudCustomName">
+                <input type="text" id="cloudCustomNameInput" placeholder="输入你的姓名" maxlength="30" />
             </div>
             <div class="form-group">
                 <label for="wordInput">输入一个词或短语</label>
@@ -272,10 +283,9 @@
                 <select id="fillStudentName">
                     <option value="">— 请选择 —</option>
                 </select>
-                <!-- 手动输入框 -->
-                <div class="manual-input" id="manualFillNameContainer">
-                    <input type="text" id="manualFillNameInput" placeholder="请输入你的姓名" maxlength="30" style="margin-top:8px;" />
-                </div>
+            </div>
+            <div class="custom-name-input" id="fillCustomName">
+                <input type="text" id="fillCustomNameInput" placeholder="输入你的姓名" maxlength="30" />
             </div>
             <div class="fill-display" id="fillDisplay">
                 <div class="fill-sentence" id="fillSentence">等待教师同步题目…</div>
@@ -294,7 +304,7 @@
 
     <script>
         // ================================================================
-        //  学生名单（新增3人 + 原有名单）
+        //  学生名单（含新增三位）
         // ================================================================
         const STUDENT_NAMES = [
             'ALEKSEENKO DENIS',
@@ -310,14 +320,14 @@
             'SAFONOV PAVEL',
             'SIMONOV DANIIL',
             'AHMED RAAD ABDULWAHID AL-RAHMANI',
-            // ===== 新增3人 =====
+            // 新增三位
             'JAIPONG MISS SIRIWAN',
             'GORDEEVA SOFIA',
             'GRISHKINA VALERIIA'
         ];
 
         // ================================================================
-        //  MQTT 配置（与教师端一致）
+        //  MQTT 配置
         // ================================================================
         const MQTT_BROKER = 'wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
         const MQTT_USER = 'aihuayu';
@@ -334,7 +344,7 @@
         const statusText = document.getElementById('statusText');
 
         // ================================================================
-        //  填充下拉列表（包含“不在名单中”选项）
+        //  填充下拉列表 & 自定义姓名功能
         // ================================================================
         function populateSelects() {
             const selects = ['studentName', 'fillStudentName'];
@@ -347,50 +357,40 @@
                     opt.textContent = name;
                     sel.appendChild(opt);
                 });
-                // 添加“不在名单中”选项
-                const optOther = document.createElement('option');
-                optOther.value = '__other__';
-                optOther.textContent = '— 不在名单中 —';
-                sel.appendChild(optOther);
+                // 添加“不在名单中，输入姓名”选项
+                const optCustom = document.createElement('option');
+                optCustom.value = '__custom__';
+                optCustom.textContent = '✏️ 不在名单中，输入姓名';
+                sel.appendChild(optCustom);
+
+                // 监听变化，显示/隐藏自定义输入框
+                sel.addEventListener('change', function() {
+                    const customInput = this.closest('.form-group').querySelector('.custom-name-input');
+                    if (this.value === '__custom__') {
+                        customInput.classList.add('active');
+                        customInput.querySelector('input').focus();
+                    } else {
+                        customInput.classList.remove('active');
+                        customInput.querySelector('input').value = '';
+                    }
+                });
             });
         }
         populateSelects();
 
-        // ================================================================
-        //  控制手动输入框显隐
-        // ================================================================
-        function setupManualInput(selectId, inputContainerId, inputId) {
-            const select = document.getElementById(selectId);
-            const container = document.getElementById(inputContainerId);
-            const input = document.getElementById(inputId);
-            select.addEventListener('change', function() {
-                if (this.value === '__other__') {
-                    container.classList.add('show');
-                    input.focus();
-                } else {
-                    container.classList.remove('show');
-                    input.value = '';
-                }
-            });
-        }
-        setupManualInput('studentName', 'manualNameContainer', 'manualNameInput');
-        setupManualInput('fillStudentName', 'manualFillNameContainer', 'manualFillNameInput');
-
-        // ================================================================
-        //  获取当前选中的姓名（优先取手动输入）
-        // ================================================================
-        function getSelectedName(selectId, inputId) {
-            const select = document.getElementById(selectId);
-            const input = document.getElementById(inputId);
-            if (select.value === '__other__') {
-                return input.value.trim();
+        // 获取有效的姓名（下拉选中的或自定义输入的）
+        function getEffectiveName(selectId, customInputId) {
+            const sel = document.getElementById(selectId);
+            if (sel.value === '__custom__') {
+                const customInput = document.getElementById(customInputId);
+                return customInput.value.trim();
             } else {
-                return select.value;
+                return sel.value;
             }
         }
 
         // ================================================================
-        //  MQTT 连接与消息处理
+        //  MQTT 状态
         // ================================================================
         function setStatus(connected, msg) {
             mqttConnected = connected;
@@ -440,6 +440,9 @@
         }
         connectMqtt();
 
+        // ================================================================
+        //  显示填空题目（白色框）
+        // ================================================================
         function showFillQuestion(data) {
             const sentenceDiv = document.getElementById('fillSentence');
             const transDiv = document.getElementById('fillTranslation');
@@ -449,6 +452,9 @@
             document.getElementById('fillAnswerInput').value = '';
         }
 
+        // ================================================================
+        //  切换模式
+        // ================================================================
         function switchMode(mode) {
             document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
             document.querySelectorAll('.mode-panel').forEach(p => p.classList.toggle('active', p.id === 'mode-' + mode));
@@ -458,7 +464,7 @@
         //  提交词云
         // ================================================================
         document.getElementById('submitCloudBtn').addEventListener('click', function() {
-            const name = getSelectedName('studentName', 'manualNameInput');
+            const name = getEffectiveName('studentName', 'cloudCustomNameInput');
             const text = document.getElementById('wordInput').value.trim();
             if (!name) { showMsg('cloudMsg', '请选择或输入姓名', 'error'); return; }
             if (!text) { showMsg('cloudMsg', '请输入词汇', 'error'); return; }
@@ -475,7 +481,7 @@
         //  提交填空答案
         // ================================================================
         document.getElementById('submitFillBtn').addEventListener('click', function() {
-            const name = getSelectedName('fillStudentName', 'manualFillNameInput');
+            const name = getEffectiveName('fillStudentName', 'fillCustomNameInput');
             const answer = document.getElementById('fillAnswerInput').value.trim();
             if (!name) { showMsg('fillMsg', '请选择或输入姓名', 'error'); return; }
             if (!answer) { showMsg('fillMsg', '请输入答案', 'error'); return; }
@@ -505,7 +511,7 @@
             });
         });
 
-        console.log('📱 学生端已启动（支持不在名单中的学生手动输入）');
+        console.log('📱 学生端已更新：新增三位学生，支持自定义姓名，填空样式为白色框。');
     </script>
 </body>
 </html>
