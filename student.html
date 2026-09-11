@@ -8,50 +8,93 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI','PingFang SC',sans-serif;background:linear-gradient(145deg,#f0f6fb,#e2eaf2);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:20px}
-.container{max-width:500px;width:100%;background:#fff;border-radius:40px;box-shadow:0 20px 60px rgba(0,20,40,.10);padding:32px 28px 40px}
-.header{text-align:center;margin-bottom:24px}
+.container{max-width:500px;width:100%;background:#fff;border-radius:40px;box-shadow:0 20px 60px rgba(0,20,40,.10);padding:32px 28px 40px;position:relative}
+.header{text-align:center;margin-bottom:20px}
 .header .icon{font-size:48px}
 .header h1{font-size:26px;font-weight:700;color:#1a2a3a;margin-top:6px}
 .header p{color:#6a7b8c;font-size:15px;margin-top:4px}
-.mqtt-status{display:flex;align-items:center;justify-content:center;gap:12px;background:#f0f4f9;padding:8px 16px;border-radius:40px;margin-bottom:24px;font-size:14px;font-weight:500}
+.mqtt-status{display:flex;align-items:center;justify-content:center;gap:12px;background:#f0f4f9;padding:8px 16px;border-radius:40px;margin-bottom:20px;font-size:14px;font-weight:500}
 .mqtt-status .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
 .mqtt-status .dot.online{background:#0b6e4f}
 .mqtt-status .dot.offline{background:#b91c1c}
-.mode-tabs{display:flex;gap:6px;margin-bottom:20px;background:#f0f4f9;border-radius:16px;padding:4px}
-.mode-tab{flex:1;padding:10px;border:none;border-radius:12px;background:transparent;font-weight:600;color:#5a6c7d;cursor:pointer}
-.mode-tab.active{background:#fff;color:#1a2a3a;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.mode-panel{display:none}
-.mode-panel.active{display:block}
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-weight:600;color:#1a2a3a;margin-bottom:6px;font-size:15px}
-.form-group select,.form-group input{width:100%;padding:12px 16px;border:1.5px solid #dce4ec;border-radius:16px;font-size:16px;outline:none;background:#f8fafc}
-.form-group select:focus,.form-group input:focus{border-color:#3b7cff;background:#fff}
-.custom-name-input{margin-top:8px;display:none}
+
+/* 姓名选择 */
+.name-picker{background:#f0f4f9;border-radius:18px;padding:16px 18px;margin-bottom:18px;border:1.5px solid #dce4ec}
+.name-picker label{display:block;font-weight:700;color:#1a2a3a;font-size:15px;margin-bottom:8px}
+.name-picker select{width:100%;padding:12px 14px;border:1.5px solid #dce4ec;border-radius:14px;font-size:16px;outline:none;background:#fff;font-weight:600;color:#1a2a3a;cursor:pointer}
+.name-picker select:focus{border-color:#3b7cff;box-shadow:0 0 0 3px rgba(59,124,255,.12)}
+.custom-name-input{margin-top:10px;display:none}
 .custom-name-input.show{display:block}
-.btn-submit{width:100%;padding:14px;border:none;border-radius:40px;background:#3b7cff;color:#fff;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(59,124,255,.25)}
-.btn-submit:hover{background:#2a6ae0}
-.btn-submit:disabled{opacity:.5;cursor:not-allowed}
-.message{margin-top:16px;padding:12px 16px;border-radius:16px;font-size:15px;font-weight:500;text-align:center;min-height:50px}
+.custom-name-input input{width:100%;padding:12px 14px;border:1.5px solid #3b7cff;border-radius:14px;font-size:16px;outline:none;background:#fff;font-weight:600;color:#1a2a3a}
+.name-hint{font-size:12px;color:#5a6c7d;margin-top:8px;text-align:center;min-height:16px}
+.name-hint.ok{color:#0b6e4f;font-weight:600}
+
+/* 当前模式提示 */
+.mode-badge{display:flex;align-items:center;gap:10px;padding:12px 18px;background:linear-gradient(135deg,#e0edff,#d4e4ff);border-radius:16px;margin-bottom:18px;font-weight:700;color:#2a4d8a;font-size:15px;border:1.5px solid #b8d4ff}
+.mode-badge.waiting{background:linear-gradient(135deg,#f0f4f9,#e6ecf2);color:#5a6c7d;border-color:#dce4ec}
+.mode-badge.cloud{background:linear-gradient(135deg,#e0edff,#d4e4ff);color:#2a4d8a;border-color:#b8d4ff}
+.mode-badge.fill{background:linear-gradient(135deg,#e0f2e6,#d1e8da);color:#0b6e4f;border-color:#b8d9b0}
+.mode-badge.quiz{background:linear-gradient(135deg,#fff4d6,#ffeaa7);color:#8a5a00;border-color:#f5c542}
+.mode-badge .pulse{width:10px;height:10px;border-radius:50%;background:currentColor;animation:bkPulse 1.5s ease-in-out infinite}
+@keyframes bkPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+.mode-badge .icon{font-size:20px}
+
+.mode-panel{display:none;animation:fadeUp .3s ease}
+.mode-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* 待命 */
+.waiting-box{text-align:center;padding:40px 20px;background:#f8fafc;border-radius:20px;border:2px dashed #dce4ec}
+.waiting-box .emoji{font-size:64px;margin-bottom:12px}
+.waiting-box .title{font-size:18px;font-weight:700;color:#1a2a3a;margin-bottom:8px}
+.waiting-box .desc{font-size:14px;color:#5a6c7d;line-height:1.6}
+
+.btn-submit{width:100%;padding:14px;border:none;border-radius:40px;background:#3b7cff;color:#fff;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(59,124,255,.25);transition:.15s}
+.btn-submit:hover{background:#2a6ae0;transform:translateY(-1px)}
+.btn-submit:active{transform:translateY(0)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-weight:600;color:#1a2a3a;margin-bottom:6px;font-size:14px}
+.form-group input{width:100%;padding:12px 16px;border:1.5px solid #dce4ec;border-radius:16px;font-size:16px;outline:none;background:#f8fafc;transition:.15s}
+.form-group input:focus{border-color:#3b7cff;background:#fff;box-shadow:0 0 0 3px rgba(59,124,255,.1)}
+
+.message{margin-top:14px;padding:12px 16px;border-radius:14px;font-size:14px;font-weight:500;text-align:center;min-height:44px}
 .message.success{background:#e0f2e6;color:#0b6e4f}
 .message.error{background:#fee2e2;color:#991b1b}
 .message.info{background:#e0edff;color:#1a56db}
-.fill-display{background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #e6edf4}
+
+.fill-display{background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:14px;border:1px solid #e6edf4}
 .fill-sentence{font-size:22px;font-weight:600;color:#1a2a3a;margin-bottom:8px;line-height:2.2}
 .fill-sentence .blank{display:inline-block;min-width:80px;padding:0 8px;border:2px dashed #3b7cff;border-radius:8px;background:#fff;color:#1a2a3a;font-weight:600;text-align:center;line-height:2;margin:0 6px}
-.fill-translation{font-size:15px;color:#5a6c7d;margin-bottom:12px}
-.fill-input{width:100%;padding:12px;border:1.5px solid #dce4ec;border-radius:16px;font-size:16px;outline:none;background:#fff}
-.fill-input:focus{border-color:#3b7cff}
-.footer{text-align:center;margin-top:20px;font-size:13px;color:#8a9aa8}
-.quiz-team{display:flex;align-items:center;justify-content:center;gap:12px;padding:18px;border-radius:20px;margin-bottom:16px;font-size:22px;font-weight:700;text-align:center}
-.quiz-buzz-btn{width:100%;padding:60px 20px;border:none;border-radius:30px;font-size:36px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.15);transition:all .1s;background:#cccccc}
-.quiz-buzz-btn:active:not(:disabled){transform:scale(.97)}
-.quiz-buzz-btn:disabled{opacity:.5;cursor:not-allowed}
-.quiz-question-box{background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:16px;min-height:80px;font-size:18px;font-weight:600;color:#1a2a3a;text-align:center;line-height:1.8}
+.fill-translation{font-size:14px;color:#5a6c7d}
+
+/* 争霸赛 */
+.quiz-team{display:flex;align-items:center;justify-content:center;gap:12px;padding:18px;border-radius:20px;margin-bottom:14px;font-size:22px;font-weight:700;text-align:center}
+.quiz-members{font-size:13px;color:#5a6c7d;text-align:center;margin-bottom:12px}
+.quiz-question-box{background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:14px;min-height:80px;font-size:18px;font-weight:600;color:#1a2a3a;text-align:center;line-height:1.8}
 .quiz-question-box .q-words{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:18px}
 .quiz-question-box .q-word{background:#fff;padding:12px 22px;border-radius:12px;font-size:26px;font-weight:700;border:1px solid #e6edf4;text-align:center}
 .quiz-question-box .blank{display:inline-block;min-width:60px;border-bottom:2px solid #3b7cff;margin:0 6px}
+.quiz-buzz-btn{width:100%;padding:60px 20px;border:none;border-radius:30px;font-size:36px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.15);transition:all .1s;background:#cccccc}
+.quiz-buzz-btn:active:not(:disabled){transform:scale(.97)}
+.quiz-buzz-btn:disabled{opacity:.5;cursor:not-allowed}
 .quiz-waiting{color:#5a6c7d;font-size:15px;text-align:center;padding:30px 10px}
-.quiz-members{font-size:13px;color:#5a6c7d;text-align:center;margin-bottom:12px}
+
+/* 被移除覆盖层 */
+.kick-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,20,15,.7);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.kick-overlay.hidden{display:none}
+.kick-box{background:#fff;border-radius:24px;padding:32px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:kickPop .3s ease}
+@keyframes kickPop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.kick-box .emoji{font-size:56px;margin-bottom:12px}
+.kick-box .title{font-size:20px;font-weight:800;color:#1a2a3a;margin-bottom:10px}
+.kick-box .desc{font-size:14px;color:#5a6c7d;line-height:1.6;margin-bottom:20px}
+
+@media (max-width:768px){
+  .container{padding:24px 20px 32px}
+  .header .icon{font-size:40px}
+  .header h1{font-size:22px}
+}
 </style>
 </head>
 <body>
@@ -59,7 +102,7 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:linear-gradient(
 <div class="header">
 <div class="icon">📱</div>
 <h1>课堂互动</h1>
-<p>提交词汇 · 填空 · 争霸赛</p>
+<p>选择姓名后，等待老师同步</p>
 </div>
 
 <div class="mqtt-status">
@@ -67,61 +110,77 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:linear-gradient(
 <span class="status-text" id="statusText">连接中...</span>
 </div>
 
-<div class="mode-tabs">
-<button class="mode-tab active" data-mode="cloud">☁️ 词云</button>
-<button class="mode-tab" data-mode="fill">✍️ 填空</button>
-<button class="mode-tab" data-mode="quiz">🏆 争霸赛</button>
+<!-- 姓名选择（只选一次） -->
+<div class="name-picker">
+<label for="globalStudentName">👤 你的姓名</label>
+<select id="globalStudentName"><option value="">— 请选择 —</option></select>
+<div class="custom-name-input" id="globalCustomName">
+<input type="text" id="globalCustomNameInput" placeholder="输入你的姓名" maxlength="30" />
+</div>
+<div class="name-hint" id="nameHint">请先选择姓名</div>
 </div>
 
-<div id="mode-cloud" class="mode-panel active">
-<div class="form-group">
-<label for="studentName">选择你的姓名</label>
-<select id="studentName"><option value="">— 请选择 —</option></select>
-<div class="custom-name-input" id="cloudCustomName"><input type="text" id="cloudCustomNameInput" placeholder="输入你的姓名" maxlength="30" /></div>
+<!-- 当前模式提示 -->
+<div class="mode-badge waiting" id="modeBadge">
+<span class="pulse"></span>
+<span class="icon" id="modeBadgeIcon">⏳</span>
+<span id="modeBadgeText">待命中 · 等待老师同步</span>
 </div>
+
+<!-- 待命 -->
+<div id="mode-waiting" class="mode-panel active">
+<div class="waiting-box">
+<div class="emoji">👂</div>
+<div class="title">等待老师同步内容</div>
+<div class="desc">老师将在回音壁发起同步<br>届时您的界面会自动切换</div>
+</div>
+</div>
+
+<!-- 词云 -->
+<div id="mode-cloud" class="mode-panel">
 <div class="form-group">
-<label for="wordInput">输入一个词或短语</label>
+<label>输入一个词或短语</label>
 <input type="text" id="wordInput" placeholder="例如：苹果、旅行" maxlength="50" />
 </div>
 <button class="btn-submit" id="submitCloudBtn">📤 提交词云</button>
-<div id="cloudMsg" class="message info">等待连接…</div>
+<div id="cloudMsg" class="message info">请输入内容后提交</div>
 </div>
 
+<!-- 填空 -->
 <div id="mode-fill" class="mode-panel">
-<div class="form-group">
-<label for="fillStudentName">选择你的姓名</label>
-<select id="fillStudentName"><option value="">— 请选择 —</option></select>
-<div class="custom-name-input" id="fillCustomName"><input type="text" id="fillCustomNameInput" placeholder="输入你的姓名" maxlength="30" /></div>
-</div>
 <div class="fill-display">
-<div class="fill-sentence" id="fillSentence">等待教师同步题目…</div>
+<div class="fill-sentence" id="fillSentence">等待老师同步题目…</div>
 <div class="fill-translation" id="fillTranslation"></div>
 </div>
 <div class="form-group">
-<label for="fillAnswerInput">你的答案</label>
+<label>你的答案</label>
 <input type="text" id="fillAnswerInput" placeholder="输入答案" maxlength="50" />
 </div>
 <button class="btn-submit" id="submitFillBtn">📤 提交答案</button>
 <div id="fillMsg" class="message info">等待题目…</div>
 </div>
 
+<!-- 争霸赛 -->
 <div id="mode-quiz" class="mode-panel">
-<div class="form-group">
-<label for="quizStudentName">选择你的姓名</label>
-<select id="quizStudentName"><option value="">— 请选择 —</option></select>
-<div class="custom-name-input" id="quizCustomName"><input type="text" id="quizCustomNameInput" placeholder="输入你的姓名" maxlength="30" /></div>
-</div>
-<div id="quizWaitJoin" class="quiz-waiting">请选择姓名后等待教师开始争霸赛…</div>
+<div id="quizWaitJoin" class="quiz-waiting">等待老师开始争霸赛…</div>
 <div id="quizJoined" style="display:none;">
 <div class="quiz-team" id="quizTeamDisplay">—</div>
 <div class="quiz-members" id="quizMembersDisplay"></div>
 <div class="quiz-question-box" id="quizQuestionBox">等待题目…</div>
 <button class="quiz-buzz-btn" id="quizBuzzBtn" disabled>抢答！</button>
-<div class="message info" id="quizStatusMsg">等待教师出题…</div>
+<div class="message info" id="quizStatusMsg">等待老师出题…</div>
+</div>
 </div>
 </div>
 
-<div class="footer">教师端将实时接收你的提交</div>
+<!-- 被移除覆盖层 -->
+<div class="kick-overlay hidden" id="kickOverlay">
+<div class="kick-box">
+<div class="emoji">👋</div>
+<div class="title">你已被老师移出课堂</div>
+<div class="desc">请重新选择姓名加入</div>
+<button class="btn-submit" id="kickRejoinBtn" style="max-width:180px;">重新加入</button>
+</div>
 </div>
 
 <script>
@@ -133,157 +192,352 @@ const TOPIC_TEACHER_FILL='classroom/teacher/fill';
 const TOPIC_STUDENT_ANSWER='classroom/student/answer';
 const TOPIC_QUIZ_STATE='classroom/quiz/state';
 const TOPIC_QUIZ_BUZZ='classroom/quiz/buzz';
+const TOPIC_TEACHER_SYNC='classroom/teacher/sync';
+const TOPIC_STUDENT_KICK='classroom/student/kick';
 
-let mqttClient=null,mqttConnected=false,currentFillQuestion=null;
-let myGroup=null,myName='',quizActive=false;
+let mqttClient=null,mqttConnected=false;
+let currentFillQuestion=null;
+let myGroup=null;
+let lastGroupsData=null;
 let canBuzz=false,myGroupWrong=false,isMyBuzz=false,buzzLockedByOther=false;
+let currentMode='waiting';
+
 const statusDot=document.getElementById('statusDot'),statusText=document.getElementById('statusText');
+const globalName=document.getElementById('globalStudentName');
+const globalCustomName=document.getElementById('globalCustomName');
+const globalCustomNameInput=document.getElementById('globalCustomNameInput');
+const nameHint=document.getElementById('nameHint');
+const modeBadge=document.getElementById('modeBadge');
+const modeBadgeIcon=document.getElementById('modeBadgeIcon');
+const modeBadgeText=document.getElementById('modeBadgeText');
+const kickOverlay=document.getElementById('kickOverlay');
 
-function populateSelects(){['studentName','fillStudentName','quizStudentName'].forEach(id=>{const sel=document.getElementById(id);sel.innerHTML='<option value="">— 请选择 —</option>';STUDENT_NAMES.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o)});const co=document.createElement('option');co.value='__custom__';co.textContent='📝 不在名单中，输入姓名';sel.appendChild(co)})}
-populateSelects();
+// 填充姓名下拉列表
+function populateGlobalSelect(){
+  globalName.innerHTML='<option value="">— 请选择 —</option>';
+  STUDENT_NAMES.forEach(n=>{
+    const o=document.createElement('option');
+    o.value=n;o.textContent=n;
+    globalName.appendChild(o);
+  });
+  const co=document.createElement('option');
+  co.value='__custom__';co.textContent='📝 不在名单中，输入姓名';
+  globalName.appendChild(co);
+}
+populateGlobalSelect();
 
-function handleCustom(selId,contId){const s=document.getElementById(selId),c=document.getElementById(contId),i=c.querySelector('input');if(s.value==='__custom__'){c.classList.add('show');i.focus()}else{c.classList.remove('show');i.value=''}}
-document.getElementById('studentName').onchange=()=>handleCustom('studentName','cloudCustomName');
-document.getElementById('fillStudentName').onchange=()=>handleCustom('fillStudentName','fillCustomName');
-document.getElementById('quizStudentName').onchange=()=>{handleCustom('quizStudentName','quizCustomName');checkQuizJoin()};
-['cloudCustomNameInput','fillCustomNameInput','quizCustomNameInput'].forEach(id=>document.getElementById(id).addEventListener('input',function(){if(id==='quizCustomNameInput')checkQuizJoin()}));
+// 恢复上次保存的姓名
+const savedName=localStorage.getItem('pinyin_student_name');
+if(savedName){
+  if(STUDENT_NAMES.includes(savedName)){
+    globalName.value=savedName;
+    updateNameHint();
+  }else{
+    globalName.value='__custom__';
+    globalCustomName.classList.add('show');
+    globalCustomNameInput.value=savedName;
+    updateNameHint();
+  }
+}
 
-function getFinalName(selId,inpId){const s=document.getElementById(selId);return s.value==='__custom__'?document.getElementById(inpId).value.trim():s.value}
+// 获取当前姓名
+function getMyName(){
+  const v=globalName.value;
+  if(v==='__custom__')return globalCustomNameInput.value.trim();
+  return v;
+}
 
-function setStatus(c,msg){mqttConnected=c;statusDot.className='dot '+(c?'online':'offline');statusText.textContent=c?'已连接':'未连接';document.querySelectorAll('.btn-submit').forEach(b=>b.disabled=!c);if(msg){document.getElementById('cloudMsg').textContent=msg;document.getElementById('cloudMsg').className='message '+(c?'info':'error')}}
+// 更新姓名提示
+function updateNameHint(){
+  const n=getMyName();
+  if(n){
+    nameHint.textContent='✅ 你将以「'+n+'」参与课堂';
+    nameHint.className='name-hint ok';
+    localStorage.setItem('pinyin_student_name',n);
+    // 如果已有分组，尝试加入
+    if(lastGroupsData)tryJoinQuizGroup();
+  }else{
+    nameHint.textContent='请先选择姓名';
+    nameHint.className='name-hint';
+  }
+}
 
-function connectMqtt(){const cid='student_'+Math.random().toString(16).substr(2,8);mqttClient=new Paho.MQTT.Client(MQTT_BROKER,cid);
-mqttClient.onConnectionLost=()=>setStatus(false,'连接已断开');
-mqttClient.onMessageArrived=function(msg){
-if(msg.destinationName===TOPIC_TEACHER_FILL){try{const d=JSON.parse(msg.payloadString);currentFillQuestion=d;showFillQuestion(d);switchMode('fill');document.getElementById('fillMsg').textContent='📩 新题目已接收';document.getElementById('fillMsg').className='message info'}catch(e){}}
-else if(msg.destinationName===TOPIC_QUIZ_STATE){try{handleQuizState(JSON.parse(msg.payloadString))}catch(e){console.warn(e)}}
-};
-const o={userName:MQTT_USER,password:MQTT_PASS,useSSL:true,onSuccess:function(){setStatus(true,'✅ 已连接');mqttClient.subscribe(TOPIC_TEACHER_FILL);mqttClient.subscribe(TOPIC_QUIZ_STATE)},onFailure:function(e){setStatus(false,'❌ 连接失败：'+(e.errorMessage||''))}};mqttClient.connect(o)}
+// 姓名改变
+globalName.addEventListener('change',function(){
+  if(this.value==='__custom__'){
+    globalCustomName.classList.add('show');
+    globalCustomNameInput.focus();
+  }else{
+    globalCustomName.classList.remove('show');
+    globalCustomNameInput.value='';
+  }
+  updateNameHint();
+});
+globalCustomNameInput.addEventListener('input',updateNameHint);
+
+// ==================== MQTT ====================
+function setStatus(c,msg){
+  mqttConnected=c;
+  statusDot.className='dot '+(c?'online':'offline');
+  statusText.textContent=c?'已连接':'未连接';
+  document.querySelectorAll('.btn-submit').forEach(b=>b.disabled=!c);
+  if(msg){
+    // 只在连接状态变化时提示，不阻塞
+  }
+}
+
+function connectMqtt(){
+  const cid='student_'+Math.random().toString(16).substr(2,8);
+  mqttClient=new Paho.MQTT.Client(MQTT_BROKER,cid);
+  mqttClient.onConnectionLost=()=>setStatus(false,'连接已断开');
+  mqttClient.onMessageArrived=function(msg){
+    try{
+      if(msg.destinationName===TOPIC_TEACHER_FILL){
+        const d=JSON.parse(msg.payloadString);
+        currentFillQuestion=d;
+        showFillQuestion(d);
+        switchMode('fill');
+        document.getElementById('fillMsg').textContent='📩 题目已接收，请作答';
+        document.getElementById('fillMsg').className='message info';
+      }
+      else if(msg.destinationName===TOPIC_QUIZ_STATE){
+        const d=JSON.parse(msg.payloadString);
+        handleQuizState(d);
+      }
+      else if(msg.destinationName===TOPIC_TEACHER_SYNC){
+        const d=JSON.parse(msg.payloadString);
+        if(d.mode)switchMode(d.mode);
+      }
+      else if(msg.destinationName===TOPIC_STUDENT_KICK){
+        const d=JSON.parse(msg.payloadString);
+        if(d.name===getMyName()){
+          // 被移除
+          localStorage.removeItem('pinyin_student_name');
+          kickOverlay.classList.remove('hidden');
+        }
+      }
+    }catch(e){console.warn('消息解析失败',e);}
+  };
+  const o={
+    userName:MQTT_USER,password:MQTT_PASS,useSSL:true,
+    onSuccess:function(){
+      setStatus(true);
+      mqttClient.subscribe(TOPIC_TEACHER_FILL);
+      mqttClient.subscribe(TOPIC_QUIZ_STATE);
+      mqttClient.subscribe(TOPIC_TEACHER_SYNC);
+      mqttClient.subscribe(TOPIC_STUDENT_KICK);
+      console.log('MQTT 连接成功');
+    },
+    onFailure:function(e){setStatus(false);alert('MQTT 连接失败：'+(e.errorMessage||''));}
+  };
+  mqttClient.connect(o);
+}
 connectMqtt();
 
-function showFillQuestion(d){const s=d.sentence.replace(/_{2,}/g,'<span class="blank">______</span>');document.getElementById('fillSentence').innerHTML=s;document.getElementById('fillTranslation').textContent='📖 '+d.translation;document.getElementById('fillAnswerInput').value=''}
-function switchMode(m){document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===m));document.querySelectorAll('.mode-panel').forEach(p=>p.classList.toggle('active',p.id==='mode-'+m))}
+// ==================== 模块切换 ====================
+function switchMode(m){
+  if(m===currentMode)return;
+  currentMode=m;
+  document.querySelectorAll('.mode-panel').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('mode-'+m);
+  if(el)el.classList.add('active');
 
-document.getElementById('submitCloudBtn').onclick=function(){const n=getFinalName('studentName','cloudCustomNameInput');const t=document.getElementById('wordInput').value.trim();if(!n){showMsg('cloudMsg','请选择或输入姓名','error');return}if(!t){showMsg('cloudMsg','请输入词汇','error');return}if(!mqttConnected){showMsg('cloudMsg','MQTT未连接','error');return}const m=new Paho.MQTT.Message(JSON.stringify({name:n,text:t}));m.destinationName=TOPIC_STUDENT_CLOUD;mqttClient.send(m);showMsg('cloudMsg',`✅ 已提交：「${t}」`,'success');document.getElementById('wordInput').value=''};
+  // 更新徽章
+  modeBadge.className='mode-badge';
+  if(m==='cloud'){
+    modeBadge.classList.add('cloud');
+    modeBadgeIcon.textContent='☁️';
+    modeBadgeText.textContent='词云模块';
+  }else if(m==='fill'){
+    modeBadge.classList.add('fill');
+    modeBadgeIcon.textContent='✍️';
+    modeBadgeText.textContent='选词填空模块';
+  }else if(m==='quiz'){
+    modeBadge.classList.add('quiz');
+    modeBadgeIcon.textContent='🏆';
+    modeBadgeText.textContent='争霸赛模块';
+  }else{
+    modeBadge.classList.add('waiting');
+    modeBadgeIcon.textContent='⏳';
+    modeBadgeText.textContent='待命中 · 等待老师同步';
+  }
+}
 
-document.getElementById('submitFillBtn').onclick=function(){const n=getFinalName('fillStudentName','fillCustomNameInput');const a=document.getElementById('fillAnswerInput').value.trim();if(!n){showMsg('fillMsg','请选择或输入姓名','error');return}if(!a){showMsg('fillMsg','请输入答案','error');return}if(!mqttConnected){showMsg('fillMsg','MQTT未连接','error');return}if(!currentFillQuestion){showMsg('fillMsg','暂无题目','error');return}const m=new Paho.MQTT.Message(JSON.stringify({name:n,answer:a,question:currentFillQuestion.sentence}));m.destinationName=TOPIC_STUDENT_ANSWER;mqttClient.send(m);showMsg('fillMsg',`✅ 答案已提交：「${a}」`,'success');document.getElementById('fillAnswerInput').value=''};
+// ==================== 词云 ====================
+document.getElementById('submitCloudBtn').onclick=function(){
+  const n=getMyName();
+  const t=document.getElementById('wordInput').value.trim();
+  if(!n){showMsg('cloudMsg','请先在顶部选择姓名','error');return;}
+  if(!t){showMsg('cloudMsg','请输入词汇','error');return;}
+  if(!mqttConnected){showMsg('cloudMsg','MQTT未连接','error');return;}
+  const m=new Paho.MQTT.Message(JSON.stringify({name:n,text:t}));
+  m.destinationName=TOPIC_STUDENT_CLOUD;
+  mqttClient.send(m);
+  showMsg('cloudMsg','✅ 已提交：「'+t+'」','success');
+  document.getElementById('wordInput').value='';
+};
 
-function showMsg(id,t,ty){const e=document.getElementById(id);e.textContent=t;e.className='message '+ty}
+// ==================== 填空 ====================
+function showFillQuestion(d){
+  const s=d.sentence.replace(/_{2,}/g,'<span class="blank">______</span>');
+  document.getElementById('fillSentence').innerHTML=s;
+  document.getElementById('fillTranslation').textContent=d.translation?'📖 '+d.translation:'';
+  document.getElementById('fillAnswerInput').value='';
+  document.getElementById('fillMsg').textContent='等待你的答案…';
+  document.getElementById('fillMsg').className='message info';
+}
 
-document.querySelectorAll('.mode-tab').forEach(t=>t.onclick=function(){switchMode(this.dataset.mode)});
+document.getElementById('submitFillBtn').onclick=function(){
+  const n=getMyName();
+  const a=document.getElementById('fillAnswerInput').value.trim();
+  if(!n){showMsg('fillMsg','请先在顶部选择姓名','error');return;}
+  if(!a){showMsg('fillMsg','请输入答案','error');return;}
+  if(!mqttConnected){showMsg('fillMsg','MQTT未连接','error');return;}
+  if(!currentFillQuestion){showMsg('fillMsg','暂无题目','error');return;}
+  const m=new Paho.MQTT.Message(JSON.stringify({name:n,answer:a,question:currentFillQuestion.sentence}));
+  m.destinationName=TOPIC_STUDENT_ANSWER;
+  mqttClient.send(m);
+  showMsg('fillMsg','✅ 答案已提交：「'+a+'」','success');
+  document.getElementById('fillAnswerInput').value='';
+};
 
-function checkQuizJoin(){const n=getFinalName('quizStudentName','quizCustomNameInput');if(!n)return;myName=n;if(myGroup){document.getElementById('quizWaitJoin').style.display='none';document.getElementById('quizJoined').style.display='block';renderQuizTeam()}}
+function showMsg(id,t,ty){
+  const el=document.getElementById(id);
+  el.textContent=t;
+  el.className='message '+ty;
+}
 
+// ==================== 争霸赛 ====================
 function handleQuizState(data){
-if(data.type==='groups'){
-myGroup=data.groups.find(g=>g.members.includes(myName));
-if(myGroup){
-document.getElementById('quizWaitJoin').style.display='none';
-document.getElementById('quizJoined').style.display='block';
-renderQuizTeam();
-quizActive=true;
-canBuzz=false;myGroupWrong=false;isMyBuzz=false;buzzLockedByOther=false;
-updateBuzzBtn();
-document.getElementById('quizQuestionBox').textContent='等待教师出题…';
-document.getElementById('quizStatusMsg').textContent='分组已完成，等待教师出题…';
-document.getElementById('quizStatusMsg').className='message info';
+  if(data.type==='groups'){
+    lastGroupsData=data;
+    tryJoinQuizGroup();
+  }else if(data.type==='question'){
+    if(!myGroup)return;
+    canBuzz=true;myGroupWrong=false;isMyBuzz=false;buzzLockedByOther=false;
+    updateBuzzBtn();
+    renderQuizQuestion(data.question);
+    document.getElementById('quizStatusMsg').textContent=(data.playMode==='assign')?'等待老师指定回答…':'🔔 题目已出，可以抢答！';
+    document.getElementById('quizStatusMsg').className='message info';
+  }else if(data.type==='buzz_locked'){
+    if(!myGroup)return;
+    if(data.group===myGroup.name){
+      isMyBuzz=true;canBuzz=false;
+      document.getElementById('quizStatusMsg').textContent='🎉 本组抢到了！等待老师判定…';
+      document.getElementById('quizStatusMsg').className='message success';
+    }else{
+      buzzLockedByOther=true;canBuzz=false;
+      document.getElementById('quizStatusMsg').textContent='⏳ '+data.group+' · '+data.student+' 已抢答，等待判定…';
+      document.getElementById('quizStatusMsg').className='message info';
+    }
+    updateBuzzBtn();
+  }else if(data.type==='wrong'){
+    if(!myGroup)return;
+    if(data.group===myGroup.name){
+      myGroupWrong=true;canBuzz=false;
+      document.getElementById('quizStatusMsg').textContent='❌ 本组答错了，其他组可继续抢答';
+      document.getElementById('quizStatusMsg').className='message error';
+    }else{
+      if(!myGroupWrong){
+        canBuzz=true;buzzLockedByOther=false;isMyBuzz=false;
+        document.getElementById('quizStatusMsg').textContent='🔔 可以继续抢答！';
+        document.getElementById('quizStatusMsg').className='message info';
+      }
+    }
+    updateBuzzBtn();
+  }else if(data.type==='correct'){
+    canBuzz=false;isMyBuzz=false;buzzLockedByOther=false;
+    updateBuzzBtn();
+    if(myGroup&&data.group===myGroup.name){
+      document.getElementById('quizStatusMsg').textContent='✅ 本组答对了！等待下一题';
+      document.getElementById('quizStatusMsg').className='message success';
+    }else{
+      document.getElementById('quizStatusMsg').textContent='✅ '+data.group+' · '+data.student+' 答对，+'+data.points+'分';
+      document.getElementById('quizStatusMsg').className='message info';
+    }
+  }else if(data.type==='end'){
+    canBuzz=false;
+    myGroup=null;lastGroupsData=null;
+    document.getElementById('quizQuestionBox').textContent='比赛已结束';
+    document.getElementById('quizStatusMsg').textContent='老师已结束争霸赛';
+    document.getElementById('quizWaitJoin').style.display='block';
+    document.getElementById('quizJoined').style.display='none';
+    switchMode('waiting');
+  }
 }
-}else if(data.type==='question'){
-if(!myGroup)return;
-canBuzz=true;myGroupWrong=false;isMyBuzz=false;buzzLockedByOther=false;
-updateBuzzBtn();
-renderQuizQuestion(data.question);
-document.getElementById('quizStatusMsg').textContent=(data.playMode==='assign')?'等待老师指定回答…':'🔔 题目已出，可以抢答！';
-document.getElementById('quizStatusMsg').className='message info';
-}else if(data.type==='buzz_locked'){
-if(!myGroup)return;
-if(data.group===myGroup.name){
-isMyBuzz=true;canBuzz=false;
-document.getElementById('quizStatusMsg').textContent='🎉 本组抢到了！等待老师判定…';
-document.getElementById('quizStatusMsg').className='message success';
-}else{
-buzzLockedByOther=true;canBuzz=false;
-document.getElementById('quizStatusMsg').textContent=`⏳ ${data.group} · ${data.student} 已抢答，等待判定…`;
-document.getElementById('quizStatusMsg').className='message info';
-}
-updateBuzzBtn();
-}else if(data.type==='wrong'){
-if(!myGroup)return;
-if(data.group===myGroup.name){
-myGroupWrong=true;canBuzz=false;
-document.getElementById('quizStatusMsg').textContent='❌ 本组答错了，其他组可继续抢答';
-document.getElementById('quizStatusMsg').className='message error';
-}else{
-if(!myGroupWrong){
-canBuzz=true;buzzLockedByOther=false;isMyBuzz=false;
-document.getElementById('quizStatusMsg').textContent='🔔 可以继续抢答！';
-document.getElementById('quizStatusMsg').className='message info';
-}
-}
-updateBuzzBtn();
-}else if(data.type==='correct'){
-canBuzz=false;isMyBuzz=false;buzzLockedByOther=false;
-updateBuzzBtn();
-if(data.group===myGroup.name){
-document.getElementById('quizStatusMsg').textContent='✅ 本组答对了！等待下一题';
-document.getElementById('quizStatusMsg').className='message success';
-}else{
-document.getElementById('quizStatusMsg').textContent=`✅ ${data.group} · ${data.student} 答对，+${data.points}分`;
-document.getElementById('quizStatusMsg').className='message info';
-}
-}else if(data.type==='end'){
-quizActive=false;canBuzz=false;
-document.getElementById('quizQuestionBox').textContent='比赛已结束';
-document.getElementById('quizStatusMsg').textContent='教师已结束争霸赛';
-myGroup=null;
-document.getElementById('quizWaitJoin').style.display='block';
-document.getElementById('quizJoined').style.display='none';
-}
+
+function tryJoinQuizGroup(){
+  if(!lastGroupsData)return;
+  const name=getMyName();
+  if(!name)return;
+  const g=lastGroupsData.groups.find(g=>g.members.includes(name));
+  if(g){
+    myGroup=g;
+    document.getElementById('quizWaitJoin').style.display='none';
+    document.getElementById('quizJoined').style.display='block';
+    renderQuizTeam();
+    canBuzz=false;myGroupWrong=false;isMyBuzz=false;buzzLockedByOther=false;
+    updateBuzzBtn();
+    document.getElementById('quizStatusMsg').textContent='已加入 '+g.name+'，等待老师出题…';
+    document.getElementById('quizStatusMsg').className='message info';
+    switchMode('quiz');
+  }
 }
 
 function renderQuizTeam(){
-if(!myGroup)return;
-const d=document.getElementById('quizTeamDisplay');
-d.textContent=`你是 ${myGroup.name} 的成员`;
-d.style.background=myGroup.color;d.style.color='#fff';
-const btn=document.getElementById('quizBuzzBtn');
-btn.style.background=myGroup.color;
-document.getElementById('quizMembersDisplay').textContent='组员：'+myGroup.members.join('、');
+  if(!myGroup)return;
+  const d=document.getElementById('quizTeamDisplay');
+  d.textContent='你是 '+myGroup.name+' 的成员';
+  d.style.background=myGroup.color;d.style.color='#fff';
+  const btn=document.getElementById('quizBuzzBtn');
+  btn.style.background=myGroup.color;
+  document.getElementById('quizMembersDisplay').textContent='组员：'+myGroup.members.join('、');
 }
 
 function updateBuzzBtn(){
-const btn=document.getElementById('quizBuzzBtn');
-if(canBuzz&&!myGroupWrong&&!buzzLockedByOther&&!isMyBuzz){
-btn.disabled=false;
-btn.style.background=myGroup.color;
-btn.style.opacity='1';
-}else{
-btn.disabled=true;
-btn.style.background='#cccccc';
-btn.style.opacity='0.6';
-}
+  const btn=document.getElementById('quizBuzzBtn');
+  if(canBuzz&&!myGroupWrong&&!buzzLockedByOther&&!isMyBuzz){
+    btn.disabled=false;
+    btn.style.background=myGroup?myGroup.color:'#cccccc';
+    btn.style.opacity='1';
+  }else{
+    btn.disabled=true;
+    btn.style.background='#cccccc';
+    btn.style.opacity='0.6';
+  }
 }
 
 function renderQuizQuestion(q){
-const box=document.getElementById('quizQuestionBox');
-let html='';
-if(q.type==='words_show'){html=`${q.content}<div class="q-words">${q.words.map(w=>`<div class="q-word">${w.word}</div>`).join('')}</div>`}
-else if(q.type==='fill'){html=q.sentence.replace(/_{2,}/g,'<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')}
-else if(q.type==='sentence_listen'){html=`🔊 听句子，准备复述`}
-else if(q.type==='sentence_order'){html=`将词语按正确顺序排列：<div class="q-words" style="gap:14px;margin-top:18px;">${q.parts.map(p=>`<div class="q-word" style="font-size:26px;padding:12px 22px;text-align:center;">${p}</div>`).join('')}</div>`}
-box.innerHTML=html;
+  const box=document.getElementById('quizQuestionBox');
+  let html='';
+  if(q.type==='words_show'){html=q.content+'<div class="q-words">'+q.words.map(w=>'<div class="q-word">'+w.word+'</div>').join('')+'</div>';}
+  else if(q.type==='fill'){html=q.sentence.replace(/_{2,}/g,'<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');}
+  else if(q.type==='sentence_listen'){html='🔊 听句子，准备复述';}
+  else if(q.type==='sentence_order'){html='将词语按正确顺序排列：<div class="q-words" style="gap:14px;margin-top:18px;">'+q.parts.map(p=>'<div class="q-word" style="font-size:26px;padding:12px 22px;text-align:center;">'+p+'</div>').join('')+'</div>';}
+  box.innerHTML=html;
 }
 
 document.getElementById('quizBuzzBtn').onclick=function(){
-if(!canBuzz||!myGroup||!myName)return;
-if(myGroupWrong||buzzLockedByOther||isMyBuzz)return;
-canBuzz=false;isMyBuzz=true;
-updateBuzzBtn();
-const m=new Paho.MQTT.Message(JSON.stringify({group:myGroup.name,student:myName}));
-m.destinationName=TOPIC_QUIZ_BUZZ;
-mqttClient.send(m);
-document.getElementById('quizStatusMsg').textContent='⏳ 已抢答，等待教师判定…';
-document.getElementById('quizStatusMsg').className='message info';
+  if(!canBuzz||!myGroup)return;
+  if(myGroupWrong||buzzLockedByOther||isMyBuzz)return;
+  canBuzz=false;isMyBuzz=true;
+  updateBuzzBtn();
+  const m=new Paho.MQTT.Message(JSON.stringify({group:myGroup.name,student:getMyName()}));
+  m.destinationName=TOPIC_QUIZ_BUZZ;
+  mqttClient.send(m);
+  document.getElementById('quizStatusMsg').textContent='⏳ 已抢答，等待老师判定…';
+  document.getElementById('quizStatusMsg').className='message info';
+};
+
+// ==================== 被移除后重新加入 ====================
+document.getElementById('kickRejoinBtn').onclick=function(){
+  kickOverlay.classList.add('hidden');
+  globalName.value='';
+  globalCustomName.classList.remove('show');
+  globalCustomNameInput.value='';
+  updateNameHint();
+  myGroup=null;lastGroupsData=null;
+  switchMode('waiting');
 };
 
 console.log('📱 学生端已加载');
