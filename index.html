@@ -131,30 +131,15 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 .quiz-wrong-groups{margin-top:8px;font-size:13px;color:#991b1b;text-align:center}
 
 /* ===== 回音壁悬浮按钮 + 面板 ===== */
-.echo-btn{
-  position:fixed;right:24px;bottom:24px;width:68px;height:68px;
-  border-radius:50%;background:linear-gradient(135deg,#3b7cff,#2a6ae0);color:#fff;border:none;
-  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  box-shadow:0 8px 28px rgba(59,124,255,.40);z-index:999;
-  transition:all .2s;
-}
+.echo-btn{position:fixed;right:24px;bottom:24px;width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#3b7cff,#2a6ae0);color:#fff;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(59,124,255,.40);z-index:999;transition:all .2s}
 .echo-btn:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(59,124,255,.5)}
 .echo-btn:active{transform:scale(.95)}
 .echo-btn .icon{font-size:26px;line-height:1}
 .echo-btn .label{font-size:10px;font-weight:700;margin-top:2px;letter-spacing:1px}
-.echo-panel{
-  position:fixed;right:24px;bottom:104px;width:350px;max-height:calc(100vh - 140px);
-  background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.20);
-  z-index:1000;display:none;overflow:hidden;flex-direction:column;
-  animation:echoSlide .25s ease;
-}
+.echo-panel{position:fixed;right:24px;bottom:104px;width:350px;max-height:calc(100vh - 140px);background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.20);z-index:1000;display:none;overflow:hidden;flex-direction:column;animation:echoSlide .25s ease}
 .echo-panel.show{display:flex}
 @keyframes echoSlide{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-.echo-header{
-  padding:14px 18px;background:linear-gradient(135deg,#3b7cff,#2a6ae0);color:#fff;
-  display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px;
-  flex-shrink:0;
-}
+.echo-header{padding:14px 18px;background:linear-gradient(135deg,#3b7cff,#2a6ae0);color:#fff;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px;flex-shrink:0}
 .echo-close{background:transparent;border:none;color:#fff;font-size:24px;cursor:pointer;line-height:1;padding:0 4px;opacity:.85}
 .echo-close:hover{opacity:1}
 .echo-body{padding:16px 18px;overflow-y:auto;flex:1}
@@ -170,17 +155,14 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 .echo-course label{display:flex;align-items:center;gap:4px;font-size:13px;color:#2c3e50;padding:5px 10px;background:#f0f4f9;border-radius:8px;cursor:pointer;transition:.15s}
 .echo-course label:has(input:checked){background:#e0edff;color:#3b7cff;font-weight:600}
 .echo-course input{accent-color:#3b7cff;cursor:pointer;width:14px;height:14px}
-.echo-sync-btn{
-  width:100%;padding:12px;border:none;border-radius:12px;
-  background:linear-gradient(135deg,#0b6e4f,#0a5a40);color:#fff;
-  font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;
-  box-shadow:0 4px 12px rgba(11,110,79,.25);transition:.15s;
-}
+.echo-sync-btn{width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#0b6e4f,#0a5a40);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;box-shadow:0 4px 12px rgba(11,110,79,.25);transition:.15s}
 .echo-sync-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(11,110,79,.4)}
 .echo-sync-btn:active{transform:translateY(0)}
 .echo-status{font-size:12px;text-align:center;min-height:18px;color:#0b6e4f;margin-bottom:10px;font-weight:600}
-.echo-students{display:flex;flex-wrap:wrap;gap:5px;max-height:80px;overflow-y:auto;padding:6px;background:#f8fafc;border-radius:10px;min-height:32px}
-.echo-students .stu{padding:2px 10px;background:#fff;border:1px solid #e6edf4;border-radius:12px;font-size:12px;color:#2c3e50}
+.echo-students{display:flex;flex-wrap:wrap;gap:6px;max-height:110px;overflow-y:auto;padding:6px;background:#f8fafc;border-radius:10px;min-height:32px}
+.echo-students .stu{display:inline-flex;align-items:center;gap:2px;padding:2px 4px 2px 10px;background:#fff;border:1px solid #e6edf4;border-radius:14px;font-size:12px;color:#2c3e50}
+.echo-students .stu-remove{background:transparent;border:none;color:#dc2626;font-size:16px;cursor:pointer;font-weight:700;padding:0 4px;line-height:1}
+.echo-students .stu-remove:hover{color:#991b1b}
 
 @media (max-width:768px){
   .echo-panel{width:calc(100vw - 32px);right:16px;bottom:96px}
@@ -301,7 +283,6 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 <option value="buzz">抢答者答题</option>
 <option value="assign">教师指定队员答题</option>
 </select>
-<span style="font-size:13px;color:#5a6c7d;">（题目内容来自侧边栏已勾选的课程）</span>
 </div>
 <div>
 <div style="font-weight:600;color:#2c3e50;margin-bottom:8px;">😴 缺勤学生（点击标记）：</div>
@@ -376,7 +357,7 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 // ==================== 词库 ====================
 const LESSON4=[{word:'去',pinyin:'qù',en:'go',ru:'идти'},{word:'过',pinyin:'guò',en:'aspect',ru:'частица'},{word:'订',pinyin:'dìng',en:'order',ru:'заказать'},{word:'送',pinyin:'sòng',en:'deliver',ru:'доставить'},{word:'没',pinyin:'méi',en:'not',ru:'не'},{word:'试',pinyin:'shì',en:'try',ru:'попробовать'},{word:'辣',pinyin:'là',en:'spicy',ru:'острый'},{word:'菜',pinyin:'cài',en:'dish',ru:'блюдо'},{word:'假期',pinyin:'jià qī',en:'holiday',ru:'каникулы'},{word:'以前',pinyin:'yǐ qián',en:'before',ru:'раньше'},{word:'地方',pinyin:'dì fang',en:'place',ru:'место'},{word:'外卖',pinyin:'wài mài',en:'takeout',ru:'еда'},{word:'上网',pinyin:'shàng wǎng',en:'surf',ru:'интернет'},{word:'味道',pinyin:'wèi dào',en:'taste',ru:'вкус'},{word:'特别',pinyin:'tè bié',en:'particularly',ru:'особенно'},{word:'有名',pinyin:'yǒu míng',en:'famous',ru:'известный'},{word:'可以',pinyin:'kě yǐ',en:'can',ru:'можно'},{word:'西餐厅',pinyin:'xī cān tīng',en:'western restaurant',ru:'ресторан'},{word:'经常',pinyin:'jīng cháng',en:'often',ru:'часто'},{word:'东西',pinyin:'dōng xi',en:'thing',ru:'вещь'},{word:'北京',pinyin:'Běi jīng',en:'Beijing',ru:'Пекин'},{word:'上海',pinyin:'Shàng hǎi',en:'Shanghai',ru:'Шанхай'},{word:'旅游',pinyin:'lǚ yóu',en:'travel',ru:'путешествовать'},{word:'好吃',pinyin:'hǎo chī',en:'delicious',ru:'вкусный'},{word:'饭店',pinyin:'fàn diàn',en:'restaurant',ru:'ресторан'},{word:'我们',pinyin:'wǒ men',en:'we',ru:'мы'},{word:'比萨',pinyin:'bǐ sà',en:'pizza',ru:'пицца'},{word:'衣服',pinyin:'yī fu',en:'clothes',ru:'одежда'},{word:'好看',pinyin:'hǎo kàn',en:'good-looking',ru:'красивый'},{word:'今天',pinyin:'jīn tiān',en:'today',ru:'сегодня'},{word:'饺子',pinyin:'jiǎo zi',en:'dumpling',ru:'пельмени'}];
 const LESSON5=[{word:'了',pinyin:'le',en:'particle',ru:'частица'},{word:'跟',pinyin:'gēn',en:'with',ru:'с'},{word:'同学',pinyin:'tóng xué',en:'classmate',ru:'одноклассник'},{word:'郊区',pinyin:'jiāo qū',en:'suburb',ru:'пригород'},{word:'滑雪',pinyin:'huá xuě',en:'ski',ru:'лыжи'},{word:'那儿',pinyin:'nà er',en:'there',ru:'там'},{word:'滑雪场',pinyin:'huá xuě chǎng',en:'ski resort',ru:'курорт'},{word:'棒',pinyin:'bàng',en:'excellent',ru:'отличный'},{word:'难',pinyin:'nán',en:'difficult',ru:'трудный'},{word:'怕',pinyin:'pà',en:'fear',ru:'бояться'},{word:'摔',pinyin:'shuāi',en:'fall',ru:'падать'},{word:'就行',pinyin:'jiù xíng',en:'will do',ru:'подойдёт'},{word:'次',pinyin:'cì',en:'time',ru:'раз'},{word:'想',pinyin:'xiǎng',en:'think',ru:'думать'},{word:'干',pinyin:'gàn',en:'do',ru:'делать'},{word:'几',pinyin:'jǐ',en:'several',ru:'несколько'},{word:'朋友',pinyin:'péng you',en:'friend',ru:'друг'},{word:'来',pinyin:'lái',en:'come',ru:'приходить'},{word:'做饭',pinyin:'zuò fàn',en:'cook',ru:'готовить'},{word:'要求',pinyin:'yāo qiú',en:'require',ru:'требовать'},{word:'带',pinyin:'dài',en:'bring',ru:'приносить'},{word:'办法',pinyin:'bàn fǎ',en:'way',ru:'способ'},{word:'猜',pinyin:'cāi',en:'guess',ru:'угадывать'},{word:'一定',pinyin:'yí dìng',en:'certainly',ru:'определённо'},{word:'沙拉',pinyin:'shā lā',en:'salad',ru:'салат'},{word:'周末',pinyin:'zhōu mò',en:'weekend',ru:'выходные'},{word:'一起',pinyin:'yì qǐ',en:'together',ru:'вместе'},{word:'上课',pinyin:'shàng kè',en:'have class',ru:'урок'}];
-const LESSON6=[{word:'有点儿',pinyin:'yǒu diǎnr',en:'a little',ru:'немного'},{word:'舒服',pinyin:'shū fu',en:'comfortable',ru:'удобный'},{word:'头',pinyin:'tóu',en:'head',ru:'голова'},{word:'疼',pinyin:'téng',en:'painful',ru:'болит'},{word:'觉得',pinyin:'jué de',en:'feel',ru:'чувствовать'},{word:'冷',pinyin:'lěng',en:'cold',ru:'холодный'},{word:'发烧',pinyin:'fā shāo',en:'fever',ru:'температура'},{word:'量',pinyin:'liáng',en:'measure',ru:'измерять'},{word:'体温',pinyin:'tǐ wēn',en:'temperature',ru:'температура тела'},{word:'只',pinyin:'zhǐ',en:'only',ru:'только'},{word:'度',pinyin:'dù',en:'degree',ru:'градус'},{word:'感冒',pinyin:'gǎn mào',en:'cold',ru:'простуда'},{word:'药',pinyin:'yào',en:'medicine',ru:'лекарство'},{word:'片',pinyin:'piàn',en:'tablet',ru:'таблетка'},{word:'水',pinyin:'shuǐ',en:'water',ru:'вода'},{word:'先',pinyin:'xiān',en:'first',ru:'сначала'},{word:'验血',pinyin:'yàn xiě',en:'blood test',ru:'анализ'},{word:'大夫',pinyin:'dài fu',en:'doctor',ru:'врач'},{word:'病',pinyin:'bìng',en:'ill',ru:'болезнь'},{word:'能',pinyin:'néng',en:'can',ru:'мочь'},{word:'帮',pinyin:'bāng',en:'help',ru:'помогать'},{word:'请假',pinyin:'qǐng jià',en:'ask leave',ru:'отпроситься'},{word:'少',pinyin:'shǎo',en:'little',ru:'мало'},{word:'多',pinyin:'duō',en:'many',ru:'много'},{word:'休息',pinyin:'xiū xi',en:'rest',ru:'отдыхать'},{word:'上课',pinyin:'shàng kè',en:'have class',ru:'урок'},{word:'医院',pinyin:'yī yuàn',en:'hospital',ru:'больница'}];
+const LESSON6=[{word:'有点儿',pinyin:'yǒu diǎnr',en:'a little',ru:'немного'},{word:'舒服',pinyin:'shū fu',en:'comfortable',ru:'удобный'},{word:'头',pinyin:'tóu',en:'head',ru:'голова'},{word:'疼',pinyin:'téng',en:'painful',ru:'болит'},{word:'觉得',pinyin:'jué de',en:'feel',ru:'чувствовать'},{word:'冷',pinyin:'lěng',en:'cold',ru:'холодный'},{word:'发烧',pinyin:'fā shāo',en:'fever',ru:'температура'},{word:'量',pinyin:'liáng',en:'measure',ru:'измерять'},{word:'体温',pinyin:'tǐ wēn',en:'temperature',ru:'температура тела'},{word:'只',pinyin:'zhǐ',en:'only',ru:'только'},{word:'度',pinyin:'dù',en:'degree',ru:'градус'},{word:'感冒',pinyin:'gǎn mào',en:'cold',ru:'простуда'},{word:'药',pinyin:'yào',en:'medicine',ru:'лекарство'},{word:'片',pinyin:'piàn',en:'tablet',ru:'таблетка'},{word:'水',pinyin:'shuǐ',en:'water',ru:'вода'},{word:'先',pinyin:'xiān',en:'first',ru:'сначала'},{word:'验血',pinyin:'yàn xiě',en:'blood test',ru:'анализ'},{word:'大夫',pinyin:'dài fu',en:'doctor',ru:'врач'},{word:'病',pinyin:'bìng',en:'ill',ru:'болезнь'},{word:'能',pinyin:'néng',en:'can',ru:'мочь'},{word:'帮',pinyin:'bāng',en:'help',ru:'помогать'},{word:'请假',pinyin:'qǐng jià',en:'ask leave',ru:'отпроситься'},{word:'少',pinyin:'shǎo',en:'little',ru:'мало'},{word:'多',pinyin:'duō',en:'many',ru:'много'},{word:'休息',pinyin:'xiū xi',en:'rest',ru:'отдыхать'},{word:'医院',pinyin:'yī yuàn',en:'hospital',ru:'больница'}];
 
 const LESSON4_SENTENCES=[
 {sentence:'我________去过上海。',answer:'以前',translation:'I have been to Shanghai before.'},
@@ -431,7 +412,6 @@ lesson6:['我有点儿不舒服。','我头很疼，觉得特别冷。','我发�
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function pickWords(pool,usedSet,count=5){const av=pool.filter(w=>!usedSet.has(w.word));let s=[];if(av.length>=count)s=shuffle(av).slice(0,count);else{usedSet.clear();s=shuffle([...pool]).slice(0,count)}s.forEach(w=>usedSet.add(w.word));return s}
 
-// ★★★ 分词函数：用词库做最长匹配切分句子 ★★★
 function segmentSentence(sentence, vocab) {
   const clean = sentence.replace(/[，。？、！；：""''（）\s]/g, '');
   const sortedVocab = [...new Set(vocab)].filter(w => w.length >= 1).sort((a, b) => b.length - a.length);
@@ -441,21 +421,14 @@ function segmentSentence(sentence, vocab) {
     let matched = false;
     for (const word of sortedVocab) {
       if (clean.startsWith(word, i)) {
-        words.push(word);
-        i += word.length;
-        matched = true;
-        break;
+        words.push(word); i += word.length; matched = true; break;
       }
     }
-    if (!matched) {
-      words.push(clean[i]);
-      i++;
-    }
+    if (!matched) { words.push(clean[i]); i++; }
   }
   return words;
 }
 
-// ==================== 课程多选下拉框 ====================
 const courseTrigger=document.getElementById('courseTrigger');
 const courseDropdown=document.getElementById('courseDropdown');
 const courseSelectedText=document.getElementById('courseSelectedText');
@@ -477,6 +450,7 @@ const TOPIC_STUDENT_CLOUD='classroom/student/wordcloud';
 const TOPIC_QUIZ_STATE='classroom/quiz/state';
 const TOPIC_QUIZ_BUZZ='classroom/quiz/buzz';
 const TOPIC_TEACHER_SYNC='classroom/teacher/sync';
+const TOPIC_STUDENT_KICK='classroom/student/kick';
 
 let mqttClient=null,mqttConnected=false;
 const mqttDot=document.getElementById('mqttDot'),mqttText=document.getElementById('mqttText'),mqttBtn=document.getElementById('mqttConnectBtn');
@@ -487,15 +461,32 @@ const cid='teacher_'+Math.random().toString(16).substr(2,8);mqttClient=new Paho.
 mqttClient.onConnectionLost=()=>updateMqttStatus(false);
 mqttClient.onMessageArrived=function(msg){
 if(msg.destinationName===TOPIC_STUDENT_ANSWER){try{const d=JSON.parse(msg.payloadString);if(d.name&&d.answer){studentAnswers[d.name]=d.answer;renderStudentAnswers()}}catch(e){}}
-else if(msg.destinationName===TOPIC_STUDENT_CLOUD){try{const d=JSON.parse(msg.payloadString);if(d.name&&d.text)addCloudItem(d.name,d.text)}catch(e){}}
+else if(msg.destinationName===TOPIC_STUDENT_CLOUD){try{const d=JSON.parse(msg.payloadString);if(d.name&&d.text){addCloudItem(d.name,d.text);autoAddStudent(d.name);}}catch(e){}}
 else if(msg.destinationName===TOPIC_QUIZ_BUZZ){handleQuizBuzz(JSON.parse(msg.payloadString))}};
 const o={userName:MQTT_USER,password:MQTT_PASS,useSSL:true,onSuccess:function(){updateMqttStatus(true);mqttClient.subscribe(TOPIC_STUDENT_ANSWER);mqttClient.subscribe(TOPIC_STUDENT_CLOUD);mqttClient.subscribe(TOPIC_QUIZ_BUZZ)},onFailure:function(e){updateMqttStatus(false);alert('MQTT 连接失败: '+(e.errorMessage||'请检查网络'))}};mqttClient.connect(o)}
 mqttBtn.addEventListener('click',connectMqtt);
 
+function autoAddStudent(name){
+  const students=getStudents();
+  if(!students.find(s=>s.name===name)){
+    students.push({name:name,points:0});
+    saveStudents(students);
+    renderTeacherPanel();
+    updateEchoStudentList();
+  }
+}
+
 function syncFillToStudent(s,a,t){if(!mqttConnected){alert('MQTT未连接');return}const m=new Paho.MQTT.Message(JSON.stringify({sentence:s,answer:a,translation:t}));m.destinationName=TOPIC_TEACHER_FILL;mqttClient.send(m);document.getElementById('fillStatus').textContent='✅ 已同步';studentAnswers={};renderStudentAnswers()}
 function renderStudentAnswers(){const c=document.getElementById('fillAnswerList');const ns=Object.keys(studentAnswers);if(ns.length===0){c.innerHTML='<div class="empty">暂无学生提交</div>';return}c.innerHTML=ns.map(n=>`<div class="answer-item"><span class="name">${n}</span><span class="ans">${studentAnswers[n]}</span></div>`).join('')}
 
-// ==================== 模块切换 ====================
+// 学生数据
+function getStudents(){try{return JSON.parse(localStorage.getItem('pinyin_students'))||[]}catch(e){return[]}}
+function saveStudents(s){localStorage.setItem('pinyin_students',JSON.stringify(s))}
+
+function renderTeacherPanel(){
+  // 只用于更新学生计数显示
+}
+
 const moduleBtns=document.querySelectorAll('.module-btn');
 const panels={word:document.getElementById('panel-word'),pair:document.getElementById('panel-pair'),cloud:document.getElementById('panel-cloud'),flip:document.getElementById('panel-flip'),fill:document.getElementById('panel-fill'),quiz:document.getElementById('panel-quiz')};
 const pageTitle=document.getElementById('pageTitle');
@@ -778,12 +769,36 @@ echoCopyLink.addEventListener('click',function(){
   });
 });
 
+// ★★★ 更新回音壁学生列表（带移除按钮）★★★
 function updateEchoStudentList(){
   const students=getStudents();
   echoStudentCount.textContent=students.length;
-  if(students.length===0){echoStudentList.innerHTML='<span style="color:#8a9aa8;font-size:13px;">暂无</span>';}
-  else{echoStudentList.innerHTML=students.map(s=>`<span class="stu">${s.name}</span>`).join('');}
+  if(students.length===0){
+    echoStudentList.innerHTML='<span style="color:#8a9aa8;font-size:13px;">暂无</span>';
+  }else{
+    echoStudentList.innerHTML=students.map(s=>
+      `<span class="stu">${s.name}<button class="stu-remove" data-name="${s.name}" title="移除该学生">×</button></span>`
+    ).join('');
+  }
 }
+
+// 回音壁学生列表移除事件
+echoStudentList.addEventListener('click',function(e){
+  if(e.target.classList.contains('stu-remove')){
+    const name=e.target.dataset.name;
+    if(!confirm(`确定移除学生 "${name}" 吗？\n该学生将被要求重新加入课堂。`))return;
+    let students=getStudents().filter(s=>s.name!==name);
+    saveStudents(students);
+    updateEchoStudentList();
+    renderTeacherPanel();
+    // 通知学生端
+    if(mqttConnected){
+      const m=new Paho.MQTT.Message(JSON.stringify({name:name}));
+      m.destinationName=TOPIC_STUDENT_KICK;
+      mqttClient.send(m);
+    }
+  }
+});
 
 function syncEchoCbsFromSidebar(){
   document.querySelectorAll('.course-check').forEach(cb=>{
@@ -792,7 +807,6 @@ function syncEchoCbsFromSidebar(){
   });
 }
 
-// 回音壁中的课程复选框 → 同步到侧边栏
 document.querySelectorAll('.echo-course-cb').forEach(cb=>{
   cb.addEventListener('change',function(){
     const checked=document.querySelectorAll('.echo-course-cb:checked');
@@ -805,7 +819,7 @@ document.querySelectorAll('.echo-course-cb').forEach(cb=>{
   });
 });
 
-// 回音壁同步按钮
+// ★★★ 回音壁同步按钮 ★★★
 echoSyncBtn.addEventListener('click',function(){
   if(!mqttConnected){
     echoSyncStatus.textContent='⚠️ MQTT未连接，请先点击左侧「连接 MQTT」';
@@ -817,15 +831,16 @@ echoSyncBtn.addEventListener('click',function(){
   echoSyncStatus.textContent='';echoSyncStatus.style.color='#0b6e4f';
 
   if(active==='cloud'){
+    // 通知学生切到词云模块
     const m=new Paho.MQTT.Message(JSON.stringify({mode:'cloud'}));
     m.destinationName=TOPIC_TEACHER_SYNC;
     mqttClient.send(m);
-    echoSyncStatus.textContent='✅ 已同步：学生端切换到「词云」';
+    echoSyncStatus.textContent='✅ 已同步：学生端切换到「☁️ 词云」';
   }else if(active==='fill'){
     const item=fillSentences[fillCurrentIndex];
     if(item){
       syncFillToStudent(item.sentence,item.answer,item.translation);
-      echoSyncStatus.textContent='✅ 已同步：当前填空题';
+      echoSyncStatus.textContent='✅ 已同步：学生端切换到「✍️ 填空」';
     }else{
       echoSyncStatus.textContent='⚠️ 暂无填空题';
       echoSyncStatus.style.color='#b91c1c';
@@ -836,9 +851,9 @@ echoSyncBtn.addEventListener('click',function(){
       if(quizCurrentQuestion){
         setTimeout(()=>publishQuizState({type:'question',question:quizCurrentQuestion,playMode:quizPlayMode}),200);
       }
-      echoSyncStatus.textContent='✅ 已同步：争霸赛分组与题目';
+      echoSyncStatus.textContent='✅ 已同步：学生端切换到「🏆 争霸赛」';
     }else{
-      echoSyncStatus.textContent='⚠️ 争霸赛尚未开始，请先点击左侧「争霸赛」生成分组';
+      echoSyncStatus.textContent='⚠️ 争霸赛尚未开始，请先到左侧「争霸赛」生成分组';
       echoSyncStatus.style.color='#b91c1c';
     }
   }else{
@@ -853,7 +868,7 @@ setInterval(()=>{if(echoPanel.classList.contains('show'))updateEchoStudentList()
 
 initQuizAbsentList();
 updateCourseTriggerText();
-console.log('📘 教师端已加载（含回音壁）');
+console.log('📘 教师端已加载（含回音壁+移除学生）');
 </script>
 </body>
 </html>
