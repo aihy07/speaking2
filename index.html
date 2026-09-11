@@ -129,6 +129,65 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 .quiz-buzz-info.wrong{background:#fee2e2;color:#991b1b}
 .quiz-judge{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 .quiz-wrong-groups{margin-top:8px;font-size:13px;color:#991b1b;text-align:center}
+
+/* ===== 回音壁悬浮按钮 + 面板 ===== */
+.echo-btn{
+  position:fixed;right:24px;bottom:24px;width:68px;height:68px;
+  border-radius:50%;background:linear-gradient(135deg,#3b7cff,#2a6ae0);color:#fff;border:none;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 8px 28px rgba(59,124,255,.40);z-index:999;
+  transition:all .2s;
+}
+.echo-btn:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(59,124,255,.5)}
+.echo-btn:active{transform:scale(.95)}
+.echo-btn .icon{font-size:26px;line-height:1}
+.echo-btn .label{font-size:10px;font-weight:700;margin-top:2px;letter-spacing:1px}
+.echo-panel{
+  position:fixed;right:24px;bottom:104px;width:350px;max-height:calc(100vh - 140px);
+  background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.20);
+  z-index:1000;display:none;overflow:hidden;flex-direction:column;
+  animation:echoSlide .25s ease;
+}
+.echo-panel.show{display:flex}
+@keyframes echoSlide{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.echo-header{
+  padding:14px 18px;background:linear-gradient(135deg,#3b7cff,#2a6ae0);color:#fff;
+  display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px;
+  flex-shrink:0;
+}
+.echo-close{background:transparent;border:none;color:#fff;font-size:24px;cursor:pointer;line-height:1;padding:0 4px;opacity:.85}
+.echo-close:hover{opacity:1}
+.echo-body{padding:16px 18px;overflow-y:auto;flex:1}
+.echo-qr{display:flex;justify-content:center;padding:12px;background:#f8fafc;border-radius:14px;margin-bottom:10px}
+.echo-qr #echoQR{padding:8px;background:#fff;border-radius:10px;display:inline-block}
+.echo-link{display:flex;gap:8px;align-items:center;background:#f0f4f9;padding:6px 12px;border-radius:10px;margin-bottom:14px;font-size:12px;color:#5a6c7d}
+.echo-link span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.echo-copy{background:#3b7cff;color:#fff;border:none;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0}
+.echo-copy:hover{background:#2a6ae0}
+.echo-section{margin-bottom:14px}
+.echo-label{font-size:12px;font-weight:700;color:#2c3e50;margin-bottom:6px}
+.echo-course{display:flex;gap:8px;flex-wrap:wrap}
+.echo-course label{display:flex;align-items:center;gap:4px;font-size:13px;color:#2c3e50;padding:5px 10px;background:#f0f4f9;border-radius:8px;cursor:pointer;transition:.15s}
+.echo-course label:has(input:checked){background:#e0edff;color:#3b7cff;font-weight:600}
+.echo-course input{accent-color:#3b7cff;cursor:pointer;width:14px;height:14px}
+.echo-sync-btn{
+  width:100%;padding:12px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#0b6e4f,#0a5a40);color:#fff;
+  font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;
+  box-shadow:0 4px 12px rgba(11,110,79,.25);transition:.15s;
+}
+.echo-sync-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(11,110,79,.4)}
+.echo-sync-btn:active{transform:translateY(0)}
+.echo-status{font-size:12px;text-align:center;min-height:18px;color:#0b6e4f;margin-bottom:10px;font-weight:600}
+.echo-students{display:flex;flex-wrap:wrap;gap:5px;max-height:80px;overflow-y:auto;padding:6px;background:#f8fafc;border-radius:10px;min-height:32px}
+.echo-students .stu{padding:2px 10px;background:#fff;border:1px solid #e6edf4;border-radius:12px;font-size:12px;color:#2c3e50}
+
+@media (max-width:768px){
+  .echo-panel{width:calc(100vw - 32px);right:16px;bottom:96px}
+  .echo-btn{right:16px;bottom:16px;width:58px;height:58px}
+  .echo-btn .icon{font-size:22px}
+  .echo-btn .label{font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -277,6 +336,42 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 </div>
 </div>
 
+<!-- ==================== 回音壁 ==================== -->
+<button class="echo-btn" id="echoBtn" title="回音壁">
+<span class="icon">📱</span>
+<span class="label">回音壁</span>
+</button>
+
+<div class="echo-panel" id="echoPanel">
+<div class="echo-header">
+<span>📱 回音壁 · 学生同步</span>
+<button class="echo-close" id="echoClose">×</button>
+</div>
+<div class="echo-body">
+<div class="echo-qr"><div id="echoQR"></div></div>
+<div class="echo-link">
+<span id="echoLinkText">加载中...</span>
+<button class="echo-copy" id="echoCopyLink">复制</button>
+</div>
+<div class="echo-section">
+<div class="echo-label">📖 课程内容</div>
+<div class="echo-course">
+<label><input type="checkbox" class="echo-course-cb" value="lesson4" checked> 第4课</label>
+<label><input type="checkbox" class="echo-course-cb" value="lesson5" checked> 第5课</label>
+<label><input type="checkbox" class="echo-course-cb" value="lesson6" checked> 第6课</label>
+</div>
+</div>
+<button class="echo-sync-btn" id="echoSyncBtn">🚀 同步当前模块到学生端</button>
+<div class="echo-status" id="echoSyncStatus"></div>
+<div class="echo-section">
+<div class="echo-label">👥 已加入学生 (<span id="echoStudentCount">0</span>)</div>
+<div class="echo-students" id="echoStudentList">
+<span style="color:#8a9aa8;font-size:13px;">暂无</span>
+</div>
+</div>
+</div>
+</div>
+
 <script>
 // ==================== 词库 ====================
 const LESSON4=[{word:'去',pinyin:'qù',en:'go',ru:'идти'},{word:'过',pinyin:'guò',en:'aspect',ru:'частица'},{word:'订',pinyin:'dìng',en:'order',ru:'заказать'},{word:'送',pinyin:'sòng',en:'deliver',ru:'доставить'},{word:'没',pinyin:'méi',en:'not',ru:'не'},{word:'试',pinyin:'shì',en:'try',ru:'попробовать'},{word:'辣',pinyin:'là',en:'spicy',ru:'острый'},{word:'菜',pinyin:'cài',en:'dish',ru:'блюдо'},{word:'假期',pinyin:'jià qī',en:'holiday',ru:'каникулы'},{word:'以前',pinyin:'yǐ qián',en:'before',ru:'раньше'},{word:'地方',pinyin:'dì fang',en:'place',ru:'место'},{word:'外卖',pinyin:'wài mài',en:'takeout',ru:'еда'},{word:'上网',pinyin:'shàng wǎng',en:'surf',ru:'интернет'},{word:'味道',pinyin:'wèi dào',en:'taste',ru:'вкус'},{word:'特别',pinyin:'tè bié',en:'particularly',ru:'особенно'},{word:'有名',pinyin:'yǒu míng',en:'famous',ru:'известный'},{word:'可以',pinyin:'kě yǐ',en:'can',ru:'можно'},{word:'西餐厅',pinyin:'xī cān tīng',en:'western restaurant',ru:'ресторан'},{word:'经常',pinyin:'jīng cháng',en:'often',ru:'часто'},{word:'东西',pinyin:'dōng xi',en:'thing',ru:'вещь'},{word:'北京',pinyin:'Běi jīng',en:'Beijing',ru:'Пекин'},{word:'上海',pinyin:'Shàng hǎi',en:'Shanghai',ru:'Шанхай'},{word:'旅游',pinyin:'lǚ yóu',en:'travel',ru:'путешествовать'},{word:'好吃',pinyin:'hǎo chī',en:'delicious',ru:'вкусный'},{word:'饭店',pinyin:'fàn diàn',en:'restaurant',ru:'ресторан'},{word:'我们',pinyin:'wǒ men',en:'we',ru:'мы'},{word:'比萨',pinyin:'bǐ sà',en:'pizza',ru:'пицца'},{word:'衣服',pinyin:'yī fu',en:'clothes',ru:'одежда'},{word:'好看',pinyin:'hǎo kàn',en:'good-looking',ru:'красивый'},{word:'今天',pinyin:'jīn tiān',en:'today',ru:'сегодня'},{word:'饺子',pinyin:'jiǎo zi',en:'dumpling',ru:'пельмени'}];
@@ -381,6 +476,7 @@ const TOPIC_STUDENT_ANSWER='classroom/student/answer';
 const TOPIC_STUDENT_CLOUD='classroom/student/wordcloud';
 const TOPIC_QUIZ_STATE='classroom/quiz/state';
 const TOPIC_QUIZ_BUZZ='classroom/quiz/buzz';
+const TOPIC_TEACHER_SYNC='classroom/teacher/sync';
 
 let mqttClient=null,mqttConnected=false;
 const mqttDot=document.getElementById('mqttDot'),mqttText=document.getElementById('mqttText'),mqttBtn=document.getElementById('mqttConnectBtn');
@@ -405,7 +501,7 @@ const panels={word:document.getElementById('panel-word'),pair:document.getElemen
 const pageTitle=document.getElementById('pageTitle');
 const titles={word:'🧩 单字组词',pair:'🔗 词汇配对',cloud:'☁️ 词云',flip:'🃏 翻牌子',fill:'✍️ 选词填空',quiz:'🏆 争霸赛'};
 moduleBtns.forEach(b=>b.addEventListener('click',function(){moduleBtns.forEach(x=>x.classList.remove('active'));this.classList.add('active');const m=this.dataset.module;Object.keys(panels).forEach(k=>panels[k].classList.toggle('active',k===m));pageTitle.textContent=titles[m]||'练习';if(m==='quiz')initQuizAbsentList()}));
-document.querySelectorAll('.course-check').forEach(cb=>cb.addEventListener('change',()=>{const cs=getSelectedCourses();if(cs.length===0){alert('请至少勾选一课');cb.checked=true;updateCourseTriggerText();return}updateCourseTriggerText();wordUsedSet.clear();pairUsedSet.clear();initWordGroup();initPairGroup();initFlipSet();initFillSet()}));
+document.querySelectorAll('.course-check').forEach(cb=>cb.addEventListener('change',()=>{const cs=getSelectedCourses();if(cs.length===0){alert('请至少勾选一课');cb.checked=true;updateCourseTriggerText();return}updateCourseTriggerText();wordUsedSet.clear();pairUsedSet.clear();initWordGroup();initPairGroup();initFlipSet();initFillSet();syncEchoCbsFromSidebar()}));
 
 // ==================== 单字组词 ====================
 let wordUsedSet=new Set(),currentWordGroup=[],wordCompleted=[],charItems=[],selectedIndices=[];
@@ -540,7 +636,6 @@ if(quizPool40.length===0){alert('40分题已用完');return}
 const s=quizPool40.shift();
 if(Math.random()<0.5){q={type:'sentence_listen',points,sentence:s,content:'🔊 听句子，复述'};}
 else{
-  // ★ 使用分词函数：按词语拆分
   const words = segmentSentence(s, getWordPool().map(w => w.word));
   shuffle(words);
   q={type:'sentence_order',points,original:s,parts:words,content:'将词语按正确顺序排列：'};
@@ -638,9 +733,127 @@ publishQuizState({type:'end'});
 
 function publishQuizState(data){if(!mqttConnected)return;const m=new Paho.MQTT.Message(JSON.stringify(data));m.destinationName=TOPIC_QUIZ_STATE;mqttClient.send(m)}
 
+// ==================== 回音壁 ====================
+const echoBtn=document.getElementById('echoBtn');
+const echoPanel=document.getElementById('echoPanel');
+const echoClose=document.getElementById('echoClose');
+const echoSyncBtn=document.getElementById('echoSyncBtn');
+const echoSyncStatus=document.getElementById('echoSyncStatus');
+const echoStudentList=document.getElementById('echoStudentList');
+const echoStudentCount=document.getElementById('echoStudentCount');
+const echoLinkText=document.getElementById('echoLinkText');
+const echoCopyLink=document.getElementById('echoCopyLink');
+const echoQR=document.getElementById('echoQR');
+let echoQRGenerated=false;
+
+echoBtn.addEventListener('click',function(){
+  echoPanel.classList.toggle('show');
+  if(echoPanel.classList.contains('show')){
+    if(!echoQRGenerated){generateEchoQR();echoQRGenerated=true;}
+    updateEchoStudentList();
+    echoLinkText.textContent=window.location.href.replace(/[^/]*$/,'')+'student.html';
+    syncEchoCbsFromSidebar();
+  }
+});
+
+echoClose.addEventListener('click',()=>echoPanel.classList.remove('show'));
+
+function generateEchoQR(){
+  const url=window.location.href.replace(/[^/]*$/,'')+'student.html';
+  echoQR.innerHTML='';
+  try{
+    new QRCode(echoQR,{text:url,width:160,height:160,colorDark:'#1a2a3a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+  }catch(e){echoQR.innerHTML='<div style="color:#a67c6a;padding:20px;">QR码生成失败</div>';}
+}
+
+echoCopyLink.addEventListener('click',function(){
+  const url=echoLinkText.textContent;
+  navigator.clipboard?.writeText(url).then(()=>{
+    echoCopyLink.textContent='✓ 已复制';
+    setTimeout(()=>echoCopyLink.textContent='复制',1500);
+  }).catch(()=>{
+    const input=document.createElement('input');input.value=url;document.body.appendChild(input);input.select();document.execCommand('copy');input.remove();
+    echoCopyLink.textContent='✓ 已复制';
+    setTimeout(()=>echoCopyLink.textContent='复制',1500);
+  });
+});
+
+function updateEchoStudentList(){
+  const students=getStudents();
+  echoStudentCount.textContent=students.length;
+  if(students.length===0){echoStudentList.innerHTML='<span style="color:#8a9aa8;font-size:13px;">暂无</span>';}
+  else{echoStudentList.innerHTML=students.map(s=>`<span class="stu">${s.name}</span>`).join('');}
+}
+
+function syncEchoCbsFromSidebar(){
+  document.querySelectorAll('.course-check').forEach(cb=>{
+    const echoCb=document.querySelector(`.echo-course-cb[value="${cb.value}"]`);
+    if(echoCb)echoCb.checked=cb.checked;
+  });
+}
+
+// 回音壁中的课程复选框 → 同步到侧边栏
+document.querySelectorAll('.echo-course-cb').forEach(cb=>{
+  cb.addEventListener('change',function(){
+    const checked=document.querySelectorAll('.echo-course-cb:checked');
+    if(checked.length===0){this.checked=true;alert('请至少选择一课');return;}
+    const sidebarCb=document.querySelector(`.course-check[value="${this.value}"]`);
+    if(sidebarCb&&sidebarCb.checked!==this.checked){
+      sidebarCb.checked=this.checked;
+      sidebarCb.dispatchEvent(new Event('change'));
+    }
+  });
+});
+
+// 回音壁同步按钮
+echoSyncBtn.addEventListener('click',function(){
+  if(!mqttConnected){
+    echoSyncStatus.textContent='⚠️ MQTT未连接，请先点击左侧「连接 MQTT」';
+    echoSyncStatus.style.color='#b91c1c';
+    setTimeout(()=>{echoSyncStatus.textContent='';},3500);
+    return;
+  }
+  const active=document.querySelector('.module-btn.active')?.dataset.module;
+  echoSyncStatus.textContent='';echoSyncStatus.style.color='#0b6e4f';
+
+  if(active==='cloud'){
+    const m=new Paho.MQTT.Message(JSON.stringify({mode:'cloud'}));
+    m.destinationName=TOPIC_TEACHER_SYNC;
+    mqttClient.send(m);
+    echoSyncStatus.textContent='✅ 已同步：学生端切换到「词云」';
+  }else if(active==='fill'){
+    const item=fillSentences[fillCurrentIndex];
+    if(item){
+      syncFillToStudent(item.sentence,item.answer,item.translation);
+      echoSyncStatus.textContent='✅ 已同步：当前填空题';
+    }else{
+      echoSyncStatus.textContent='⚠️ 暂无填空题';
+      echoSyncStatus.style.color='#b91c1c';
+    }
+  }else if(active==='quiz'){
+    if(quizGroups.length>0){
+      publishQuizState({type:'groups',groups:quizGroups.map(g=>({name:g.name,color:g.color,members:g.members}))});
+      if(quizCurrentQuestion){
+        setTimeout(()=>publishQuizState({type:'question',question:quizCurrentQuestion,playMode:quizPlayMode}),200);
+      }
+      echoSyncStatus.textContent='✅ 已同步：争霸赛分组与题目';
+    }else{
+      echoSyncStatus.textContent='⚠️ 争霸赛尚未开始，请先点击左侧「争霸赛」生成分组';
+      echoSyncStatus.style.color='#b91c1c';
+    }
+  }else{
+    echoSyncStatus.textContent='💡 该模块不需要同步（'+(titles[active]||active)+'）';
+    echoSyncStatus.style.color='#7a5f50';
+  }
+  setTimeout(()=>{echoSyncStatus.textContent='';},3500);
+});
+
+// 面板显示时每 3 秒刷新学生列表
+setInterval(()=>{if(echoPanel.classList.contains('show'))updateEchoStudentList();},3000);
+
 initQuizAbsentList();
 updateCourseTriggerText();
-console.log('📘 教师端已加载');
+console.log('📘 教师端已加载（含回音壁）');
 </script>
 </body>
 </html>
