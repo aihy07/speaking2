@@ -1,546 +1,212 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>学生端 · 词云 & 填空</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js">
-    </script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
-            background: linear-gradient(145deg, #f0f6fb 0%, #e2eaf2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            max-width: 500px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 40px;
-            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.10);
-            padding: 32px 28px 40px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .header .icon {
-            font-size: 48px;
-        }
-        .header h1 {
-            font-size: 26px;
-            font-weight: 700;
-            color: #1a2a3a;
-            margin-top: 6px;
-        }
-        .header p {
-            color: #6a7b8c;
-            font-size: 15px;
-            margin-top: 4px;
-        }
-        .mqtt-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background: #f0f4f9;
-            padding: 8px 16px;
-            border-radius: 40px;
-            margin-bottom: 24px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .mqtt-status .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .mqtt-status .dot.online {
-            background: #0b6e4f;
-        }
-        .mqtt-status .dot.offline {
-            background: #b91c1c;
-        }
-        .mode-tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 20px;
-            background: #f0f4f9;
-            border-radius: 16px;
-            padding: 4px;
-        }
-        .mode-tab {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 12px;
-            background: transparent;
-            font-weight: 600;
-            color: #5a6c7d;
-            cursor: pointer;
-            transition: 0.15s;
-        }
-        .mode-tab.active {
-            background: #fff;
-            color: #1a2a3a;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-        .mode-panel {
-            display: none;
-        }
-        .mode-panel.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #1a2a3a;
-            margin-bottom: 6px;
-            font-size: 15px;
-        }
-        .form-group select,
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid #dce4ec;
-            border-radius: 16px;
-            font-size: 16px;
-            outline: none;
-            transition: 0.15s;
-            background: #f8fafc;
-        }
-        .form-group select:focus,
-        .form-group input:focus {
-            border-color: #3b7cff;
-            background: #ffffff;
-            box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.1);
-        }
-        .form-group .custom-name-input {
-            margin-top: 8px;
-            display: none;
-        }
-        .form-group .custom-name-input.show {
-            display: block;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 40px;
-            background: #3b7cff;
-            color: #fff;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.15s;
-            box-shadow: 0 4px 16px rgba(59, 124, 255, 0.25);
-        }
-        .btn-submit:hover {
-            background: #2a6ae0;
-            transform: translateY(-2px);
-        }
-        .btn-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .message {
-            margin-top: 16px;
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 500;
-            text-align: center;
-            min-height: 50px;
-        }
-        .message.success {
-            background: #e0f2e6;
-            color: #0b6e4f;
-        }
-        .message.error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .message.info {
-            background: #e0edff;
-            color: #1a56db;
-        }
-
-        .fill-display {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid #e6edf4;
-        }
-        /* ===== ★★★ 学生端填空框样式（与教师端一致）★★★ ===== */
-        .fill-sentence {
-            font-size: 22px;
-            font-weight: 600;
-            color: #1a2a3a;
-            margin-bottom: 8px;
-            line-height: 2.2;
-        }
-        .fill-sentence .blank {
-            display: inline-block;
-            min-width: 80px;
-            padding: 0 8px;
-            border: 2px dashed #3b7cff;
-            border-radius: 8px;
-            background: #ffffff;
-            color: #1a2a3a;
-            font-weight: 600;
-            text-align: center;
-            line-height: 2;
-            margin: 0 6px;
-            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.04);
-            transition: all 0.2s;
-        }
-        .fill-sentence .blank:hover {
-            border-color: #2a6ae0;
-            background: #f8fbff;
-        }
-        .fill-translation {
-            font-size: 15px;
-            color: #5a6c7d;
-            margin-bottom: 12px;
-        }
-        .fill-input {
-            width: 100%;
-            padding: 12px;
-            border: 1.5px solid #dce4ec;
-            border-radius: 16px;
-            font-size: 16px;
-            outline: none;
-            background: #fff;
-        }
-        .fill-input:focus {
-            border-color: #3b7cff;
-            box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.1);
-        }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            color: #8a9aa8;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>学生端 · 课堂互动</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC',sans-serif;background:linear-gradient(145deg,#f0f6fb,#e2eaf2);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:20px}
+.container{max-width:500px;width:100%;background:#fff;border-radius:40px;box-shadow:0 20px 60px rgba(0,20,40,.10);padding:32px 28px 40px}
+.header{text-align:center;margin-bottom:24px}
+.header .icon{font-size:48px}
+.header h1{font-size:26px;font-weight:700;color:#1a2a3a;margin-top:6px}
+.header p{color:#6a7b8c;font-size:15px;margin-top:4px}
+.mqtt-status{display:flex;align-items:center;justify-content:center;gap:12px;background:#f0f4f9;padding:8px 16px;border-radius:40px;margin-bottom:24px;font-size:14px;font-weight:500}
+.mqtt-status .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.mqtt-status .dot.online{background:#0b6e4f}
+.mqtt-status .dot.offline{background:#b91c1c}
+.mode-tabs{display:flex;gap:6px;margin-bottom:20px;background:#f0f4f9;border-radius:16px;padding:4px}
+.mode-tab{flex:1;padding:10px;border:none;border-radius:12px;background:transparent;font-weight:600;color:#5a6c7d;cursor:pointer}
+.mode-tab.active{background:#fff;color:#1a2a3a;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.mode-panel{display:none}
+.mode-panel.active{display:block}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:600;color:#1a2a3a;margin-bottom:6px;font-size:15px}
+.form-group select,.form-group input{width:100%;padding:12px 16px;border:1.5px solid #dce4ec;border-radius:16px;font-size:16px;outline:none;background:#f8fafc}
+.form-group select:focus,.form-group input:focus{border-color:#3b7cff;background:#fff}
+.custom-name-input{margin-top:8px;display:none}
+.custom-name-input.show{display:block}
+.btn-submit{width:100%;padding:14px;border:none;border-radius:40px;background:#3b7cff;color:#fff;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(59,124,255,.25)}
+.btn-submit:hover{background:#2a6ae0}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.message{margin-top:16px;padding:12px 16px;border-radius:16px;font-size:15px;font-weight:500;text-align:center;min-height:50px}
+.message.success{background:#e0f2e6;color:#0b6e4f}
+.message.error{background:#fee2e2;color:#991b1b}
+.message.info{background:#e0edff;color:#1a56db}
+.fill-display{background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #e6edf4}
+.fill-sentence{font-size:22px;font-weight:600;color:#1a2a3a;margin-bottom:8px;line-height:2.2}
+.fill-sentence .blank{display:inline-block;min-width:80px;padding:0 8px;border:2px dashed #3b7cff;border-radius:8px;background:#fff;color:#1a2a3a;font-weight:600;text-align:center;line-height:2;margin:0 6px}
+.fill-translation{font-size:15px;color:#5a6c7d;margin-bottom:12px}
+.fill-input{width:100%;padding:12px;border:1.5px solid #dce4ec;border-radius:16px;font-size:16px;outline:none;background:#fff}
+.fill-input:focus{border-color:#3b7cff}
+.footer{text-align:center;margin-top:20px;font-size:13px;color:#8a9aa8}
+.quiz-team{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;border-radius:20px;margin-bottom:20px;font-size:22px;font-weight:700}
+.quiz-buzz-btn{width:100%;padding:60px 20px;border:none;border-radius:30px;font-size:36px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.15);transition:transform .1s}
+.quiz-buzz-btn:active{transform:scale(.97)}
+.quiz-buzz-btn:disabled{opacity:.4;cursor:not-allowed}
+.quiz-question-box{background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:16px;min-height:80px;font-size:18px;font-weight:600;color:#1a2a3a;text-align:center;line-height:1.8}
+.quiz-question-box .q-words{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.quiz-question-box .q-word{background:#fff;padding:10px 18px;border-radius:12px;font-size:24px;font-weight:700;border:1px solid #e6edf4}
+.quiz-question-box .blank{display:inline-block;min-width:60px;border-bottom:2px solid #3b7cff;margin:0 6px}
+.quiz-waiting{color:#5a6c7d;font-size:15px;text-align:center;padding:30px 10px}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="icon">📱</div>
-            <h1>课堂互动</h1>
-            <p>提交词汇 或 完成填空</p>
-        </div>
+<div class="container">
+<div class="header">
+<div class="icon">📱</div>
+<h1>课堂互动</h1>
+<p>提交词汇 · 填空 · 争霸赛</p>
+</div>
 
-        <div class="mqtt-status">
-            <span class="dot offline" id="statusDot"></span>
-            <span class="status-text" id="statusText">连接中...</span>
-        </div>
+<div class="mqtt-status">
+<span class="dot offline" id="statusDot"></span>
+<span class="status-text" id="statusText">连接中...</span>
+</div>
 
-        <div class="mode-tabs">
-            <button class="mode-tab active" data-mode="cloud">☁️ 词云</button>
-            <button class="mode-tab" data-mode="fill">✍️ 填空</button>
-        </div>
+<div class="mode-tabs">
+<button class="mode-tab active" data-mode="cloud">☁️ 词云</button>
+<button class="mode-tab" data-mode="fill">✍️ 填空</button>
+<button class="mode-tab" data-mode="quiz">🏆 争霸赛</button>
+</div>
 
-        <!-- 词云模式 -->
-        <div id="mode-cloud" class="mode-panel active">
-            <div class="form-group">
-                <label for="studentName">选择你的姓名</label>
-                <select id="studentName">
-                    <option value="">— 请选择 —</option>
-                </select>
-                <div class="custom-name-input" id="cloudCustomName">
-                    <input type="text" id="cloudCustomNameInput" placeholder="输入你的姓名" maxlength="30" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="wordInput">输入一个词或短语</label>
-                <input type="text" id="wordInput" placeholder="例如：苹果、旅行" maxlength="50" />
-            </div>
-            <button class="btn-submit" id="submitCloudBtn">📤 提交词云</button>
-            <div id="cloudMsg" class="message info">等待连接…</div>
-        </div>
+<div id="mode-cloud" class="mode-panel active">
+<div class="form-group">
+<label for="studentName">选择你的姓名</label>
+<select id="studentName"><option value="">— 请选择 —</option></select>
+<div class="custom-name-input" id="cloudCustomName"><input type="text" id="cloudCustomNameInput" placeholder="输入你的姓名" maxlength="30" /></div>
+</div>
+<div class="form-group">
+<label for="wordInput">输入一个词或短语</label>
+<input type="text" id="wordInput" placeholder="例如：苹果、旅行" maxlength="50" />
+</div>
+<button class="btn-submit" id="submitCloudBtn">📤 提交词云</button>
+<div id="cloudMsg" class="message info">等待连接…</div>
+</div>
 
-        <!-- 填空模式 -->
-        <div id="mode-fill" class="mode-panel">
-            <div class="form-group">
-                <label for="fillStudentName">选择你的姓名</label>
-                <select id="fillStudentName">
-                    <option value="">— 请选择 —</option>
-                </select>
-                <div class="custom-name-input" id="fillCustomName">
-                    <input type="text" id="fillCustomNameInput" placeholder="输入你的姓名" maxlength="30" />
-                </div>
-            </div>
-            <div class="fill-display" id="fillDisplay">
-                <div class="fill-sentence" id="fillSentence">等待教师同步题目…</div>
-                <div class="fill-translation" id="fillTranslation"></div>
-            </div>
-            <div class="form-group">
-                <label for="fillAnswerInput">你的答案</label>
-                <input type="text" id="fillAnswerInput" placeholder="输入答案" maxlength="50" />
-            </div>
-            <button class="btn-submit" id="submitFillBtn">📤 提交答案</button>
-            <div id="fillMsg" class="message info">等待题目…</div>
-        </div>
+<div id="mode-fill" class="mode-panel">
+<div class="form-group">
+<label for="fillStudentName">选择你的姓名</label>
+<select id="fillStudentName"><option value="">— 请选择 —</option></select>
+<div class="custom-name-input" id="fillCustomName"><input type="text" id="fillCustomNameInput" placeholder="输入你的姓名" maxlength="30" /></div>
+</div>
+<div class="fill-display">
+<div class="fill-sentence" id="fillSentence">等待教师同步题目…</div>
+<div class="fill-translation" id="fillTranslation"></div>
+</div>
+<div class="form-group">
+<label for="fillAnswerInput">你的答案</label>
+<input type="text" id="fillAnswerInput" placeholder="输入答案" maxlength="50" />
+</div>
+<button class="btn-submit" id="submitFillBtn">📤 提交答案</button>
+<div id="fillMsg" class="message info">等待题目…</div>
+</div>
 
-        <div class="footer">教师端将实时接收你的提交</div>
-    </div>
+<div id="mode-quiz" class="mode-panel">
+<div class="form-group">
+<label for="quizStudentName">选择你的姓名</label>
+<select id="quizStudentName"><option value="">— 请选择 —</option></select>
+<div class="custom-name-input" id="quizCustomName"><input type="text" id="quizCustomNameInput" placeholder="输入你的姓名" maxlength="30" /></div>
+</div>
+<div id="quizWaitJoin" class="quiz-waiting">请选择姓名后等待教师开始争霸赛…</div>
+<div id="quizJoined" style="display:none;">
+<div class="quiz-team" id="quizTeamDisplay">—</div>
+<div class="quiz-question-box" id="quizQuestionBox">等待题目…</div>
+<button class="quiz-buzz-btn" id="quizBuzzBtn" disabled>抢答！</button>
+<div class="message info" id="quizStatusMsg">等待教师出题…</div>
+</div>
+</div>
 
-    <script>
-        // ================================================================
-        //  学生名单（新增三位 + 预留自定义）
-        // ================================================================
-        const STUDENT_NAMES = [
-            'ALEKSEENKO DENIS',
-            'BAKAEVA MARGARITA',
-            'GODOVIKOV MATVEI',
-            'DUBININA VASILISA',
-            'ERSHOV KIRILL',
-            'ZEYNALOV FARIZ',
-            'KORCHUGANOV NIKITA',
-            'MNATSAKANIAN DAVID',
-            'NEPRINTSEVA ANNA',
-            'PARCHAK ANASTASIIA',
-            'SAFONOV PAVEL',
-            'SIMONOV DANIIL',
-            'AHMED RAAD ABDULWAHID AL-RAHMANI',
-            // 新增三位
-            'JAIPONG MISS SIRIWAN',
-            'GORDEEVA SOFIA',
-            'GRISHKINA VALERIIA'
-        ];
+<div class="footer">教师端将实时接收你的提交</div>
+</div>
 
-        // ================================================================
-        //  MQTT 配置
-        // ================================================================
-        const MQTT_BROKER = 'wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
-        const MQTT_USER = 'aihuayu';
-        const MQTT_PASS = 'Huyu6180';
-        const TOPIC_STUDENT_CLOUD = 'classroom/student/wordcloud';
-        const TOPIC_TEACHER_FILL = 'classroom/teacher/fill';
-        const TOPIC_STUDENT_ANSWER = 'classroom/student/answer';
+<script>
+const STUDENT_NAMES=['ALEKSEENKO DENIS','BAKAEVA MARGARITA','GODOVIKOV MATVEI','DUBININA VASILISA','ERSHOV KIRILL','ZEYNALOV FARIZ','KORCHUGANOV NIKITA','MNATSAKANIAN DAVID','NEPRINTSEVA ANNA','PARCHAK ANASTASIIA','SAFONOV PAVEL','SIMONOV DANIIL','AHMED RAAD ABDULWAHID AL-RAHMANI','JAIPONG MISS SIRIWAN','GORDEEVA SOFIA','GRISHKINA VALERIIA'];
+const MQTT_BROKER='wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
+const MQTT_USER='aihuayu',MQTT_PASS='Huyu6180';
+const TOPIC_STUDENT_CLOUD='classroom/student/wordcloud';
+const TOPIC_TEACHER_FILL='classroom/teacher/fill';
+const TOPIC_STUDENT_ANSWER='classroom/student/answer';
+const TOPIC_QUIZ_STATE='classroom/quiz/state';
+const TOPIC_QUIZ_BUZZ='classroom/quiz/buzz';
 
-        let mqttClient = null;
-        let mqttConnected = false;
-        let currentFillQuestion = null;
+let mqttClient=null,mqttConnected=false,currentFillQuestion=null;
+let myGroup=null,myName='',quizActive=false,quizCanBuzz=false;
+const statusDot=document.getElementById('statusDot'),statusText=document.getElementById('statusText');
 
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
+function populateSelects(){['studentName','fillStudentName','quizStudentName'].forEach(id=>{const sel=document.getElementById(id);sel.innerHTML='<option value="">— 请选择 —</option>';STUDENT_NAMES.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o)});const co=document.createElement('option');co.value='__custom__';co.textContent='📝 不在名单中，输入姓名';sel.appendChild(co)})}
+populateSelects();
 
-        // ================================================================
-        //  填充下拉列表（含自定义选项）
-        // ================================================================
-        function populateSelects() {
-            const selects = ['studentName', 'fillStudentName'];
-            selects.forEach(id => {
-                const sel = document.getElementById(id);
-                sel.innerHTML = '<option value="">— 请选择 —</option>';
-                STUDENT_NAMES.forEach(name => {
-                    const opt = document.createElement('option');
-                    opt.value = name;
-                    opt.textContent = name;
-                    sel.appendChild(opt);
-                });
-                // 增加“不在名单中”选项
-                const customOpt = document.createElement('option');
-                customOpt.value = '__custom__';
-                customOpt.textContent = '📝 不在名单中，输入姓名';
-                sel.appendChild(customOpt);
-            });
-        }
-        populateSelects();
+function handleCustom(selId,contId){const s=document.getElementById(selId),c=document.getElementById(contId),i=c.querySelector('input');if(s.value==='__custom__'){c.classList.add('show');i.focus()}else{c.classList.remove('show');i.value=''}}
+document.getElementById('studentName').onchange=()=>handleCustom('studentName','cloudCustomName');
+document.getElementById('fillStudentName').onchange=()=>handleCustom('fillStudentName','fillCustomName');
+document.getElementById('quizStudentName').onchange=()=>{handleCustom('quizStudentName','quizCustomName');checkQuizJoin()};
+['cloudCustomNameInput','fillCustomNameInput','quizCustomNameInput'].forEach(id=>document.getElementById(id).addEventListener('input',function(){if(id==='quizCustomNameInput')checkQuizJoin()}));
 
-        // ================================================================
-        //  显示/隐藏自定义姓名输入框
-        // ================================================================
-        function handleCustomNameSelect(selectId, customContainerId) {
-            const sel = document.getElementById(selectId);
-            const container = document.getElementById(customContainerId);
-            const input = container.querySelector('input');
-            if (sel.value === '__custom__') {
-                container.classList.add('show');
-                input.focus();
-            } else {
-                container.classList.remove('show');
-                input.value = '';
-            }
-        }
+function getFinalName(selId,inpId){const s=document.getElementById(selId);return s.value==='__custom__'?document.getElementById(inpId).value.trim():s.value}
 
-        document.getElementById('studentName').addEventListener('change', function() {
-            handleCustomNameSelect('studentName', 'cloudCustomName');
-        });
-        document.getElementById('fillStudentName').addEventListener('change', function() {
-            handleCustomNameSelect('fillStudentName', 'fillCustomName');
-        });
+function setStatus(c,msg){mqttConnected=c;statusDot.className='dot '+(c?'online':'offline');statusText.textContent=c?'已连接':'未连接';document.querySelectorAll('.btn-submit').forEach(b=>b.disabled=!c);if(msg){document.getElementById('cloudMsg').textContent=msg;document.getElementById('cloudMsg').className='message '+(c?'info':'error')}}
 
-        // 点击自定义输入框时，如果之前没选，自动选中
-        document.getElementById('cloudCustomNameInput').addEventListener('focus', function() {
-            const sel = document.getElementById('studentName');
-            if (sel.value !== '__custom__') {
-                sel.value = '__custom__';
-                handleCustomNameSelect('studentName', 'cloudCustomName');
-            }
-        });
-        document.getElementById('fillCustomNameInput').addEventListener('focus', function() {
-            const sel = document.getElementById('fillStudentName');
-            if (sel.value !== '__custom__') {
-                sel.value = '__custom__';
-                handleCustomNameSelect('fillStudentName', 'fillCustomName');
-            }
-        });
+function connectMqtt(){const cid='student_'+Math.random().toString(16).substr(2,8);mqttClient=new Paho.MQTT.Client(MQTT_BROKER,cid);mqttClient.onConnectionLost=()=>setStatus(false,'连接已断开');mqttClient.onMessageArrived=function(msg){
+if(msg.destinationName===TOPIC_TEACHER_FILL){try{const d=JSON.parse(msg.payloadString);currentFillQuestion=d;showFillQuestion(d);switchMode('fill');document.getElementById('fillMsg').textContent='📩 新题目已接收';document.getElementById('fillMsg').className='message info'}catch(e){}}
+else if(msg.destinationName===TOPIC_QUIZ_STATE){try{handleQuizState(JSON.parse(msg.payloadString))}catch(e){}}
+};const o={userName:MQTT_USER,password:MQTT_PASS,useSSL:true,onSuccess:function(){setStatus(true,'✅ 已连接');mqttClient.subscribe(TOPIC_TEACHER_FILL);mqttClient.subscribe(TOPIC_QUIZ_STATE)},onFailure:function(e){setStatus(false,'❌ 连接失败：'+(e.errorMessage||''))}};mqttClient.connect(o)}
+connectMqtt();
 
-        // 获取最终姓名（如果选择了自定义则取输入框的值）
-        function getFinalName(selectId, inputId) {
-            const sel = document.getElementById(selectId);
-            if (sel.value === '__custom__') {
-                return document.getElementById(inputId).value.trim();
-            }
-            return sel.value;
-        }
+function showFillQuestion(d){const s=d.sentence.replace(/_{2,}/g,'<span class="blank">______</span>');document.getElementById('fillSentence').innerHTML=s;document.getElementById('fillTranslation').textContent='📖 '+d.translation;document.getElementById('fillAnswerInput').value=''}
 
-        // ================================================================
-        //  MQTT 连接 & 消息处理
-        // ================================================================
-        function setStatus(connected, msg) {
-            mqttConnected = connected;
-            statusDot.className = 'dot ' + (connected ? 'online' : 'offline');
-            statusText.textContent = connected ? '已连接' : '未连接';
-            document.querySelectorAll('.btn-submit').forEach(b => b.disabled = !connected);
-            if (msg) {
-                document.getElementById('cloudMsg').textContent = msg;
-                document.getElementById('cloudMsg').className = 'message ' + (connected ? 'info' : 'error');
-            }
-        }
+function switchMode(m){document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===m));document.querySelectorAll('.mode-panel').forEach(p=>p.classList.toggle('active',p.id==='mode-'+m))}
 
-        function connectMqtt() {
-            const clientId = 'student_' + Math.random().toString(16).substr(2, 8);
-            mqttClient = new Paho.MQTT.Client(MQTT_BROKER, clientId);
-            mqttClient.onConnectionLost = function(resp) {
-                setStatus(false, '连接已断开');
-                console.warn('MQTT 断开', resp);
-            };
-            mqttClient.onMessageArrived = function(msg) {
-                if (msg.destinationName === TOPIC_TEACHER_FILL) {
-                    try {
-                        const data = JSON.parse(msg.payloadString);
-                        currentFillQuestion = data;
-                        showFillQuestion(data);
-                        switchMode('fill');
-                        document.getElementById('fillMsg').textContent = '📩 新题目已接收，请作答';
-                        document.getElementById('fillMsg').className = 'message info';
-                    } catch (e) {}
-                }
-            };
-            const options = {
-                userName: MQTT_USER,
-                password: MQTT_PASS,
-                useSSL: true,
-                onSuccess: function() {
-                    setStatus(true, '✅ 已连接');
-                    mqttClient.subscribe(TOPIC_TEACHER_FILL);
-                    console.log('MQTT 连接成功');
-                },
-                onFailure: function(err) {
-                    setStatus(false, '❌ 连接失败：' + (err.errorMessage || '请检查网络'));
-                    console.error('MQTT 连接失败', err);
-                }
-            };
-            mqttClient.connect(options);
-        }
-        connectMqtt();
+document.getElementById('submitCloudBtn').onclick=function(){const n=getFinalName('studentName','cloudCustomNameInput');const t=document.getElementById('wordInput').value.trim();if(!n){showMsg('cloudMsg','请选择或输入姓名','error');return}if(!t){showMsg('cloudMsg','请输入词汇','error');return}if(!mqttConnected){showMsg('cloudMsg','MQTT未连接','error');return}const m=new Paho.MQTT.Message(JSON.stringify({name:n,text:t}));m.destinationName=TOPIC_STUDENT_CLOUD;mqttClient.send(m);showMsg('cloudMsg',`✅ 已提交：「${t}」`,'success');document.getElementById('wordInput').value=''};
 
-        // ================================================================
-        //  显示填空题目（使用白色框样式）
-        // ================================================================
-        function showFillQuestion(data) {
-            const sentenceDiv = document.getElementById('fillSentence');
-            const transDiv = document.getElementById('fillTranslation');
-            // 替换为空白框样式（与教师端一致）
-            const blankHtml = data.sentence.replace('_____', '<span class="blank">______</span>');
-            sentenceDiv.innerHTML = blankHtml;
-            transDiv.textContent = '📖 ' + data.translation;
-            document.getElementById('fillAnswerInput').value = '';
-        }
+document.getElementById('submitFillBtn').onclick=function(){const n=getFinalName('fillStudentName','fillCustomNameInput');const a=document.getElementById('fillAnswerInput').value.trim();if(!n){showMsg('fillMsg','请选择或输入姓名','error');return}if(!a){showMsg('fillMsg','请输入答案','error');return}if(!mqttConnected){showMsg('fillMsg','MQTT未连接','error');return}if(!currentFillQuestion){showMsg('fillMsg','暂无题目','error');return}const m=new Paho.MQTT.Message(JSON.stringify({name:n,answer:a,question:currentFillQuestion.sentence}));m.destinationName=TOPIC_STUDENT_ANSWER;mqttClient.send(m);showMsg('fillMsg',`✅ 答案已提交：「${a}」`,'success');document.getElementById('fillAnswerInput').value=''};
 
-        // ================================================================
-        //  切换模式（词云 / 填空）
-        // ================================================================
-        function switchMode(mode) {
-            document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
-            document.querySelectorAll('.mode-panel').forEach(p => p.classList.toggle('active', p.id === 'mode-' + mode));
-        }
+function showMsg(id,t,ty){const e=document.getElementById(id);e.textContent=t;e.className='message '+ty}
 
-        // ================================================================
-        //  提交词云
-        // ================================================================
-        document.getElementById('submitCloudBtn').addEventListener('click', function() {
-            const name = getFinalName('studentName', 'cloudCustomNameInput');
-            const text = document.getElementById('wordInput').value.trim();
-            if (!name) { showMsg('cloudMsg', '请选择或输入姓名', 'error'); return; }
-            if (!text) { showMsg('cloudMsg', '请输入词汇', 'error'); return; }
-            if (!mqttConnected) { showMsg('cloudMsg', 'MQTT未连接', 'error'); return; }
-            const payload = JSON.stringify({ name, text });
-            const msg = new Paho.MQTT.Message(payload);
-            msg.destinationName = TOPIC_STUDENT_CLOUD;
-            mqttClient.send(msg);
-            showMsg('cloudMsg', `✅ 已提交：「${text}」`, 'success');
-            document.getElementById('wordInput').value = '';
-        });
+document.querySelectorAll('.mode-tab').forEach(t=>t.onclick=function(){switchMode(this.dataset.mode)});
 
-        // ================================================================
-        //  提交填空答案
-        // ================================================================
-        document.getElementById('submitFillBtn').addEventListener('click', function() {
-            const name = getFinalName('fillStudentName', 'fillCustomNameInput');
-            const answer = document.getElementById('fillAnswerInput').value.trim();
-            if (!name) { showMsg('fillMsg', '请选择或输入姓名', 'error'); return; }
-            if (!answer) { showMsg('fillMsg', '请输入答案', 'error'); return; }
-            if (!mqttConnected) { showMsg('fillMsg', 'MQTT未连接', 'error'); return; }
-            if (!currentFillQuestion) { showMsg('fillMsg', '暂无题目', 'error'); return; }
-            const payload = JSON.stringify({ name, answer, question: currentFillQuestion.sentence });
-            const msg = new Paho.MQTT.Message(payload);
-            msg.destinationName = TOPIC_STUDENT_ANSWER;
-            mqttClient.send(msg);
-            showMsg('fillMsg', `✅ 答案已提交：「${answer}」`, 'success');
-            document.getElementById('fillAnswerInput').value = '';
-        });
+function checkQuizJoin(){const n=getFinalName('quizStudentName','quizCustomNameInput');if(!n)return;myName=n;if(myGroup){document.getElementById('quizWaitJoin').style.display='none';document.getElementById('quizJoined').style.display='block';renderQuizTeam()}}
 
-        function showMsg(id, text, type) {
-            const el = document.getElementById(id);
-            el.textContent = text;
-            el.className = 'message ' + type;
-        }
+function handleQuizState(data){
+if(data.type==='groups'){
+myGroup=data.groups.find(g=>g.members.includes(myName));
+if(myGroup){document.getElementById('quizWaitJoin').style.display='none';document.getElementById('quizJoined').style.display='block';renderQuizTeam();quizActive=true}
+}else if(data.type==='question'){
+if(!myGroup)return;quizActive=true;quizCanBuzz=true;
+renderQuizQuestion(data.question);
+document.getElementById('quizBuzzBtn').disabled=false;
+document.getElementById('quizStatusMsg').textContent='🔔 题目已出，可以抢答！';
+document.getElementById('quizStatusMsg').className='message info';
+}else if(data.type==='end'){
+quizActive=false;quizCanBuzz=false;
+document.getElementById('quizBuzzBtn').disabled=true;
+document.getElementById('quizQuestionBox').textContent='比赛已结束';
+document.getElementById('quizStatusMsg').textContent='教师已结束争霸赛';
+myGroup=null;
+document.getElementById('quizWaitJoin').style.display='block';
+document.getElementById('quizJoined').style.display='none';
+}}
 
-        // ================================================================
-        //  手动切换模式
-        // ================================================================
-        document.querySelectorAll('.mode-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const mode = this.dataset.mode;
-                switchMode(mode);
-            });
-        });
+function renderQuizTeam(){if(!myGroup)return;const d=document.getElementById('quizTeamDisplay');d.textContent=`你是 ${myGroup.name} 的成员`;d.style.background=myGroup.color;d.style.color='#fff';const btn=document.getElementById('quizBuzzBtn');btn.style.background=myGroup.color}
 
-        console.log('📱 学生端已启动（含自定义姓名、白色填空框）');
-    </script>
+function renderQuizQuestion(q){const box=document.getElementById('quizQuestionBox');let html='';
+if(q.type==='words_show'){html=`${q.content}<div class="q-words">${q.words.map(w=>`<div class="q-word">${w.word}</div>`).join('')}</div>`}
+else if(q.type==='fill'){html=q.sentence.replace(/_{2,}/g,'<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')}
+else if(q.type==='sentence_listen'){html=`🔊 听句子，准备复述`}
+else if(q.type==='sentence_order'){html=`将词语按正确顺序排列：<div class="q-words">${q.parts.map(p=>`<div class="q-word" style="font-size:18px;padding:6px 12px;">${p}</div>`).join('')}</div>`}
+box.innerHTML=html}
+
+document.getElementById('quizBuzzBtn').onclick=function(){
+if(!quizCanBuzz||!myGroup||!myName)return;
+quizCanBuzz=false;this.disabled=true;
+const m=new Paho.MQTT.Message(JSON.stringify({group:myGroup.name,student:myName}));m.destinationName=TOPIC_QUIZ_BUZZ;mqttClient.send(m);
+document.getElementById('quizStatusMsg').textContent='⏳ 已抢答，等待教师判定…';
+document.getElementById('quizStatusMsg').className='message info';
+};
+
+console.log('📱 学生端已加载');
+</script>
 </body>
 </html>
