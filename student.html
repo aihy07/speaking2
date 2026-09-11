@@ -42,15 +42,16 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:linear-gradient(
 .fill-input{width:100%;padding:12px;border:1.5px solid #dce4ec;border-radius:16px;font-size:16px;outline:none;background:#fff}
 .fill-input:focus{border-color:#3b7cff}
 .footer{text-align:center;margin-top:20px;font-size:13px;color:#8a9aa8}
-.quiz-team{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;border-radius:20px;margin-bottom:20px;font-size:22px;font-weight:700}
-.quiz-buzz-btn{width:100%;padding:60px 20px;border:none;border-radius:30px;font-size:36px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.15);transition:transform .1s}
-.quiz-buzz-btn:active{transform:scale(.97)}
-.quiz-buzz-btn:disabled{opacity:.4;cursor:not-allowed}
+.quiz-team{display:flex;align-items:center;justify-content:center;gap:12px;padding:18px;border-radius:20px;margin-bottom:16px;font-size:22px;font-weight:700;text-align:center}
+.quiz-buzz-btn{width:100%;padding:60px 20px;border:none;border-radius:30px;font-size:36px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.15);transition:all .1s;background:#cccccc}
+.quiz-buzz-btn:active:not(:disabled){transform:scale(.97)}
+.quiz-buzz-btn:disabled{opacity:.5;cursor:not-allowed}
 .quiz-question-box{background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:16px;min-height:80px;font-size:18px;font-weight:600;color:#1a2a3a;text-align:center;line-height:1.8}
 .quiz-question-box .q-words{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
 .quiz-question-box .q-word{background:#fff;padding:10px 18px;border-radius:12px;font-size:24px;font-weight:700;border:1px solid #e6edf4}
 .quiz-question-box .blank{display:inline-block;min-width:60px;border-bottom:2px solid #3b7cff;margin:0 6px}
 .quiz-waiting{color:#5a6c7d;font-size:15px;text-align:center;padding:30px 10px}
+.quiz-members{font-size:13px;color:#5a6c7d;text-align:center;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -113,6 +114,7 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:linear-gradient(
 <div id="quizWaitJoin" class="quiz-waiting">请选择姓名后等待教师开始争霸赛…</div>
 <div id="quizJoined" style="display:none;">
 <div class="quiz-team" id="quizTeamDisplay">—</div>
+<div class="quiz-members" id="quizMembersDisplay"></div>
 <div class="quiz-question-box" id="quizQuestionBox">等待题目…</div>
 <button class="quiz-buzz-btn" id="quizBuzzBtn" disabled>抢答！</button>
 <div class="message info" id="quizStatusMsg">等待教师出题…</div>
@@ -133,7 +135,8 @@ const TOPIC_QUIZ_STATE='classroom/quiz/state';
 const TOPIC_QUIZ_BUZZ='classroom/quiz/buzz';
 
 let mqttClient=null,mqttConnected=false,currentFillQuestion=null;
-let myGroup=null,myName='',quizActive=false,quizCanBuzz=false;
+let myGroup=null,myName='',quizActive=false;
+let canBuzz=false,myGroupWrong=false,isMyBuzz=false,buzzLockedByOther=false;
 const statusDot=document.getElementById('statusDot'),statusText=document.getElementById('statusText');
 
 function populateSelects(){['studentName','fillStudentName','quizStudentName'].forEach(id=>{const sel=document.getElementById(id);sel.innerHTML='<option value="">— 请选择 —</option>';STUDENT_NAMES.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o)});const co=document.createElement('option');co.value='__custom__';co.textContent='📝 不在名单中，输入姓名';sel.appendChild(co)})}
@@ -149,14 +152,16 @@ function getFinalName(selId,inpId){const s=document.getElementById(selId);return
 
 function setStatus(c,msg){mqttConnected=c;statusDot.className='dot '+(c?'online':'offline');statusText.textContent=c?'已连接':'未连接';document.querySelectorAll('.btn-submit').forEach(b=>b.disabled=!c);if(msg){document.getElementById('cloudMsg').textContent=msg;document.getElementById('cloudMsg').className='message '+(c?'info':'error')}}
 
-function connectMqtt(){const cid='student_'+Math.random().toString(16).substr(2,8);mqttClient=new Paho.MQTT.Client(MQTT_BROKER,cid);mqttClient.onConnectionLost=()=>setStatus(false,'连接已断开');mqttClient.onMessageArrived=function(msg){
+function connectMqtt(){const cid='student_'+Math.random().toString(16).substr(2,8);mqttClient=new Paho.MQTT.Client(MQTT_BROKER,cid);
+mqttClient.onConnectionLost=()=>setStatus(false,'连接已断开');
+mqttClient.onMessageArrived=function(msg){
 if(msg.destinationName===TOPIC_TEACHER_FILL){try{const d=JSON.parse(msg.payloadString);currentFillQuestion=d;showFillQuestion(d);switchMode('fill');document.getElementById('fillMsg').textContent='📩 新题目已接收';document.getElementById('fillMsg').className='message info'}catch(e){}}
-else if(msg.destinationName===TOPIC_QUIZ_STATE){try{handleQuizState(JSON.parse(msg.payloadString))}catch(e){}}
-};const o={userName:MQTT_USER,password:MQTT_PASS,useSSL:true,onSuccess:function(){setStatus(true,'✅ 已连接');mqttClient.subscribe(TOPIC_TEACHER_FILL);mqttClient.subscribe(TOPIC_QUIZ_STATE)},onFailure:function(e){setStatus(false,'❌ 连接失败：'+(e.errorMessage||''))}};mqttClient.connect(o)}
+else if(msg.destinationName===TOPIC_QUIZ_STATE){try{handleQuizState(JSON.parse(msg.payloadString))}catch(e){console.warn(e)}}
+};
+const o={userName:MQTT_USER,password:MQTT_PASS,useSSL:true,onSuccess:function(){setStatus(true,'✅ 已连接');mqttClient.subscribe(TOPIC_TEACHER_FILL);mqttClient.subscribe(TOPIC_QUIZ_STATE)},onFailure:function(e){setStatus(false,'❌ 连接失败：'+(e.errorMessage||''))}};mqttClient.connect(o)}
 connectMqtt();
 
 function showFillQuestion(d){const s=d.sentence.replace(/_{2,}/g,'<span class="blank">______</span>');document.getElementById('fillSentence').innerHTML=s;document.getElementById('fillTranslation').textContent='📖 '+d.translation;document.getElementById('fillAnswerInput').value=''}
-
 function switchMode(m){document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===m));document.querySelectorAll('.mode-panel').forEach(p=>p.classList.toggle('active',p.id==='mode-'+m))}
 
 document.getElementById('submitCloudBtn').onclick=function(){const n=getFinalName('studentName','cloudCustomNameInput');const t=document.getElementById('wordInput').value.trim();if(!n){showMsg('cloudMsg','请选择或输入姓名','error');return}if(!t){showMsg('cloudMsg','请输入词汇','error');return}if(!mqttConnected){showMsg('cloudMsg','MQTT未连接','error');return}const m=new Paho.MQTT.Message(JSON.stringify({name:n,text:t}));m.destinationName=TOPIC_STUDENT_CLOUD;mqttClient.send(m);showMsg('cloudMsg',`✅ 已提交：「${t}」`,'success');document.getElementById('wordInput').value=''};
@@ -172,36 +177,111 @@ function checkQuizJoin(){const n=getFinalName('quizStudentName','quizCustomNameI
 function handleQuizState(data){
 if(data.type==='groups'){
 myGroup=data.groups.find(g=>g.members.includes(myName));
-if(myGroup){document.getElementById('quizWaitJoin').style.display='none';document.getElementById('quizJoined').style.display='block';renderQuizTeam();quizActive=true}
-}else if(data.type==='question'){
-if(!myGroup)return;quizActive=true;quizCanBuzz=true;
-renderQuizQuestion(data.question);
-document.getElementById('quizBuzzBtn').disabled=false;
-document.getElementById('quizStatusMsg').textContent='🔔 题目已出，可以抢答！';
+if(myGroup){
+document.getElementById('quizWaitJoin').style.display='none';
+document.getElementById('quizJoined').style.display='block';
+renderQuizTeam();
+quizActive=true;
+canBuzz=false;myGroupWrong=false;isMyBuzz=false;buzzLockedByOther=false;
+updateBuzzBtn();
+document.getElementById('quizQuestionBox').textContent='等待教师出题…';
+document.getElementById('quizStatusMsg').textContent='分组已完成，等待教师出题…';
 document.getElementById('quizStatusMsg').className='message info';
+}
+}else if(data.type==='question'){
+if(!myGroup)return;
+canBuzz=true;myGroupWrong=false;isMyBuzz=false;buzzLockedByOther=false;
+updateBuzzBtn();
+renderQuizQuestion(data.question);
+document.getElementById('quizStatusMsg').textContent=(data.playMode==='assign')?'等待老师指定回答…':'🔔 题目已出，可以抢答！';
+document.getElementById('quizStatusMsg').className='message info';
+}else if(data.type==='buzz_locked'){
+if(!myGroup)return;
+if(data.group===myGroup.name){
+isMyBuzz=true;canBuzz=false;
+document.getElementById('quizStatusMsg').textContent='🎉 本组抢到了！等待老师判定…';
+document.getElementById('quizStatusMsg').className='message success';
+}else{
+buzzLockedByOther=true;canBuzz=false;
+document.getElementById('quizStatusMsg').textContent=`⏳ ${data.group} · ${data.student} 已抢答，等待判定…`;
+document.getElementById('quizStatusMsg').className='message info';
+}
+updateBuzzBtn();
+}else if(data.type==='wrong'){
+if(!myGroup)return;
+if(data.group===myGroup.name){
+myGroupWrong=true;canBuzz=false;
+document.getElementById('quizStatusMsg').textContent='❌ 本组答错了，其他组可继续抢答';
+document.getElementById('quizStatusMsg').className='message error';
+}else{
+if(!myGroupWrong){
+canBuzz=true;buzzLockedByOther=false;isMyBuzz=false;
+document.getElementById('quizStatusMsg').textContent='🔔 可以继续抢答！';
+document.getElementById('quizStatusMsg').className='message info';
+}
+}
+updateBuzzBtn();
+}else if(data.type==='correct'){
+canBuzz=false;isMyBuzz=false;buzzLockedByOther=false;
+updateBuzzBtn();
+if(data.group===myGroup.name){
+document.getElementById('quizStatusMsg').textContent='✅ 本组答对了！等待下一题';
+document.getElementById('quizStatusMsg').className='message success';
+}else{
+document.getElementById('quizStatusMsg').textContent=`✅ ${data.group} · ${data.student} 答对，+${data.points}分`;
+document.getElementById('quizStatusMsg').className='message info';
+}
 }else if(data.type==='end'){
-quizActive=false;quizCanBuzz=false;
-document.getElementById('quizBuzzBtn').disabled=true;
+quizActive=false;canBuzz=false;
 document.getElementById('quizQuestionBox').textContent='比赛已结束';
 document.getElementById('quizStatusMsg').textContent='教师已结束争霸赛';
 myGroup=null;
 document.getElementById('quizWaitJoin').style.display='block';
 document.getElementById('quizJoined').style.display='none';
-}}
+}
+}
 
-function renderQuizTeam(){if(!myGroup)return;const d=document.getElementById('quizTeamDisplay');d.textContent=`你是 ${myGroup.name} 的成员`;d.style.background=myGroup.color;d.style.color='#fff';const btn=document.getElementById('quizBuzzBtn');btn.style.background=myGroup.color}
+function renderQuizTeam(){
+if(!myGroup)return;
+const d=document.getElementById('quizTeamDisplay');
+d.textContent=`你是 ${myGroup.name} 的成员`;
+d.style.background=myGroup.color;d.style.color='#fff';
+const btn=document.getElementById('quizBuzzBtn');
+btn.style.background=myGroup.color;
+document.getElementById('quizMembersDisplay').textContent='组员：'+myGroup.members.join('、');
+}
 
-function renderQuizQuestion(q){const box=document.getElementById('quizQuestionBox');let html='';
+function updateBuzzBtn(){
+const btn=document.getElementById('quizBuzzBtn');
+if(canBuzz&&!myGroupWrong&&!buzzLockedByOther&&!isMyBuzz){
+btn.disabled=false;
+btn.style.background=myGroup.color;
+btn.style.opacity='1';
+}else{
+btn.disabled=true;
+btn.style.background='#cccccc';
+btn.style.opacity='0.6';
+}
+}
+
+function renderQuizQuestion(q){
+const box=document.getElementById('quizQuestionBox');
+let html='';
 if(q.type==='words_show'){html=`${q.content}<div class="q-words">${q.words.map(w=>`<div class="q-word">${w.word}</div>`).join('')}</div>`}
 else if(q.type==='fill'){html=q.sentence.replace(/_{2,}/g,'<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')}
 else if(q.type==='sentence_listen'){html=`🔊 听句子，准备复述`}
 else if(q.type==='sentence_order'){html=`将词语按正确顺序排列：<div class="q-words">${q.parts.map(p=>`<div class="q-word" style="font-size:18px;padding:6px 12px;">${p}</div>`).join('')}</div>`}
-box.innerHTML=html}
+box.innerHTML=html;
+}
 
 document.getElementById('quizBuzzBtn').onclick=function(){
-if(!quizCanBuzz||!myGroup||!myName)return;
-quizCanBuzz=false;this.disabled=true;
-const m=new Paho.MQTT.Message(JSON.stringify({group:myGroup.name,student:myName}));m.destinationName=TOPIC_QUIZ_BUZZ;mqttClient.send(m);
+if(!canBuzz||!myGroup||!myName)return;
+if(myGroupWrong||buzzLockedByOther||isMyBuzz)return;
+canBuzz=false;isMyBuzz=true;
+updateBuzzBtn();
+const m=new Paho.MQTT.Message(JSON.stringify({group:myGroup.name,student:myName}));
+m.destinationName=TOPIC_QUIZ_BUZZ;
+mqttClient.send(m);
 document.getElementById('quizStatusMsg').textContent='⏳ 已抢答，等待教师判定…';
 document.getElementById('quizStatusMsg').className='message info';
 };
