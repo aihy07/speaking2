@@ -14,38 +14,18 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 .sidebar .course-selector{margin-bottom:28px}
 .sidebar .course-selector .title{display:block;font-weight:600;color:#2c3e50;margin-bottom:8px;font-size:14px}
 .multi-select{position:relative;width:100%}
-.multi-select-trigger{
-  width:100%;padding:10px 14px;border-radius:12px;
-  border:1.5px solid #dce4ec;background:#fff;cursor:pointer;
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:14px;color:#1a2a3a;transition:all .15s;
-  user-select:none;box-sizing:border-box;
-}
+.multi-select-trigger{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #dce4ec;background:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#1a2a3a;transition:all .15s;user-select:none}
 .multi-select-trigger:hover{border-color:#b0c0d0}
 .multi-select-trigger.open{border-color:#3b7cff;box-shadow:0 0 0 3px rgba(59,124,255,.15)}
 .multi-select-trigger .arrow{font-size:10px;color:#8a9aa8;transition:transform .2s}
 .multi-select-trigger.open .arrow{transform:rotate(180deg)}
-.multi-select-trigger .selected-text{
-  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  margin-right:8px;text-align:left;
-}
-.multi-select-dropdown{
-  display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;
-  background:#fff;border-radius:12px;border:1.5px solid #dce4ec;
-  box-shadow:0 8px 24px rgba(0,0,0,.10);padding:6px;z-index:100;
-}
+.multi-select-trigger .selected-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px;text-align:left}
+.multi-select-dropdown{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:12px;border:1.5px solid #dce4ec;box-shadow:0 8px 24px rgba(0,0,0,.10);padding:6px;z-index:100}
 .multi-select-dropdown.show{display:block;animation:ddFade .15s ease}
 @keyframes ddFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.dropdown-item{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 12px;border-radius:8px;cursor:pointer;
-  font-size:14px;color:#2c3e50;transition:background .1s;
-}
+.dropdown-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:#2c3e50;transition:background .1s}
 .dropdown-item:hover{background:#f0f4f9}
-.dropdown-item input{
-  width:16px;height:16px;cursor:pointer;
-  accent-color:#3b7cff;flex-shrink:0;
-}
+.dropdown-item input{width:16px;height:16px;cursor:pointer;accent-color:#3b7cff;flex-shrink:0}
 .dropdown-item.checked{background:#e0edff}
 .dropdown-item.checked span{color:#3b7cff;font-weight:600}
 .sidebar .module-list{display:flex;flex-direction:column;gap:4px}
@@ -131,20 +111,24 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 .quiz-absent-item:hover{border-color:#b0c0d0}
 .quiz-absent-item.absent{background:#fee2e2;border-color:#fecaca;color:#991b1b;text-decoration:line-through}
 .quiz-scoreboard{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
-.quiz-score-card{flex:1;min-width:130px;padding:16px;border-radius:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:.2s}
-.quiz-score-card .team-name{font-size:16px;font-weight:700;margin-bottom:6px}
+.quiz-score-card{flex:1;min-width:180px;padding:16px;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.quiz-score-card .team-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.quiz-score-card .team-name{font-size:18px;font-weight:700}
 .quiz-score-card .team-score{font-size:36px;font-weight:800}
+.quiz-score-card .members{font-size:12px;color:#5a6c7d;line-height:1.5;word-break:break-word}
+.quiz-score-card .members .member{padding:1px 6px;background:rgba(255,255,255,.6);border-radius:10px;display:inline-block;margin:1px}
 .quiz-question{background:#fff;border-radius:20px;padding:28px;margin-bottom:20px;border:1px solid #e6edf4;min-height:200px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .quiz-question .q-content{font-size:26px;font-weight:700;color:#1a2a3a;line-height:2}
 .quiz-question .q-extra{margin-top:12px;color:#5a6c7d;font-size:15px}
-.quiz-question .q-words{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:16px}
-.quiz-question .q-word{background:#f0f6fb;padding:14px 24px;border-radius:16px;font-size:32px;font-weight:700;color:#1a2a3a;border:1px solid #e6edf4}
+.quiz-question .q-words{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.quiz-question .q-word{background:#f0f6fb;padding:16px 28px;border-radius:16px;font-size:32px;font-weight:700;color:#1a2a3a;border:1px solid #e6edf4;text-align:center}
 .quiz-question .blank{display:inline-block;min-width:80px;border-bottom:2px solid #3b7cff;margin:0 6px}
 .quiz-buzz-info{background:#f8fafc;border-radius:20px;padding:20px;text-align:center;font-size:20px;font-weight:600;color:#1a2a3a;margin-bottom:16px;min-height:60px;display:flex;align-items:center;justify-content:center}
 .quiz-buzz-info.buzzed{background:#fff4d6;color:#8a5a00}
 .quiz-buzz-info.correct{background:#e0f2e6;color:#0b6e4f}
 .quiz-buzz-info.wrong{background:#fee2e2;color:#991b1b}
 .quiz-judge{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.quiz-wrong-groups{margin-top:8px;font-size:13px;color:#991b1b;text-align:center}
 </style>
 </head>
 <body>
@@ -253,6 +237,11 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 <div class="quiz-row">
 <label>👥 分组数：</label>
 <input type="number" id="quizGroupCount" value="3" min="2" max="6" style="width:70px;text-align:center;">
+<label style="margin-left:16px;">玩法：</label>
+<select id="quizPlayMode" style="padding:8px 14px;border-radius:12px;border:1.5px solid #dce4ec;font-size:14px;">
+<option value="buzz">抢答者答题</option>
+<option value="assign">教师指定队员答题</option>
+</select>
 <span style="font-size:13px;color:#5a6c7d;">（题目内容来自侧边栏已勾选的课程）</span>
 </div>
 <div>
@@ -276,6 +265,7 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 </div>
 <div id="quizPoolInfo" style="text-align:center;font-size:13px;color:#5a6c7d;margin-bottom:16px;">题库状态：20分 0题 · 30分 0题 · 40分 0题</div>
 <div class="quiz-buzz-info" id="quizBuzzInfo">等待学生抢答…</div>
+<div class="quiz-wrong-groups" id="quizWrongGroups"></div>
 <div class="quiz-judge" id="quizJudge" style="display:flex;">
 <button class="btn btn-success" id="quizCorrectBtn">✅ 回答正确</button>
 <button class="btn btn-danger" id="quizWrongBtn">❌ 回答错误</button>
@@ -289,9 +279,9 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 
 <script>
 // ==================== 词库 ====================
-const LESSON4=[{word:'去',pinyin:'qù',en:'go',ru:'идти'},{word:'过',pinyin:'guò',en:'aspect',ru:'частица'},{word:'订',pinyin:'dìng',en:'order',ru:'заказать'},{word:'送',pinyin:'sòng',en:'deliver',ru:'доставить'},{word:'没',pinyin:'méi',en:'not',ru:'не'},{word:'试',pinyin:'shì',en:'try',ru:'попробовать'},{word:'辣',pinyin:'là',en:'spicy',ru:'острый'},{word:'菜',pinyin:'cài',en:'dish',ru:'блюдо'},{word:'假期',pinyin:'jià qī',en:'holiday',ru:'каникулы'},{word:'以前',pinyin:'yǐ qián',en:'before',ru:'раньше'},{word:'地方',pinyin:'dì fang',en:'place',ru:'место'},{word:'外卖',pinyin:'wài mài',en:'takeout',ru:'еда'},{word:'上网',pinyin:'shàng wǎng',en:'surf',ru:'интернет'},{word:'味道',pinyin:'wèi dào',en:'taste',ru:'вкус'},{word:'特别',pinyin:'tè bié',en:'particularly',ru:'особенно'},{word:'有名',pinyin:'yǒu míng',en:'famous',ru:'известный'},{word:'可以',pinyin:'kě yǐ',en:'can',ru:'можно'},{word:'西餐厅',pinyin:'xī cān tīng',en:'western restaurant',ru:'ресторан'}];
-const LESSON5=[{word:'了',pinyin:'le',en:'particle',ru:'частица'},{word:'跟',pinyin:'gēn',en:'with',ru:'с'},{word:'同学',pinyin:'tóng xué',en:'classmate',ru:'одноклассник'},{word:'郊区',pinyin:'jiāo qū',en:'suburb',ru:'пригород'},{word:'滑雪',pinyin:'huá xuě',en:'ski',ru:'лыжи'},{word:'那儿',pinyin:'nà er',en:'there',ru:'там'},{word:'滑雪场',pinyin:'huá xuě chǎng',en:'ski resort',ru:'курорт'},{word:'棒',pinyin:'bàng',en:'excellent',ru:'отличный'},{word:'难',pinyin:'nán',en:'difficult',ru:'трудный'},{word:'怕',pinyin:'pà',en:'fear',ru:'бояться'},{word:'摔',pinyin:'shuāi',en:'fall',ru:'падать'},{word:'就行',pinyin:'jiù xíng',en:'will do',ru:'подойдёт'},{word:'次',pinyin:'cì',en:'time',ru:'раз'},{word:'想',pinyin:'xiǎng',en:'think',ru:'думать'},{word:'干',pinyin:'gàn',en:'do',ru:'делать'},{word:'几',pinyin:'jǐ',en:'several',ru:'несколько'},{word:'朋友',pinyin:'péng you',en:'friend',ru:'друг'},{word:'来',pinyin:'lái',en:'come',ru:'приходить'},{word:'做饭',pinyin:'zuò fàn',en:'cook',ru:'готовить'},{word:'要求',pinyin:'yāo qiú',en:'require',ru:'требовать'},{word:'带',pinyin:'dài',en:'bring',ru:'приносить'},{word:'办法',pinyin:'bàn fǎ',en:'way',ru:'способ'},{word:'猜',pinyin:'cāi',en:'guess',ru:'угадывать'},{word:'一定',pinyin:'yí dìng',en:'certainly',ru:'определённо'},{word:'沙拉',pinyin:'shā lā',en:'salad',ru:'салат'}];
-const LESSON6=[{word:'有点儿',pinyin:'yǒu diǎnr',en:'a little',ru:'немного'},{word:'舒服',pinyin:'shū fu',en:'comfortable',ru:'удобный'},{word:'头',pinyin:'tóu',en:'head',ru:'голова'},{word:'疼',pinyin:'téng',en:'painful',ru:'болит'},{word:'觉得',pinyin:'jué de',en:'feel',ru:'чувствовать'},{word:'冷',pinyin:'lěng',en:'cold',ru:'холодный'},{word:'发烧',pinyin:'fā shāo',en:'fever',ru:'температура'},{word:'量',pinyin:'liáng',en:'measure',ru:'измерять'},{word:'体温',pinyin:'tǐ wēn',en:'temperature',ru:'температура тела'},{word:'只',pinyin:'zhǐ',en:'only',ru:'только'},{word:'度',pinyin:'dù',en:'degree',ru:'градус'},{word:'感冒',pinyin:'gǎn mào',en:'cold',ru:'простуда'},{word:'药',pinyin:'yào',en:'medicine',ru:'лекарство'},{word:'片',pinyin:'piàn',en:'tablet',ru:'таблетка'},{word:'水',pinyin:'shuǐ',en:'water',ru:'вода'},{word:'先',pinyin:'xiān',en:'first',ru:'сначала'},{word:'验血',pinyin:'yàn xiě',en:'blood test',ru:'анализ'},{word:'大夫',pinyin:'dài fu',en:'doctor',ru:'врач'},{word:'病',pinyin:'bìng',en:'ill',ru:'болезнь'},{word:'能',pinyin:'néng',en:'can',ru:'мочь'},{word:'帮',pinyin:'bāng',en:'help',ru:'помогать'},{word:'请假',pinyin:'qǐng jià',en:'ask leave',ru:'отпроситься'},{word:'少',pinyin:'shǎo',en:'little',ru:'мало'}];
+const LESSON4=[{word:'去',pinyin:'qù',en:'go',ru:'идти'},{word:'过',pinyin:'guò',en:'aspect',ru:'частица'},{word:'订',pinyin:'dìng',en:'order',ru:'заказать'},{word:'送',pinyin:'sòng',en:'deliver',ru:'доставить'},{word:'没',pinyin:'méi',en:'not',ru:'не'},{word:'试',pinyin:'shì',en:'try',ru:'попробовать'},{word:'辣',pinyin:'là',en:'spicy',ru:'острый'},{word:'菜',pinyin:'cài',en:'dish',ru:'блюдо'},{word:'假期',pinyin:'jià qī',en:'holiday',ru:'каникулы'},{word:'以前',pinyin:'yǐ qián',en:'before',ru:'раньше'},{word:'地方',pinyin:'dì fang',en:'place',ru:'место'},{word:'外卖',pinyin:'wài mài',en:'takeout',ru:'еда'},{word:'上网',pinyin:'shàng wǎng',en:'surf',ru:'интернет'},{word:'味道',pinyin:'wèi dào',en:'taste',ru:'вкус'},{word:'特别',pinyin:'tè bié',en:'particularly',ru:'особенно'},{word:'有名',pinyin:'yǒu míng',en:'famous',ru:'известный'},{word:'可以',pinyin:'kě yǐ',en:'can',ru:'можно'},{word:'西餐厅',pinyin:'xī cān tīng',en:'western restaurant',ru:'ресторан'},{word:'经常',pinyin:'jīng cháng',en:'often',ru:'часто'},{word:'东西',pinyin:'dōng xi',en:'thing',ru:'вещь'},{word:'北京',pinyin:'Běi jīng',en:'Beijing',ru:'Пекин'},{word:'上海',pinyin:'Shàng hǎi',en:'Shanghai',ru:'Шанхай'},{word:'旅游',pinyin:'lǚ yóu',en:'travel',ru:'путешествовать'},{word:'好吃',pinyin:'hǎo chī',en:'delicious',ru:'вкусный'},{word:'饭店',pinyin:'fàn diàn',en:'restaurant',ru:'ресторан'},{word:'我们',pinyin:'wǒ men',en:'we',ru:'мы'},{word:'比萨',pinyin:'bǐ sà',en:'pizza',ru:'пицца'},{word:'衣服',pinyin:'yī fu',en:'clothes',ru:'одежда'},{word:'好看',pinyin:'hǎo kàn',en:'good-looking',ru:'красивый'},{word:'今天',pinyin:'jīn tiān',en:'today',ru:'сегодня'},{word:'饺子',pinyin:'jiǎo zi',en:'dumpling',ru:'пельмени'}];
+const LESSON5=[{word:'了',pinyin:'le',en:'particle',ru:'частица'},{word:'跟',pinyin:'gēn',en:'with',ru:'с'},{word:'同学',pinyin:'tóng xué',en:'classmate',ru:'одноклассник'},{word:'郊区',pinyin:'jiāo qū',en:'suburb',ru:'пригород'},{word:'滑雪',pinyin:'huá xuě',en:'ski',ru:'лыжи'},{word:'那儿',pinyin:'nà er',en:'there',ru:'там'},{word:'滑雪场',pinyin:'huá xuě chǎng',en:'ski resort',ru:'курорт'},{word:'棒',pinyin:'bàng',en:'excellent',ru:'отличный'},{word:'难',pinyin:'nán',en:'difficult',ru:'трудный'},{word:'怕',pinyin:'pà',en:'fear',ru:'бояться'},{word:'摔',pinyin:'shuāi',en:'fall',ru:'падать'},{word:'就行',pinyin:'jiù xíng',en:'will do',ru:'подойдёт'},{word:'次',pinyin:'cì',en:'time',ru:'раз'},{word:'想',pinyin:'xiǎng',en:'think',ru:'думать'},{word:'干',pinyin:'gàn',en:'do',ru:'делать'},{word:'几',pinyin:'jǐ',en:'several',ru:'несколько'},{word:'朋友',pinyin:'péng you',en:'friend',ru:'друг'},{word:'来',pinyin:'lái',en:'come',ru:'приходить'},{word:'做饭',pinyin:'zuò fàn',en:'cook',ru:'готовить'},{word:'要求',pinyin:'yāo qiú',en:'require',ru:'требовать'},{word:'带',pinyin:'dài',en:'bring',ru:'приносить'},{word:'办法',pinyin:'bàn fǎ',en:'way',ru:'способ'},{word:'猜',pinyin:'cāi',en:'guess',ru:'угадывать'},{word:'一定',pinyin:'yí dìng',en:'certainly',ru:'определённо'},{word:'沙拉',pinyin:'shā lā',en:'salad',ru:'салат'},{word:'周末',pinyin:'zhōu mò',en:'weekend',ru:'выходные'},{word:'一起',pinyin:'yì qǐ',en:'together',ru:'вместе'},{word:'上课',pinyin:'shàng kè',en:'have class',ru:'урок'}];
+const LESSON6=[{word:'有点儿',pinyin:'yǒu diǎnr',en:'a little',ru:'немного'},{word:'舒服',pinyin:'shū fu',en:'comfortable',ru:'удобный'},{word:'头',pinyin:'tóu',en:'head',ru:'голова'},{word:'疼',pinyin:'téng',en:'painful',ru:'болит'},{word:'觉得',pinyin:'jué de',en:'feel',ru:'чувствовать'},{word:'冷',pinyin:'lěng',en:'cold',ru:'холодный'},{word:'发烧',pinyin:'fā shāo',en:'fever',ru:'температура'},{word:'量',pinyin:'liáng',en:'measure',ru:'измерять'},{word:'体温',pinyin:'tǐ wēn',en:'temperature',ru:'температура тела'},{word:'只',pinyin:'zhǐ',en:'only',ru:'только'},{word:'度',pinyin:'dù',en:'degree',ru:'градус'},{word:'感冒',pinyin:'gǎn mào',en:'cold',ru:'простуда'},{word:'药',pinyin:'yào',en:'medicine',ru:'лекарство'},{word:'片',pinyin:'piàn',en:'tablet',ru:'таблетка'},{word:'水',pinyin:'shuǐ',en:'water',ru:'вода'},{word:'先',pinyin:'xiān',en:'first',ru:'сначала'},{word:'验血',pinyin:'yàn xiě',en:'blood test',ru:'анализ'},{word:'大夫',pinyin:'dài fu',en:'doctor',ru:'врач'},{word:'病',pinyin:'bìng',en:'ill',ru:'болезнь'},{word:'能',pinyin:'néng',en:'can',ru:'мочь'},{word:'帮',pinyin:'bāng',en:'help',ru:'помогать'},{word:'请假',pinyin:'qǐng jià',en:'ask leave',ru:'отпроситься'},{word:'少',pinyin:'shǎo',en:'little',ru:'мало'},{word:'多',pinyin:'duō',en:'many',ru:'много'},{word:'休息',pinyin:'xiū xi',en:'rest',ru:'отдыхать'},{word:'上课',pinyin:'shàng kè',en:'have class',ru:'урок'},{word:'医院',pinyin:'yī yuàn',en:'hospital',ru:'больница'}];
 
 const LESSON4_SENTENCES=[
 {sentence:'我________去过上海。',answer:'以前',translation:'I have been to Shanghai before.'},
@@ -299,43 +289,43 @@ const LESSON4_SENTENCES=[
 {sentence:'北京很________，很多人来旅游。',answer:'有名',translation:'Beijing is very famous, many people travel here.'},
 {sentence:'________你想去什么地方？',answer:'假期',translation:'Where do you want to go during the holiday?'},
 {sentence:'我经常________买东西。',answer:'上网',translation:'I often surf the Internet to buy things.'},
-{sentence:'我不想做饭，我们________比萨吧。',answer:'订',translation:'I don’t want to cook, let’s order pizza.'},
-{sentence:'这________饭店的菜很________。',answer:'家',translation:'This restaurant’s dish is very spicy.'},
+{sentence:'我不想做饭，我们________比萨吧。',answer:'订',translation:'I don\'t want to cook, let\'s order pizza.'},
+{sentence:'这________饭店的菜很________。',answer:'家 / 辣',translation:'This restaurant\'s dish is very spicy.'},
 {sentence:'我想订________。',answer:'外卖',translation:'I want to order takeout.'},
-{sentence:'这个菜________怎么样？好吃吗？',answer:'味道',translation:'How is this dish taste? Is it delicious?'},
-{sentence:'外卖_______得很________。',answer:'送',translation:'The takeout is delivered very slowly.'},
+{sentence:'这个菜________怎么样？好吃吗？',answer:'味道',translation:'How does this dish taste? Is it delicious?'},
+{sentence:'外卖_______得很________。',answer:'送 / 慢',translation:'The takeout is delivered very slowly.'},
 {sentence:'我吃________饺子。',answer:'过',translation:'I have eaten dumplings.'},
 {sentence:'这个菜________好吃。',answer:'特别',translation:'This dish is particularly delicious.'},
-{sentence:'这件衣服很好看，你_______一下。',answer:'试',translation:'This dress is beautiful, try it on.'},
-{sentence:'今天________热。',answer:'特别',translation:'It’s particularly hot today.'}
+{sentence:'这件衣服很好看，你_______一下。',answer:'试',translation:'This dress is very beautiful, try it on.'},
+{sentence:'今天________热。',answer:'特别',translation:'It\'s particularly hot today.'}
 ];
 const LESSON5_SENTENCES=[
-{sentence:'周末我_____同学一起去郊区玩了。',answer:'跟',translation:'On the weekend...'},
-{sentence:'昨天他去_____滑雪了。',answer:'滑雪场',translation:'Yesterday he went skiing.'},
+{sentence:'周末我_____同学一起去郊区玩了。',answer:'跟',translation:'On the weekend, I went to the suburb with my classmate.'},
+{sentence:'昨天他去_____滑雪了。',answer:'滑雪场',translation:'Yesterday he went to the ski resort to ski.'},
 {sentence:'这个滑雪场特别_____！',answer:'棒',translation:'This ski resort is excellent!'},
-{sentence:'我_____摔，不喜欢滑雪。',answer:'怕',translation:'I fear falling.'},
-{sentence:'滑雪不难，不怕摔_____。',answer:'就行',translation:'It will do...'},
-{sentence:'这是我第一_____滑雪。',answer:'次',translation:'This is my first time.'},
-{sentence:'我_____一下。',answer:'想想',translation:'Let me think.'},
-{sentence:'昨天你_____什么了？',answer:'干',translation:'What did you do?'},
-{sentence:'老师_____我们带书来上课。',answer:'要求',translation:'The teacher requires us...'}
+{sentence:'我_____摔，不喜欢滑雪。',answer:'怕',translation:'I fear falling, I don\'t like skiing.'},
+{sentence:'滑雪不难，不怕摔_____。',answer:'就行',translation:'Skiing is not difficult, it will do as long as you\'re not afraid of falling.'},
+{sentence:'这是我第一_____滑雪。',answer:'次',translation:'This is my first time to ski.'},
+{sentence:'我_____一下。',answer:'想想',translation:'Let me think about it.'},
+{sentence:'昨天你_____什么了？',answer:'干',translation:'What did you do yesterday?'},
+{sentence:'老师_____我们带书来上课。',answer:'要求',translation:'The teacher requires us to bring books to class.'}
 ];
 const LESSON6_SENTENCES=[
-{sentence:'我_____头疼，不想去上课。',answer:'有点儿',translation:'I have a bit of a headache.'},
-{sentence:'我身体不__________。',answer:'舒服',translation:'I feel unwell.'},
-{sentence:'他现在________想睡觉。',answer:'只',translation:'He only wants to sleep.'},
-{sentence:'体温 38.5________。',answer:'度',translation:'Temperature 38.5 degrees.'},
-{sentence:'你不舒服，________吃药，然后休息。',answer:'先',translation:'Take medicine first.'},
-{sentence:'下雨了，我们________回家吧。',answer:'还是',translation:'We’d better go home.'},
-{sentence:'我________了，头很疼。',answer:'感冒',translation:'I have a cold.'},
-{sentence:'大夫说：一天吃两________这个________。',answer:'片',translation:'Take two tablets.'},
-{sentence:'他________了，在家休息。',answer:'病',translation:'He is ill.'},
-{sentence:'你可以________我买瓶水吗？',answer:'帮',translation:'Can you help me?'},
-{sentence:'我不舒服，我要________。',answer:'请假',translation:'I need to ask for leave.'},
-{sentence:'生病要________玩手机。',answer:'少',translation:'Play phone less.'},
-{sentence:'他发烧，________来上课。',answer:'不能',translation:'He cannot come.'},
-{sentence:'我________这个药很苦。',answer:'觉得',translation:'I think it’s bitter.'},
-{sentence:'她发烧了，去看________了。',answer:'大夫',translation:'She went to see the doctor.'}
+{sentence:'我_____头疼，不想去上课。',answer:'有点儿',translation:'I have a bit of a headache, I don\'t want to go to class.'},
+{sentence:'我身体不__________。',answer:'舒服',translation:'I don\'t feel well.'},
+{sentence:'他现在________想睡觉。',answer:'只',translation:'He only wants to sleep now.'},
+{sentence:'体温 38.5________。',answer:'度',translation:'Body temperature 38.5 degrees.'},
+{sentence:'你不舒服，________吃药，然后休息。',answer:'先',translation:'You don\'t feel well, take medicine first, then rest.'},
+{sentence:'下雨了，我们________回家吧。',answer:'还是',translation:'It\'s raining, we\'d better go home.'},
+{sentence:'我________了，头很疼。',answer:'感冒',translation:'I have a cold, my head hurts.'},
+{sentence:'大夫说：一天吃两________这个________。',answer:'片 / 药',translation:'The doctor says: take two tablets of this medicine a day.'},
+{sentence:'他________了，在家休息。',answer:'病',translation:'He is ill, resting at home.'},
+{sentence:'你可以________我买瓶水吗？',answer:'帮',translation:'Can you help me buy a bottle of water?'},
+{sentence:'我不舒服，我要________。',answer:'请假',translation:'I don\'t feel well, I need to ask for leave.'},
+{sentence:'生病要________玩手机。',answer:'少',translation:'When sick, you should play with your phone less.'},
+{sentence:'他发烧，________来上课。',answer:'不能',translation:'He has a fever, he cannot come to class.'},
+{sentence:'我________这个药很苦。',answer:'觉得',translation:'I think this medicine is bitter.'},
+{sentence:'她发烧了，去看________了。',answer:'大夫',translation:'She got a fever, she went to see the doctor.'}
 ];
 
 const QUIZ_SENTENCES={
@@ -346,65 +336,42 @@ lesson6:['我有点儿不舒服。','我头很疼，觉得特别冷。','我发�
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function pickWords(pool,usedSet,count=5){const av=pool.filter(w=>!usedSet.has(w.word));let s=[];if(av.length>=count)s=shuffle(av).slice(0,count);else{usedSet.clear();s=shuffle([...pool]).slice(0,count)}s.forEach(w=>usedSet.add(w.word));return s}
 
-// ==================== 课程多选下拉框交互 ====================
-const courseTrigger = document.getElementById('courseTrigger');
-const courseDropdown = document.getElementById('courseDropdown');
-const courseSelectedText = document.getElementById('courseSelectedText');
-
-courseTrigger.addEventListener('click', function(e) {
-  e.stopPropagation();
-  courseTrigger.classList.toggle('open');
-  courseDropdown.classList.toggle('show');
-});
-document.addEventListener('click', function(e) {
-  if (!courseDropdown.contains(e.target) && !courseTrigger.contains(e.target)) {
-    courseTrigger.classList.remove('open');
-    courseDropdown.classList.remove('show');
+// ★★★ 分词函数：用词库做最长匹配切分句子 ★★★
+function segmentSentence(sentence, vocab) {
+  const clean = sentence.replace(/[，。？、！；：""''（）\s]/g, '');
+  const sortedVocab = [...new Set(vocab)].filter(w => w.length >= 1).sort((a, b) => b.length - a.length);
+  const words = [];
+  let i = 0;
+  while (i < clean.length) {
+    let matched = false;
+    for (const word of sortedVocab) {
+      if (clean.startsWith(word, i)) {
+        words.push(word);
+        i += word.length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      words.push(clean[i]);
+      i++;
+    }
   }
-});
-function updateCourseTriggerText() {
-  const checked = document.querySelectorAll('.course-check:checked');
-  const names = Array.from(checked).map(cb => {
-    return cb.value === 'lesson4' ? '第4课' : cb.value === 'lesson5' ? '第5课' : '第6课';
-  });
-  if (names.length === 0) {
-    courseSelectedText.textContent = '请选择课程';
-    courseSelectedText.style.color = '#8a9aa8';
-  } else if (names.length === 3) {
-    courseSelectedText.textContent = '全部课程';
-    courseSelectedText.style.color = '#1a2a3a';
-  } else {
-    courseSelectedText.textContent = names.join('、');
-    courseSelectedText.style.color = '#1a2a3a';
-  }
-  document.querySelectorAll('.dropdown-item').forEach(item => {
-    const cb = item.querySelector('.course-check');
-    item.classList.toggle('checked', cb.checked);
-  });
+  return words;
 }
 
-// ==================== 课程选择（统一入口） ====================
-function getSelectedCourses(){
-  return Array.from(document.querySelectorAll('.course-check:checked')).map(cb=>cb.value);
-}
-function getWordPool(){
-  const cs=getSelectedCourses();
-  let pool=[];
-  cs.forEach(c=>{if(c==='lesson4')pool=pool.concat(LESSON4);else if(c==='lesson5')pool=pool.concat(LESSON5);else if(c==='lesson6')pool=pool.concat(LESSON6)});
-  return pool;
-}
-function getSentencePool(){
-  const cs=getSelectedCourses();
-  let pool=[];
-  cs.forEach(c=>{if(c==='lesson4')pool=pool.concat(LESSON4_SENTENCES);else if(c==='lesson5')pool=pool.concat(LESSON5_SENTENCES);else if(c==='lesson6')pool=pool.concat(LESSON6_SENTENCES)});
-  return pool;
-}
-function getQuizSentencePool(){
-  const cs=getSelectedCourses();
-  let pool=[];
-  cs.forEach(c=>{if(QUIZ_SENTENCES[c])pool=pool.concat(QUIZ_SENTENCES[c])});
-  return pool;
-}
+// ==================== 课程多选下拉框 ====================
+const courseTrigger=document.getElementById('courseTrigger');
+const courseDropdown=document.getElementById('courseDropdown');
+const courseSelectedText=document.getElementById('courseSelectedText');
+courseTrigger.addEventListener('click',function(e){e.stopPropagation();courseTrigger.classList.toggle('open');courseDropdown.classList.toggle('show')});
+document.addEventListener('click',function(e){if(!courseDropdown.contains(e.target)&&!courseTrigger.contains(e.target)){courseTrigger.classList.remove('open');courseDropdown.classList.remove('show')}});
+function updateCourseTriggerText(){const checked=document.querySelectorAll('.course-check:checked');const names=Array.from(checked).map(cb=>cb.value==='lesson4'?'第4课':cb.value==='lesson5'?'第5课':'第6课');if(names.length===0){courseSelectedText.textContent='请选择课程';courseSelectedText.style.color='#8a9aa8'}else if(names.length===3){courseSelectedText.textContent='全部课程';courseSelectedText.style.color='#1a2a3a'}else{courseSelectedText.textContent=names.join('、');courseSelectedText.style.color='#1a2a3a'}document.querySelectorAll('.dropdown-item').forEach(item=>{const cb=item.querySelector('.course-check');item.classList.toggle('checked',cb.checked)})}
+
+function getSelectedCourses(){return Array.from(document.querySelectorAll('.course-check:checked')).map(cb=>cb.value)}
+function getWordPool(){const cs=getSelectedCourses();let p=[];cs.forEach(c=>{if(c==='lesson4')p=p.concat(LESSON4);else if(c==='lesson5')p=p.concat(LESSON5);else if(c==='lesson6')p=p.concat(LESSON6)});return p}
+function getSentencePool(){const cs=getSelectedCourses();let p=[];cs.forEach(c=>{if(c==='lesson4')p=p.concat(LESSON4_SENTENCES);else if(c==='lesson5')p=p.concat(LESSON5_SENTENCES);else if(c==='lesson6')p=p.concat(LESSON6_SENTENCES)});return p}
+function getQuizSentencePool(){const cs=getSelectedCourses();let p=[];cs.forEach(c=>{if(QUIZ_SENTENCES[c])p=p.concat(QUIZ_SENTENCES[c])});return p}
 
 // ==================== MQTT ====================
 const MQTT_BROKER='wss://74a61de0e9c042f9aba1355a9edf8acd.s1.eu.hivemq.cloud:8884/mqtt';
@@ -418,7 +385,6 @@ const TOPIC_QUIZ_BUZZ='classroom/quiz/buzz';
 let mqttClient=null,mqttConnected=false;
 const mqttDot=document.getElementById('mqttDot'),mqttText=document.getElementById('mqttText'),mqttBtn=document.getElementById('mqttConnectBtn');
 let studentAnswers={};
-
 function updateMqttStatus(c){mqttConnected=c;mqttDot.className='dot '+(c?'online':'offline');mqttText.textContent=c?'已连接':'未连接';mqttBtn.textContent=c?'断开':'连接'}
 function connectMqtt(){if(mqttClient&&mqttClient.isConnected()){mqttClient.disconnect();updateMqttStatus(false);return}
 const cid='teacher_'+Math.random().toString(16).substr(2,8);mqttClient=new Paho.MQTT.Client(MQTT_BROKER,cid);
@@ -439,14 +405,7 @@ const panels={word:document.getElementById('panel-word'),pair:document.getElemen
 const pageTitle=document.getElementById('pageTitle');
 const titles={word:'🧩 单字组词',pair:'🔗 词汇配对',cloud:'☁️ 词云',flip:'🃏 翻牌子',fill:'✍️ 选词填空',quiz:'🏆 争霸赛'};
 moduleBtns.forEach(b=>b.addEventListener('click',function(){moduleBtns.forEach(x=>x.classList.remove('active'));this.classList.add('active');const m=this.dataset.module;Object.keys(panels).forEach(k=>panels[k].classList.toggle('active',k===m));pageTitle.textContent=titles[m]||'练习';if(m==='quiz')initQuizAbsentList()}));
-
-document.querySelectorAll('.course-check').forEach(cb=>cb.addEventListener('change',()=>{
-  const cs=getSelectedCourses();
-  if(cs.length===0){alert('请至少勾选一课');cb.checked=true;updateCourseTriggerText();return}
-  updateCourseTriggerText();
-  wordUsedSet.clear();pairUsedSet.clear();
-  initWordGroup();initPairGroup();initFlipSet();initFillSet();
-}));
+document.querySelectorAll('.course-check').forEach(cb=>cb.addEventListener('change',()=>{const cs=getSelectedCourses();if(cs.length===0){alert('请至少勾选一课');cb.checked=true;updateCourseTriggerText();return}updateCourseTriggerText();wordUsedSet.clear();pairUsedSet.clear();initWordGroup();initPairGroup();initFlipSet();initFillSet()}));
 
 // ==================== 单字组词 ====================
 let wordUsedSet=new Set(),currentWordGroup=[],wordCompleted=[],charItems=[],selectedIndices=[];
@@ -497,7 +456,7 @@ initFillSet();
 
 // ==================== 争霸赛 ====================
 const STUDENT_NAMES=['ALEKSEENKO DENIS','BAKAEVA MARGARITA','GODOVIKOV MATVEI','DUBININA VASILISA','ERSHOV KIRILL','ZEYNALOV FARIZ','KORCHUGANOV NIKITA','MNATSAKANIAN DAVID','NEPRINTSEVA ANNA','PARCHAK ANASTASIIA','SAFONOV PAVEL','SIMONOV DANIIL','AHMED RAAD ABDULWAHID AL-RAHMANI','JAIPONG MISS SIRIWAN','GORDEEVA SOFIA','GRISHKINA VALERIIA'];
-let quizGroups=[],quizAbsent=new Set(),quizScores={},quizCurrentQuestion=null,quizBuzzedGroups=new Set(),quizBuzzer=null,quizQuestionLocked=false;
+let quizGroups=[],quizAbsent=new Set(),quizScores={},quizCurrentQuestion=null,quizBuzzedGroups=new Set(),quizBuzzer=null,quizQuestionLocked=false,quizPlayMode='buzz',quizWrongGroups=new Set();
 const QUIZ_COLORS=[{name:'红队',color:'#dc2626',bg:'#fee2e2'},{name:'蓝队',color:'#3b7cff',bg:'#e0edff'},{name:'绿队',color:'#0b6e4f',bg:'#e0f2e6'},{name:'黄队',color:'#e6a800',bg:'#fff4d6'},{name:'紫队',color:'#8b5cf6',bg:'#ede9fe'},{name:'橙队',color:'#f97316',bg:'#ffedd5'}];
 
 let quizPool20=[],quizPool30=[],quizPool40=[];
@@ -509,46 +468,21 @@ function initQuizPools(){
   const sents=getSentencePool();
   const quizSents=getQuizSentencePool();
   const uniqueWords=[...new Set(words)];
-
-  // ===== 20分题：固定10道，每道3个词 =====
   quizPool20=[];
   const shuffledWords=shuffle([...uniqueWords]);
   let idx=0;
-  for(let i=0;i<10;i++){
-    const sel=[];
-    for(let j=0;j<3;j++){
-      if(idx>=shuffledWords.length){shuffle(shuffledWords);idx=0;}
-      sel.push(shuffledWords[idx++]);
-    }
-    quizPool20.push(sel);
-  }
-
-  // ===== 30分题：固定10道 =====
+  for(let i=0;i<10;i++){const sel=[];for(let j=0;j<3;j++){if(idx>=shuffledWords.length){shuffle(shuffledWords);idx=0;}sel.push(shuffledWords[idx++]);}quizPool20.push(sel);}
   quizPool30=[];
-  const shuffledSents=shuffle(sents.slice());
-  idx=0;
-  for(let i=0;i<10;i++){
-    if(idx>=shuffledSents.length){shuffle(shuffledSents);idx=0;}
-    quizPool30.push(shuffledSents[idx++]);
-  }
-
-  // ===== 40分题：固定10道 =====
+  const shuffledSents=shuffle(sents.slice());idx=0;
+  for(let i=0;i<10;i++){if(idx>=shuffledSents.length){shuffle(shuffledSents);idx=0;}quizPool30.push(shuffledSents[idx++]);}
   quizPool40=[];
-  const shuffledQuizSents=shuffle(quizSents.slice());
-  idx=0;
-  for(let i=0;i<10;i++){
-    if(idx>=shuffledQuizSents.length){shuffle(shuffledQuizSents);idx=0;}
-    quizPool40.push(shuffledQuizSents[idx++]);
-  }
-
+  const shuffledQuizSents=shuffle(quizSents.slice());idx=0;
+  for(let i=0;i<10;i++){if(idx>=shuffledQuizSents.length){shuffle(shuffledQuizSents);idx=0;}quizPool40.push(shuffledQuizSents[idx++]);}
   updateQuizPoolInfo();
   return true;
 }
-
 function updateQuizPoolInfo(){
-  const n20=quizPool20.length;
-  const n30=quizPool30.length;
-  const n40=quizPool40.length;
+  const n20=quizPool20.length,n30=quizPool30.length,n40=quizPool40.length;
   document.querySelector('[data-points="20"]').textContent=`🎯 20分题（${n20}）`;
   document.querySelector('[data-points="20"]').disabled=(n20===0);
   document.querySelector('[data-points="30"]').textContent=`🎯 30分题（${n30}）`;
@@ -557,11 +491,11 @@ function updateQuizPoolInfo(){
   document.querySelector('[data-points="40"]').disabled=(n40===0);
   document.getElementById('quizPoolInfo').textContent=`题库状态：20分 ${n20} 题 · 30分 ${n30} 题 · 40分 ${n40} 题`;
 }
-
 function initQuizAbsentList(){const c=document.getElementById('quizAbsentList');c.innerHTML='';STUDENT_NAMES.forEach(n=>{const d=document.createElement('div');d.className='quiz-absent-item'+(quizAbsent.has(n)?' absent':'');d.textContent=n;d.onclick=()=>{if(quizAbsent.has(n))quizAbsent.delete(n);else quizAbsent.add(n);initQuizAbsentList()};c.appendChild(d)})}
 
 document.getElementById('quizStartBtn').onclick=function(){
 const groupCount=parseInt(document.getElementById('quizGroupCount').value)||3;
+quizPlayMode=document.getElementById('quizPlayMode').value;
 const available=STUDENT_NAMES.filter(n=>!quizAbsent.has(n));
 if(available.length<groupCount){alert('可用学生不足');return}
 if(!initQuizPools())return;
@@ -570,19 +504,28 @@ const groups=[];
 for(let i=0;i<groupCount;i++){groups.push({name:QUIZ_COLORS[i].name,color:QUIZ_COLORS[i].color,bg:QUIZ_COLORS[i].bg,members:[]})}
 available.forEach((n,i)=>{groups[i%groupCount].members.push(n)});
 quizGroups=groups;quizScores={};groups.forEach(g=>quizScores[g.name]=0);
-quizBuzzedGroups=new Set();quizBuzzer=null;quizQuestionLocked=false;quizCurrentQuestion=null;
+quizBuzzedGroups=new Set();quizWrongGroups=new Set();quizBuzzer=null;quizQuestionLocked=false;quizCurrentQuestion=null;
 document.getElementById('quizSetup').style.display='none';document.getElementById('quizGame').style.display='block';
 renderQuizScoreboard();
+document.getElementById('quizWrongGroups').textContent='';
 publishQuizState({type:'groups',groups:groups.map(g=>({name:g.name,color:g.color,members:g.members}))});
 };
 
-function renderQuizScoreboard(){const c=document.getElementById('quizScoreboard');c.innerHTML='';quizGroups.forEach(g=>{const d=document.createElement('div');d.className='quiz-score-card';d.style.background=g.bg;d.style.border=`2px solid ${g.color}`;d.innerHTML=`<div class="team-name" style="color:${g.color}">${g.name}</div><div class="team-score" style="color:${g.color}">${quizScores[g.name]||0}</div><div style="font-size:12px;color:#5a6c7d;margin-top:4px;">${g.members.length}人</div>`;c.appendChild(d)})}
+function renderQuizScoreboard(){
+const c=document.getElementById('quizScoreboard');c.innerHTML='';
+quizGroups.forEach(g=>{
+const d=document.createElement('div');d.className='quiz-score-card';d.style.background=g.bg;d.style.border=`2px solid ${g.color}`;
+const membersHtml=g.members.map(m=>`<span class="member">${m}</span>`).join('');
+d.innerHTML=`<div class="team-header"><span class="team-name" style="color:${g.color}">${g.name}</span><span class="team-score" style="color:${g.color}">${quizScores[g.name]||0}</span></div><div class="members">${membersHtml}</div>`;
+c.appendChild(d);
+});
+}
 
 document.querySelectorAll('[data-points]').forEach(btn=>btn.onclick=function(){generateQuizQuestion(parseInt(this.dataset.points))});
 
 function generateQuizQuestion(points){
 if(quizGroups.length===0){alert('请先开始争霸赛');return}
-quizBuzzedGroups=new Set();quizBuzzer=null;quizQuestionLocked=false;
+quizBuzzedGroups=new Set();quizWrongGroups=new Set();quizBuzzer=null;quizQuestionLocked=false;
 let q=null;
 if(points===20){
 if(quizPool20.length===0){alert('20分题已用完');return}
@@ -596,15 +539,22 @@ q={type:'fill',points,sentence:s.sentence,answer:s.answer,translation:s.translat
 if(quizPool40.length===0){alert('40分题已用完');return}
 const s=quizPool40.shift();
 if(Math.random()<0.5){q={type:'sentence_listen',points,sentence:s,content:'🔊 听句子，复述'};}
-else{const parts=s.replace(/[，。？、！]/g,' ').split(/\s+/).filter(Boolean);shuffle(parts);q={type:'sentence_order',points,original:s,parts:parts,content:'将词语按正确顺序排列'};}
+else{
+  // ★ 使用分词函数：按词语拆分
+  const words = segmentSentence(s, getWordPool().map(w => w.word));
+  shuffle(words);
+  q={type:'sentence_order',points,original:s,parts:words,content:'将词语按正确顺序排列：'};
+}
 }
 quizCurrentQuestion=q;updateQuizPoolInfo();
 document.getElementById('quizJudge').style.display='flex';
 document.getElementById('quizBuzzInfo').className='quiz-buzz-info';
-document.getElementById('quizBuzzInfo').textContent='等待学生抢答…';
-renderQuizQuestion();publishQuizState({type:'question',question:q});
+document.getElementById('quizBuzzInfo').textContent=quizPlayMode==='buzz'?'等待学生抢答…':'请老师指定学生回答';
+document.getElementById('quizWrongGroups').textContent='';
+renderQuizQuestion();
+publishQuizState({type:'question',question:q,playMode:quizPlayMode});
 const sel=document.getElementById('quizPickStudent');sel.innerHTML='<option value="">— 指定学生回答 —</option>';
-quizGroups.forEach(g=>{g.members.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=`${g.name} · ${m}`;sel.appendChild(o)})});
+quizGroups.forEach(g=>{g.members.forEach(m=>{const o=document.createElement('option');o.value=`${g.name}|${m}`;o.textContent=`${g.name} · ${m}`;sel.appendChild(o)})});
 if(q.type==='sentence_listen'){setTimeout(()=>speakText(q.sentence),500)}
 }
 
@@ -613,40 +563,84 @@ let html='';
 if(q.type==='words_show'){html=`<div class="q-content">${q.content}</div><div class="q-words">${q.words.map(w=>`<div class="q-word">${w.word}</div>`).join('')}</div>`}
 else if(q.type==='fill'){html=`<div class="q-content">${q.sentence.replace(/_{2,}/g,'<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')}</div><div class="q-extra">${q.translation}</div>`}
 else if(q.type==='sentence_listen'){html=`<div class="q-content">🔊 听句子</div><div class="q-extra">点击按钮重新播放</div><button class="btn btn-primary" style="margin-top:16px;" onclick="speakText('${q.sentence}')">🔊 重新播放</button>`}
-else if(q.type==='sentence_order'){html=`<div class="q-content">将词语按正确顺序排列：</div><div class="q-words">${q.parts.map(p=>`<div class="q-word" style="font-size:22px;padding:8px 16px;">${p}</div>`).join('')}</div>`}
+else if(q.type==='sentence_order'){html=`<div class="q-content">将词语按正确顺序排列：</div><div class="q-words" style="gap:20px;margin-top:24px;">${q.parts.map(p=>`<div class="q-word" style="font-size:32px;padding:16px 28px;text-align:center;">${p}</div>`).join('')}</div>`}
 c.innerHTML=html}
 
 function speakText(text){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=0.7;window.speechSynthesis.speak(u)}
 
-function handleQuizBuzz(data){if(quizQuestionLocked||!quizCurrentQuestion)return;const groupName=data.group;if(quizBuzzedGroups.has(groupName))return;
-quizBuzzedGroups.add(groupName);quizBuzzer={group:groupName,student:data.student};
-const info=document.getElementById('quizBuzzInfo');info.className='quiz-buzz-info buzzed';
+function handleQuizBuzz(data){
+if(quizQuestionLocked||!quizCurrentQuestion)return;
+const groupName=data.group;
+if(quizWrongGroups.has(groupName)){return}
+if(quizBuzzedGroups.has(groupName)){return}
+quizBuzzedGroups.add(groupName);
+quizBuzzer={group:groupName,student:data.student};
+const info=document.getElementById('quizBuzzInfo');
+info.className='quiz-buzz-info buzzed';
 info.textContent=`🔔 ${groupName} · ${data.student} 抢答！`;
-const sel=document.getElementById('quizPickStudent');sel.innerHTML='<option value="">— 指定学生回答 —</option>';
-const g=quizGroups.find(x=>x.name===groupName);if(g)g.members.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=`${groupName} · ${m}`;sel.appendChild(o)});
+publishQuizState({type:'buzz_locked',group:groupName,student:data.student});
+const sel=document.getElementById('quizPickStudent');
+sel.value=`${groupName}|${data.student}`;
 }
 
 document.getElementById('quizCorrectBtn').onclick=function(){
-const targetGroup=quizBuzzer?quizBuzzer.group:null;
-if(!targetGroup){const sel=document.getElementById('quizPickStudent');if(sel.value){const g=quizGroups.find(x=>x.members.includes(sel.value));if(g)targetGroup=g.name}}
-if(!targetGroup){alert('请先等待抢答或指定学生');return}
-quizScores[targetGroup]=(quizScores[targetGroup]||0)+quizCurrentQuestion.points;renderQuizScoreboard();
-const info=document.getElementById('quizBuzzInfo');info.className='quiz-buzz-info correct';info.textContent=`✅ 回答正确！+${quizCurrentQuestion.points}分`;
+if(!quizCurrentQuestion){alert('请先出题');return}
+let targetGroup=null,targetStudent=null;
+if(quizPlayMode==='assign'){
+const sel=document.getElementById('quizPickStudent');
+if(!sel.value){alert('请先指定学生');return}
+const parts=sel.value.split('|');targetGroup=parts[0];targetStudent=parts[1];
+}else{
+if(!quizBuzzer){alert('等待学生抢答');return}
+targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
+}
+quizScores[targetGroup]=(quizScores[targetGroup]||0)+quizCurrentQuestion.points;
+renderQuizScoreboard();
+const info=document.getElementById('quizBuzzInfo');
+info.className='quiz-buzz-info correct';
+info.textContent=`✅ ${targetGroup} · ${targetStudent} 回答正确！+${quizCurrentQuestion.points}分`;
+publishQuizState({type:'correct',group:targetGroup,student:targetStudent,points:quizCurrentQuestion.points,scores:quizScores});
 quizQuestionLocked=true;
 };
+
 document.getElementById('quizWrongBtn').onclick=function(){
-const info=document.getElementById('quizBuzzInfo');info.className='quiz-buzz-info wrong';info.textContent='❌ 回答错误，其他组可以继续抢答';
+if(!quizCurrentQuestion){return}
+let targetGroup=null,targetStudent=null;
+if(quizPlayMode==='assign'){
+const sel=document.getElementById('quizPickStudent');
+if(!sel.value){alert('请先指定学生');return}
+const parts=sel.value.split('|');targetGroup=parts[0];targetStudent=parts[1];
+}else{
+if(!quizBuzzer){alert('等待学生抢答');return}
+targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
+}
+quizWrongGroups.add(targetGroup);
 quizBuzzer=null;
-if(quizBuzzedGroups.size>=quizGroups.length){quizQuestionLocked=true;info.textContent='❌ 所有组已答错，本题结束'}
+const info=document.getElementById('quizBuzzInfo');
+info.className='quiz-buzz-info wrong';
+const remaining=quizGroups.filter(g=>!quizWrongGroups.has(g.name));
+info.textContent=`❌ ${targetGroup} 回答错误！${remaining.length>0?'其余组可继续抢答':'所有组已答错，本题结束'}`;
+document.getElementById('quizWrongGroups').textContent='已答错：'+Array.from(quizWrongGroups).join('、');
+publishQuizState({type:'wrong',group:targetGroup});
+if(remaining.length===0){quizQuestionLocked=true;info.textContent='❌ 所有组已答错，本题结束'}
 };
-document.getElementById('quizPickStudent').onchange=function(){if(this.value){const g=quizGroups.find(x=>x.members.includes(this.value));if(g){document.getElementById('quizBuzzInfo').textContent=`👨‍🏫 教师指定：${g.name} · ${this.value}`}}};
-document.getElementById('quizResetBtn').onclick=function(){if(!confirm('确定结束争霸赛吗？'))return;document.getElementById('quizSetup').style.display='block';document.getElementById('quizGame').style.display='none';quizGroups=[];quizScores={};quizBuzzedGroups=new Set();quizBuzzer=null;quizCurrentQuestion=null;quizQuestionLocked=false;quizPool20=[];quizPool30=[];quizPool40=[];publishQuizState({type:'end'})};
+
+document.getElementById('quizPickStudent').onchange=function(){if(this.value){const parts=this.value.split('|');document.getElementById('quizBuzzInfo').textContent=`👨‍🏫 教师指定：${parts[0]} · ${parts[1]}`}};
+
+document.getElementById('quizResetBtn').onclick=function(){
+if(!confirm('确定结束争霸赛吗？'))return;
+document.getElementById('quizSetup').style.display='block';
+document.getElementById('quizGame').style.display='none';
+quizGroups=[];quizScores={};quizBuzzedGroups=new Set();quizWrongGroups=new Set();quizBuzzer=null;quizCurrentQuestion=null;quizQuestionLocked=false;
+quizPool20=[];quizPool30=[];quizPool40=[];
+publishQuizState({type:'end'});
+};
 
 function publishQuizState(data){if(!mqttConnected)return;const m=new Paho.MQTT.Message(JSON.stringify(data));m.destinationName=TOPIC_QUIZ_STATE;mqttClient.send(m)}
 
 initQuizAbsentList();
 updateCourseTriggerText();
-console.log('📘 教师端已加载，20/30/40分题库各10道');
+console.log('📘 教师端已加载');
 </script>
 </body>
 </html>
