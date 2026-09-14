@@ -129,10 +129,8 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 .quiz-buzz-info.wrong{background:#fee2e2;color:#991b1b}
 .quiz-judge{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 .quiz-wrong-groups{margin-top:8px;font-size:13px;color:#991b1b;text-align:center}
-
-/* ===== 回音壁悬浮按钮 + 面板 ===== */
 .echo-btn{position:fixed;right:24px;bottom:24px;width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#3b7cff,#2a6ae0);color:#fff;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(59,124,255,.40);z-index:999;transition:all .2s}
-.echo-btn:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(59,124,255,.5)}
+.echo-btn:hover{transform:scale(1.08)}
 .echo-btn:active{transform:scale(.95)}
 .echo-btn .icon{font-size:26px;line-height:1}
 .echo-btn .label{font-size:10px;font-weight:700;margin-top:2px;letter-spacing:1px}
@@ -156,14 +154,13 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 .echo-course label:has(input:checked){background:#e0edff;color:#3b7cff;font-weight:600}
 .echo-course input{accent-color:#3b7cff;cursor:pointer;width:14px;height:14px}
 .echo-sync-btn{width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#0b6e4f,#0a5a40);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;box-shadow:0 4px 12px rgba(11,110,79,.25);transition:.15s}
-.echo-sync-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(11,110,79,.4)}
+.echo-sync-btn:hover{transform:translateY(-1px)}
 .echo-sync-btn:active{transform:translateY(0)}
 .echo-status{font-size:12px;text-align:center;min-height:18px;color:#0b6e4f;margin-bottom:10px;font-weight:600}
 .echo-students{display:flex;flex-wrap:wrap;gap:6px;max-height:110px;overflow-y:auto;padding:6px;background:#f8fafc;border-radius:10px;min-height:32px}
 .echo-students .stu{display:inline-flex;align-items:center;gap:2px;padding:2px 4px 2px 10px;background:#fff;border:1px solid #e6edf4;border-radius:14px;font-size:12px;color:#2c3e50}
 .echo-students .stu-remove{background:transparent;border:none;color:#dc2626;font-size:16px;cursor:pointer;font-weight:700;padding:0 4px;line-height:1}
 .echo-students .stu-remove:hover{color:#991b1b}
-
 @media (max-width:768px){
   .echo-panel{width:calc(100vw - 32px);right:16px;bottom:96px}
   .echo-btn{right:16px;bottom:16px;width:58px;height:58px}
@@ -317,7 +314,6 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 </div>
 </div>
 
-<!-- ==================== 回音壁 ==================== -->
 <button class="echo-btn" id="echoBtn" title="回音壁">
 <span class="icon">📱</span>
 <span class="label">回音壁</span>
@@ -404,10 +400,11 @@ const LESSON6_SENTENCES=[
 {sentence:'她发烧了，去看________了。',answer:'大夫',translation:'She got a fever, she went to see the doctor.'}
 ];
 
+// ★ 40分题听句子：只保留 6-12 字的句子
 const QUIZ_SENTENCES={
-lesson4:['我经常上网买东西。','这个菜很辣。','我想订外卖。','这个菜味道怎么样？','外卖送得很慢。','我吃过饺子。','这个菜特别好吃。','这件衣服很好看，你试试。','今天特别热。','我以前去过上海。','北京很有名。','假期你想去什么地方？'],
-lesson5:['周末我跟同学一起去郊区玩了。','这个滑雪场特别棒。','我有点儿怕摔。','滑雪不难，不怕摔就行。','这是我第一次滑雪。','昨天你干什么了？','老师要求我们带书来上课。','我跟朋友一起做饭。','我猜一定是沙拉。'],
-lesson6:['我有点儿不舒服。','我头很疼，觉得特别冷。','我发烧了。','量量体温吧。','我感冒了。','吃这种感冒药，一天三次，一次两片。','多喝水，多休息。','我病了，不能来上课。','我请假了。','我觉得这个药很苦。']};
+lesson4:['我经常上网买东西。','这个菜味道怎么样？','外卖送得很慢。','这个菜特别好吃。','这件衣服很好看，你试试。','我以前去过上海。','假期你想去什么地方？'],
+lesson5:['这个滑雪场特别棒。','我有点儿怕摔。','滑雪不难，不怕摔就行。','这是我第一次滑雪。','昨天你干什么了？','老师要求我们带书来上课。','我跟朋友一起做饭。','我猜一定是沙拉。'],
+lesson6:['我有点儿不舒服。','我头很疼，觉得特别冷。','多喝水，多休息。','我病了，不能来上课。','我觉得这个药很苦。']};
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function pickWords(pool,usedSet,count=5){const av=pool.filter(w=>!usedSet.has(w.word));let s=[];if(av.length>=count)s=shuffle(av).slice(0,count);else{usedSet.clear();s=shuffle([...pool]).slice(0,count)}s.forEach(w=>usedSet.add(w.word));return s}
@@ -420,9 +417,7 @@ function segmentSentence(sentence, vocab) {
   while (i < clean.length) {
     let matched = false;
     for (const word of sortedVocab) {
-      if (clean.startsWith(word, i)) {
-        words.push(word); i += word.length; matched = true; break;
-      }
+      if (clean.startsWith(word, i)) { words.push(word); i += word.length; matched = true; break; }
     }
     if (!matched) { words.push(clean[i]); i++; }
   }
@@ -458,12 +453,15 @@ let studentAnswers={};
 function updateMqttStatus(c){mqttConnected=c;mqttDot.className='dot '+(c?'online':'offline');mqttText.textContent=c?'已连接':'未连接';mqttBtn.textContent=c?'断开':'连接'}
 function connectMqtt(){if(mqttClient&&mqttClient.isConnected()){mqttClient.disconnect();updateMqttStatus(false);return}
 const cid='teacher_'+Math.random().toString(16).substr(2,8);mqttClient=new Paho.MQTT.Client(MQTT_BROKER,cid);
-mqttClient.onConnectionLost=()=>updateMqttStatus(false);
+mqttClient.onConnectionLost=function(resp){updateMqttStatus(false);setTimeout(connectMqtt,2000)};
 mqttClient.onMessageArrived=function(msg){
 if(msg.destinationName===TOPIC_STUDENT_ANSWER){try{const d=JSON.parse(msg.payloadString);if(d.name&&d.answer){studentAnswers[d.name]=d.answer;renderStudentAnswers()}}catch(e){}}
-else if(msg.destinationName===TOPIC_STUDENT_CLOUD){try{const d=JSON.parse(msg.payloadString);if(d.name&&d.text){addCloudItem(d.name,d.text);autoAddStudent(d.name);}}catch(e){}}
+else if(msg.destinationName===TOPIC_STUDENT_CLOUD){try{const d=JSON.parse(msg.payloadString);if(d.name&&d.text){addCloudItem(d.name,d.text);autoAddStudent(d.name)}}catch(e){}}
 else if(msg.destinationName===TOPIC_QUIZ_BUZZ){handleQuizBuzz(JSON.parse(msg.payloadString))}};
-const o={userName:MQTT_USER,password:MQTT_PASS,useSSL:true,onSuccess:function(){updateMqttStatus(true);mqttClient.subscribe(TOPIC_STUDENT_ANSWER);mqttClient.subscribe(TOPIC_STUDENT_CLOUD);mqttClient.subscribe(TOPIC_QUIZ_BUZZ)},onFailure:function(e){updateMqttStatus(false);alert('MQTT 连接失败: '+(e.errorMessage||'请检查网络'))}};mqttClient.connect(o)}
+const o={userName:MQTT_USER,password:MQTT_PASS,useSSL:true,keepAliveInterval:60,cleanSession:true,timeout:30,
+onSuccess:function(){updateMqttStatus(true);mqttClient.subscribe(TOPIC_STUDENT_ANSWER);mqttClient.subscribe(TOPIC_STUDENT_CLOUD);mqttClient.subscribe(TOPIC_QUIZ_BUZZ)},
+onFailure:function(e){updateMqttStatus(false);setTimeout(connectMqtt,3000)}};
+mqttClient.connect(o)}
 mqttBtn.addEventListener('click',connectMqtt);
 
 function autoAddStudent(name){
@@ -471,21 +469,13 @@ function autoAddStudent(name){
   if(!students.find(s=>s.name===name)){
     students.push({name:name,points:0});
     saveStudents(students);
-    renderTeacherPanel();
     updateEchoStudentList();
   }
 }
-
 function syncFillToStudent(s,a,t){if(!mqttConnected){alert('MQTT未连接');return}const m=new Paho.MQTT.Message(JSON.stringify({sentence:s,answer:a,translation:t}));m.destinationName=TOPIC_TEACHER_FILL;mqttClient.send(m);document.getElementById('fillStatus').textContent='✅ 已同步';studentAnswers={};renderStudentAnswers()}
 function renderStudentAnswers(){const c=document.getElementById('fillAnswerList');const ns=Object.keys(studentAnswers);if(ns.length===0){c.innerHTML='<div class="empty">暂无学生提交</div>';return}c.innerHTML=ns.map(n=>`<div class="answer-item"><span class="name">${n}</span><span class="ans">${studentAnswers[n]}</span></div>`).join('')}
-
-// 学生数据
 function getStudents(){try{return JSON.parse(localStorage.getItem('pinyin_students'))||[]}catch(e){return[]}}
 function saveStudents(s){localStorage.setItem('pinyin_students',JSON.stringify(s))}
-
-function renderTeacherPanel(){
-  // 只用于更新学生计数显示
-}
 
 const moduleBtns=document.querySelectorAll('.module-btn');
 const panels={word:document.getElementById('panel-word'),pair:document.getElementById('panel-pair'),cloud:document.getElementById('panel-cloud'),flip:document.getElementById('panel-flip'),fill:document.getElementById('panel-fill'),quiz:document.getElementById('panel-quiz')};
@@ -494,7 +484,7 @@ const titles={word:'🧩 单字组词',pair:'🔗 词汇配对',cloud:'☁️ �
 moduleBtns.forEach(b=>b.addEventListener('click',function(){moduleBtns.forEach(x=>x.classList.remove('active'));this.classList.add('active');const m=this.dataset.module;Object.keys(panels).forEach(k=>panels[k].classList.toggle('active',k===m));pageTitle.textContent=titles[m]||'练习';if(m==='quiz')initQuizAbsentList()}));
 document.querySelectorAll('.course-check').forEach(cb=>cb.addEventListener('change',()=>{const cs=getSelectedCourses();if(cs.length===0){alert('请至少勾选一课');cb.checked=true;updateCourseTriggerText();return}updateCourseTriggerText();wordUsedSet.clear();pairUsedSet.clear();initWordGroup();initPairGroup();initFlipSet();initFillSet();syncEchoCbsFromSidebar()}));
 
-// ==================== 单字组词 ====================
+// 单字组词
 let wordUsedSet=new Set(),currentWordGroup=[],wordCompleted=[],charItems=[],selectedIndices=[];
 const charGrid=document.getElementById('charGrid'),progressMsg=document.getElementById('progressMsg'),wordResult=document.getElementById('wordResult'),usedCount=document.getElementById('usedCount'),totalCountDisplay=document.getElementById('totalCountDisplay'),wordCompleteMsg=document.getElementById('wordCompleteMsg');
 function initWordGroup(){const p=getWordPool().filter(w=>w.word.length>=2);if(p.length===0){charGrid.innerHTML='<div style="color:#8a9aa8;padding:40px;">请先勾选课程</div>';return}currentWordGroup=pickWords(p,wordUsedSet,5);wordCompleted=[];selectedIndices=[];wordCompleteMsg.textContent='';usedCount.textContent=wordUsedSet.size;totalCountDisplay.textContent=p.length;buildCharItems();renderWordGroup()}
@@ -504,7 +494,7 @@ function onWordCharClick(i){const av=charItems.filter(x=>!x.used);if(i>=av.lengt
 function updateWordHighlight(){document.querySelectorAll('.char-btn').forEach(b=>b.classList.remove('selected'));selectedIndices.forEach(ri=>{const it=charItems[ri];if(!it||it.used)return;const bs=document.querySelectorAll('.char-btn');for(let b of bs){if(b.textContent===it.char&&!b.classList.contains('used')){b.classList.add('selected');break}}})}
 document.getElementById('newWordGroup').onclick=initWordGroup;initWordGroup();
 
-// ==================== 词汇配对 ====================
+// 词汇配对
 let pairUsedSet=new Set(),pairLeft=[],pairRight=[],pairMatchedCount=0,pairSelectedLeft=null;
 const leftCol=document.getElementById('leftCol'),rightCol=document.getElementById('rightCol'),pairStatus=document.getElementById('pairStatus'),pairUsedCount=document.getElementById('pairUsedCount'),pairTotalCount=document.getElementById('pairTotalCount'),pairBatchInfo=document.getElementById('pairBatchInfo'),pairCompleteMsg=document.getElementById('pairCompleteMsg');
 function initPairGroup(){const p=getWordPool();if(p.length===0)return;const g=pickWords(p,pairUsedSet,5);pairLeft=shuffle([...g.map(w=>({...w,matched:false}))]);pairRight=shuffle([...g.map(w=>({word:w.word,pinyin:w.pinyin,en:w.en,ru:w.ru,matched:false,display:`${w.pinyin} (${w.en})`}))]);pairMatchedCount=0;pairSelectedLeft=null;pairUsedCount.textContent=pairUsedSet.size;pairTotalCount.textContent=p.length;pairCompleteMsg.textContent='';renderPairGroup()}
@@ -513,7 +503,7 @@ function onPairLeftClick(i){if(pairLeft[i].matched||pairMatchedCount===pairLeft.
 function onPairRightClick(i){if(pairRight[i].matched||pairMatchedCount===pairLeft.length)return;if(pairSelectedLeft===null){pairStatus.textContent='⚠️ 请先在左边点击选择';return}if(pairLeft[pairSelectedLeft].word===pairRight[i].word){pairLeft[pairSelectedLeft].matched=true;pairRight[i].matched=true;pairMatchedCount++;pairSelectedLeft=null;pairStatus.textContent='✅ 配对正确！';renderPairGroup()}else{pairStatus.textContent='❌ 配对错误';pairSelectedLeft=null;renderPairGroup()}}
 document.getElementById('newPairGroup').onclick=initPairGroup;initPairGroup();
 
-// ==================== 词云 ====================
+// 词云
 let cloudItems=[];
 const cloudDisplay=document.getElementById('cloudDisplay');
 function addCloudItem(n,t){cloudItems.push({name:n,text:t});renderCloud()}
@@ -522,7 +512,7 @@ document.getElementById('clearCloudBtn').onclick=function(){if(cloudItems.length
 function generateQR(){const c=document.getElementById('qrCode');c.innerHTML='';const u=window.location.href.replace(/[^/]*$/,'')+'student.html';try{new QRCode(c,{text:u,width:150,height:150,colorDark:'#1a2a3a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})}catch(e){c.innerHTML='QR码生成失败'}}
 generateQR();
 
-// ==================== 翻牌子 ====================
+// 翻牌子
 let flipWords=[],flipStates=[];
 function initFlipSet(){const p=getWordPool();if(p.length===0)return;const s=shuffle([...p]);flipWords=s.slice(0,Math.min(6,s.length));flipStates=new Array(flipWords.length).fill(0);renderFlipCards()}
 function renderFlipCards(){const g=document.getElementById('flipGrid');g.innerHTML='';if(flipWords.length===0){g.innerHTML='<div style="color:#8a9aa8;padding:40px;">点击「新的一组」开始</div>';return}flipWords.forEach((w,i)=>{const st=flipStates[i];const c=document.createElement('div');c.className='flip-card'+(st===2?' flipped':'');let f,b;if(st===0){f='<div class="cover">❓</div>';b=''}else if(st===1){f=`<div style="font-size:28px;font-weight:700;">${w.word}</div>`;b=''}else{f=`<div style="font-size:28px;font-weight:700;">${w.word}</div>`;b=`<div class="pinyin">${w.pinyin}</div><div class="trans">${w.en} · ${w.ru}</div>`}c.innerHTML=`<div class="flip-card-inner"><div class="flip-card-front">${f}</div><div class="flip-card-back">${b}</div></div>`;c.onclick=()=>{flipStates[i]=(flipStates[i]+1)%3;renderFlipCards()};g.appendChild(c)})}
@@ -531,7 +521,7 @@ document.getElementById('flipAllBtn').onclick=()=>{if(flipWords.length===0)retur
 document.getElementById('resetFlipBtn').onclick=()=>{if(flipWords.length===0)return;flipStates=flipStates.map(()=>0);renderFlipCards()};
 flipWords=[];flipStates=[];renderFlipCards();
 
-// ==================== 选词填空 ====================
+// 选词填空
 let fillSentences=[],fillCurrentIndex=0;
 function initFillSet(){const p=shuffle([...getSentencePool()]);if(p.length===0)return;fillSentences=p.slice(0,Math.min(5,p.length));fillCurrentIndex=0;studentAnswers={};renderStudentAnswers();showFillSentence(0);document.getElementById('fillStatus').textContent='未同步';document.getElementById('fillAnswerContainer').style.display='none'}
 function showFillSentence(i){const it=fillSentences[i];if(!it)return;document.getElementById('fillSentenceDisplay').innerHTML=it.sentence.replace(/_{2,}/g,'<span class="blank">______</span>');document.getElementById('fillTranslationDisplay').textContent='📖 '+it.translation;document.getElementById('fillAnswerDisplay').textContent='✅ '+it.answer;document.getElementById('fillAnswerContainer').style.display='none';studentAnswers={};renderStudentAnswers()}
@@ -541,11 +531,10 @@ document.getElementById('newFillSet').onclick=initFillSet;
 document.getElementById('syncFillBtn').onclick=()=>{const it=fillSentences[fillCurrentIndex];if(it)syncFillToStudent(it.sentence,it.answer,it.translation)};
 initFillSet();
 
-// ==================== 争霸赛 ====================
-const STUDENT_NAMES=['ALEKSEENKO DENIS','BAKAEVA MARGARITA','GODOVIKOV MATVEI','DUBININA VASILISA','ERSHOV KIRILL','ZEYNALOV FARIZ','KORCHUGANOV NIKITA','MNATSAKANIAN DAVID','NEPRINTSEVA ANNA','PARCHAK ANASTASIIA','SAFONOV PAVEL','SIMONOV DANIIL','AHMED RAAD ABDULWAHID AL-RAHMANI','JAIPONG MISS SIRIWAN','GORDEEVA SOFIA','GRISHKINA VALERIIA'];
+// 争霸赛
+const STUDENT_NAMES=['ALEKSEENKO DENIS','BAKAEVA MARGARITA','GODOVIKOV MATVEI','DUBININA VASILISA','ERSHOV KIRILL','ZEYNALOV FARIZ','KORCHUGANOV NIKITA','MNATSAKANIAN DAVID','NEPRINTSEVA ANNA','PARCHAK ANASTASIIA','SAFONOV PAVEL','SIMONOV DANIIL','AHMED RAAD ABDULWAHID AL-RAHMANI','YAZAN AHMAD ALAHMAR','GORDEEVA SOFIA','GRISHKINA VALERIIA'];
 let quizGroups=[],quizAbsent=new Set(),quizScores={},quizCurrentQuestion=null,quizBuzzedGroups=new Set(),quizBuzzer=null,quizQuestionLocked=false,quizPlayMode='buzz',quizWrongGroups=new Set();
 const QUIZ_COLORS=[{name:'红队',color:'#dc2626',bg:'#fee2e2'},{name:'蓝队',color:'#3b7cff',bg:'#e0edff'},{name:'绿队',color:'#0b6e4f',bg:'#e0f2e6'},{name:'黄队',color:'#e6a800',bg:'#fff4d6'},{name:'紫队',color:'#8b5cf6',bg:'#ede9fe'},{name:'橙队',color:'#f97316',bg:'#ffedd5'}];
-
 let quizPool20=[],quizPool30=[],quizPool40=[];
 
 function initQuizPools(){
@@ -724,7 +713,7 @@ publishQuizState({type:'end'});
 
 function publishQuizState(data){if(!mqttConnected)return;const m=new Paho.MQTT.Message(JSON.stringify(data));m.destinationName=TOPIC_QUIZ_STATE;mqttClient.send(m)}
 
-// ==================== 回音壁 ====================
+// 回音壁
 const echoBtn=document.getElementById('echoBtn');
 const echoPanel=document.getElementById('echoPanel');
 const echoClose=document.getElementById('echoClose');
@@ -746,43 +735,26 @@ echoBtn.addEventListener('click',function(){
     syncEchoCbsFromSidebar();
   }
 });
-
 echoClose.addEventListener('click',()=>echoPanel.classList.remove('show'));
-
 function generateEchoQR(){
   const url=window.location.href.replace(/[^/]*$/,'')+'student.html';
   echoQR.innerHTML='';
-  try{
-    new QRCode(echoQR,{text:url,width:160,height:160,colorDark:'#1a2a3a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
-  }catch(e){echoQR.innerHTML='<div style="color:#a67c6a;padding:20px;">QR码生成失败</div>';}
+  try{new QRCode(echoQR,{text:url,width:160,height:160,colorDark:'#1a2a3a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});}
+  catch(e){echoQR.innerHTML='<div style="color:#a67c6a;padding:20px;">QR码生成失败</div>';}
 }
-
 echoCopyLink.addEventListener('click',function(){
   const url=echoLinkText.textContent;
-  navigator.clipboard?.writeText(url).then(()=>{
-    echoCopyLink.textContent='✓ 已复制';
-    setTimeout(()=>echoCopyLink.textContent='复制',1500);
-  }).catch(()=>{
+  navigator.clipboard?.writeText(url).then(()=>{echoCopyLink.textContent='✓ 已复制';setTimeout(()=>echoCopyLink.textContent='复制',1500);}).catch(()=>{
     const input=document.createElement('input');input.value=url;document.body.appendChild(input);input.select();document.execCommand('copy');input.remove();
-    echoCopyLink.textContent='✓ 已复制';
-    setTimeout(()=>echoCopyLink.textContent='复制',1500);
+    echoCopyLink.textContent='✓ 已复制';setTimeout(()=>echoCopyLink.textContent='复制',1500);
   });
 });
-
-// ★★★ 更新回音壁学生列表（带移除按钮）★★★
 function updateEchoStudentList(){
   const students=getStudents();
   echoStudentCount.textContent=students.length;
-  if(students.length===0){
-    echoStudentList.innerHTML='<span style="color:#8a9aa8;font-size:13px;">暂无</span>';
-  }else{
-    echoStudentList.innerHTML=students.map(s=>
-      `<span class="stu">${s.name}<button class="stu-remove" data-name="${s.name}" title="移除该学生">×</button></span>`
-    ).join('');
-  }
+  if(students.length===0){echoStudentList.innerHTML='<span style="color:#8a9aa8;font-size:13px;">暂无</span>';}
+  else{echoStudentList.innerHTML=students.map(s=>`<span class="stu">${s.name}<button class="stu-remove" data-name="${s.name}" title="移除该学生">×</button></span>`).join('');}
 }
-
-// 回音壁学生列表移除事件
 echoStudentList.addEventListener('click',function(e){
   if(e.target.classList.contains('stu-remove')){
     const name=e.target.dataset.name;
@@ -790,8 +762,6 @@ echoStudentList.addEventListener('click',function(e){
     let students=getStudents().filter(s=>s.name!==name);
     saveStudents(students);
     updateEchoStudentList();
-    renderTeacherPanel();
-    // 通知学生端
     if(mqttConnected){
       const m=new Paho.MQTT.Message(JSON.stringify({name:name}));
       m.destinationName=TOPIC_STUDENT_KICK;
@@ -799,14 +769,12 @@ echoStudentList.addEventListener('click',function(e){
     }
   }
 });
-
 function syncEchoCbsFromSidebar(){
   document.querySelectorAll('.course-check').forEach(cb=>{
     const echoCb=document.querySelector(`.echo-course-cb[value="${cb.value}"]`);
     if(echoCb)echoCb.checked=cb.checked;
   });
 }
-
 document.querySelectorAll('.echo-course-cb').forEach(cb=>{
   cb.addEventListener('change',function(){
     const checked=document.querySelectorAll('.echo-course-cb:checked');
@@ -818,57 +786,35 @@ document.querySelectorAll('.echo-course-cb').forEach(cb=>{
     }
   });
 });
-
-// ★★★ 回音壁同步按钮 ★★★
 echoSyncBtn.addEventListener('click',function(){
-  if(!mqttConnected){
-    echoSyncStatus.textContent='⚠️ MQTT未连接，请先点击左侧「连接 MQTT」';
-    echoSyncStatus.style.color='#b91c1c';
-    setTimeout(()=>{echoSyncStatus.textContent='';},3500);
-    return;
-  }
+  if(!mqttConnected){echoSyncStatus.textContent='⚠️ MQTT未连接';echoSyncStatus.style.color='#b91c1c';setTimeout(()=>{echoSyncStatus.textContent='';},3500);return;}
   const active=document.querySelector('.module-btn.active')?.dataset.module;
   echoSyncStatus.textContent='';echoSyncStatus.style.color='#0b6e4f';
-
   if(active==='cloud'){
-    // 通知学生切到词云模块
     const m=new Paho.MQTT.Message(JSON.stringify({mode:'cloud'}));
-    m.destinationName=TOPIC_TEACHER_SYNC;
-    mqttClient.send(m);
+    m.destinationName=TOPIC_TEACHER_SYNC;mqttClient.send(m);
     echoSyncStatus.textContent='✅ 已同步：学生端切换到「☁️ 词云」';
   }else if(active==='fill'){
     const item=fillSentences[fillCurrentIndex];
-    if(item){
-      syncFillToStudent(item.sentence,item.answer,item.translation);
-      echoSyncStatus.textContent='✅ 已同步：学生端切换到「✍️ 填空」';
-    }else{
-      echoSyncStatus.textContent='⚠️ 暂无填空题';
-      echoSyncStatus.style.color='#b91c1c';
-    }
+    if(item){syncFillToStudent(item.sentence,item.answer,item.translation);echoSyncStatus.textContent='✅ 已同步：学生端切换到「✍️ 填空」';}
+    else{echoSyncStatus.textContent='⚠️ 暂无填空题';echoSyncStatus.style.color='#b91c1c';}
   }else if(active==='quiz'){
     if(quizGroups.length>0){
       publishQuizState({type:'groups',groups:quizGroups.map(g=>({name:g.name,color:g.color,members:g.members}))});
-      if(quizCurrentQuestion){
-        setTimeout(()=>publishQuizState({type:'question',question:quizCurrentQuestion,playMode:quizPlayMode}),200);
-      }
+      if(quizCurrentQuestion){setTimeout(()=>publishQuizState({type:'question',question:quizCurrentQuestion,playMode:quizPlayMode}),200);}
       echoSyncStatus.textContent='✅ 已同步：学生端切换到「🏆 争霸赛」';
-    }else{
-      echoSyncStatus.textContent='⚠️ 争霸赛尚未开始，请先到左侧「争霸赛」生成分组';
-      echoSyncStatus.style.color='#b91c1c';
-    }
+    }else{echoSyncStatus.textContent='⚠️ 争霸赛尚未开始';echoSyncStatus.style.color='#b91c1c';}
   }else{
     echoSyncStatus.textContent='💡 该模块不需要同步（'+(titles[active]||active)+'）';
     echoSyncStatus.style.color='#7a5f50';
   }
   setTimeout(()=>{echoSyncStatus.textContent='';},3500);
 });
-
-// 面板显示时每 3 秒刷新学生列表
 setInterval(()=>{if(echoPanel.classList.contains('show'))updateEchoStudentList();},3000);
 
 initQuizAbsentList();
 updateCourseTriggerText();
-console.log('📘 教师端已加载（含回音壁+移除学生）');
+console.log('📘 教师端已加载');
 </script>
 </body>
 </html>
