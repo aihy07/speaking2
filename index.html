@@ -278,7 +278,7 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 <label style="margin-left:16px;">玩法：</label>
 <select id="quizPlayMode" style="padding:8px 14px;border-radius:12px;border:1.5px solid #dce4ec;font-size:14px;">
 <option value="buzz">抢答者答题</option>
-<option value="assign">教师指定队员答题</option>
+<option value="assign">指定学生答题（随机抽选）</option>
 </select>
 </div>
 <div>
@@ -400,29 +400,37 @@ const LESSON6_SENTENCES=[
 {sentence:'她发烧了，去看________了。',answer:'大夫',translation:'She got a fever, she went to see the doctor.'}
 ];
 
-// ★ 40分题听句子：只保留 6-12 字的句子
+// ★★★ 40分题：听后重复 + 排列句子（预定义分词）★★★
 const QUIZ_SENTENCES={
-lesson4:['我经常上网买东西。','这个菜味道怎么样？','外卖送得很慢。','这个菜特别好吃。','这件衣服很好看，你试试。','我以前去过上海。','假期你想去什么地方？'],
-lesson5:['这个滑雪场特别棒。','我有点儿怕摔。','滑雪不难，不怕摔就行。','这是我第一次滑雪。','昨天你干什么了？','老师要求我们带书来上课。','我跟朋友一起做饭。','我猜一定是沙拉。'],
-lesson6:['我有点儿不舒服。','我头很疼，觉得特别冷。','多喝水，多休息。','我病了，不能来上课。','我觉得这个药很苦。']};
+lesson4:[
+{full:'我喜欢上网买东西。',words:['我','喜欢','上网','买','东西']},
+{full:'这个菜味道怎么样？',words:['这','个','菜','味道','怎么样']},
+{full:'外卖送得很慢。',words:['外卖','送','得','很','慢']},
+{full:'这个菜特别好吃。',words:['这','个','菜','特别','好吃']},
+{full:'这件衣服很好看，你试试。',words:['这','件','衣服','很','好看','你','试试']},
+{full:'我以前去过上海。',words:['我','以前','去','过','上海']},
+{full:'假期你想去什么地方？',words:['假期','你','想','去','什么','地方']}
+],
+lesson5:[
+{full:'这个滑雪场特别棒。',words:['这','个','滑雪场','特别','棒']},
+{full:'我有点儿怕摔。',words:['我','有点儿','怕','摔']},
+{full:'滑雪不难，不怕摔就行。',words:['滑雪','不难','不','怕','摔','就行']},
+{full:'这是我第一次滑雪。',words:['这','是','我','第一次','滑雪']},
+{full:'昨天你干什么了？',words:['昨天','你','干','什么','了']},
+{full:'老师要求我们带书上课。',words:['老师','要求','我们','带','书','上课']},
+{full:'我跟朋友一起做饭。',words:['我','跟','朋友','一起','做饭']},
+{full:'我猜一定是沙拉。',words:['我','猜','一定','是','沙拉']}
+],
+lesson6:[
+{full:'我有点儿不舒服。',words:['我','有点儿','不','舒服']},
+{full:'我头疼，觉得特别冷。',words:['我','头','疼','觉得','特别','冷']},
+{full:'多喝水，多休息。',words:['多','喝','水','多','休息']},
+{full:'我病了，不能来上课。',words:['我','病','了','不能','来','上课']},
+{full:'我觉得这个药很苦。',words:['我','觉得','这个','药','很','苦']}
+]};
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function pickWords(pool,usedSet,count=5){const av=pool.filter(w=>!usedSet.has(w.word));let s=[];if(av.length>=count)s=shuffle(av).slice(0,count);else{usedSet.clear();s=shuffle([...pool]).slice(0,count)}s.forEach(w=>usedSet.add(w.word));return s}
-
-function segmentSentence(sentence, vocab) {
-  const clean = sentence.replace(/[，。？、！；：""''（）\s]/g, '');
-  const sortedVocab = [...new Set(vocab)].filter(w => w.length >= 1).sort((a, b) => b.length - a.length);
-  const words = [];
-  let i = 0;
-  while (i < clean.length) {
-    let matched = false;
-    for (const word of sortedVocab) {
-      if (clean.startsWith(word, i)) { words.push(word); i += word.length; matched = true; break; }
-    }
-    if (!matched) { words.push(clean[i]); i++; }
-  }
-  return words;
-}
 
 const courseTrigger=document.getElementById('courseTrigger');
 const courseDropdown=document.getElementById('courseDropdown');
@@ -531,9 +539,10 @@ document.getElementById('newFillSet').onclick=initFillSet;
 document.getElementById('syncFillBtn').onclick=()=>{const it=fillSentences[fillCurrentIndex];if(it)syncFillToStudent(it.sentence,it.answer,it.translation)};
 initFillSet();
 
-// 争霸赛
+// ==================== 争霸赛 ====================
 const STUDENT_NAMES=['ALEKSEENKO DENIS','BAKAEVA MARGARITA','GODOVIKOV MATVEI','DUBININA VASILISA','ERSHOV KIRILL','ZEYNALOV FARIZ','KORCHUGANOV NIKITA','MNATSAKANIAN DAVID','NEPRINTSEVA ANNA','PARCHAK ANASTASIIA','SAFONOV PAVEL','SIMONOV DANIIL','AHMED RAAD ABDULWAHID AL-RAHMANI','YAZAN AHMAD ALAHMAR','GORDEEVA SOFIA','GRISHKINA VALERIIA'];
 let quizGroups=[],quizAbsent=new Set(),quizScores={},quizCurrentQuestion=null,quizBuzzedGroups=new Set(),quizBuzzer=null,quizQuestionLocked=false,quizPlayMode='buzz',quizWrongGroups=new Set();
+let assignRollInterval=null,assignRollTimeout=null,assignIsRolling=false;
 const QUIZ_COLORS=[{name:'红队',color:'#dc2626',bg:'#fee2e2'},{name:'蓝队',color:'#3b7cff',bg:'#e0edff'},{name:'绿队',color:'#0b6e4f',bg:'#e0f2e6'},{name:'黄队',color:'#e6a800',bg:'#fff4d6'},{name:'紫队',color:'#8b5cf6',bg:'#ede9fe'},{name:'橙队',color:'#f97316',bg:'#ffedd5'}];
 let quizPool20=[],quizPool30=[],quizPool40=[];
 
@@ -601,6 +610,11 @@ document.querySelectorAll('[data-points]').forEach(btn=>btn.onclick=function(){g
 
 function generateQuizQuestion(points){
 if(quizGroups.length===0){alert('请先开始争霸赛');return}
+// 清除上一次滚动
+if(assignRollInterval){clearInterval(assignRollInterval);assignRollInterval=null;}
+if(assignRollTimeout){clearTimeout(assignRollTimeout);assignRollTimeout=null;}
+assignIsRolling=false;
+
 quizBuzzedGroups=new Set();quizWrongGroups=new Set();quizBuzzer=null;quizQuestionLocked=false;
 let q=null;
 if(points===20){
@@ -613,24 +627,83 @@ const s=quizPool30.shift();
 q={type:'fill',points,sentence:s.sentence,answer:s.answer,translation:s.translation,content:'选词填空'};
 }else if(points===40){
 if(quizPool40.length===0){alert('40分题已用完');return}
-const s=quizPool40.shift();
-if(Math.random()<0.5){q={type:'sentence_listen',points,sentence:s,content:'🔊 听句子，复述'};}
-else{
-  const words = segmentSentence(s, getWordPool().map(w => w.word));
+const item=quizPool40.shift();
+if(Math.random()<0.5){
+  q={type:'sentence_listen',points,sentence:item.full,content:'🔊 听句子，复述'};
+}else{
+  const words=[...item.words];
   shuffle(words);
-  q={type:'sentence_order',points,original:s,parts:words,content:'将词语按正确顺序排列：'};
+  q={type:'sentence_order',points,original:item.full,parts:words,content:'将词语按正确顺序排列：'};
 }
 }
 quizCurrentQuestion=q;updateQuizPoolInfo();
 document.getElementById('quizJudge').style.display='flex';
-document.getElementById('quizBuzzInfo').className='quiz-buzz-info';
-document.getElementById('quizBuzzInfo').textContent=quizPlayMode==='buzz'?'等待学生抢答…':'请老师指定学生回答';
 document.getElementById('quizWrongGroups').textContent='';
 renderQuizQuestion();
-publishQuizState({type:'question',question:q,playMode:quizPlayMode});
+
+// 填充指定学生下拉框
 const sel=document.getElementById('quizPickStudent');sel.innerHTML='<option value="">— 指定学生回答 —</option>';
 quizGroups.forEach(g=>{g.members.forEach(m=>{const o=document.createElement('option');o.value=`${g.name}|${m}`;o.textContent=`${g.name} · ${m}`;sel.appendChild(o)})});
+
+if(quizPlayMode==='assign'){
+  // 指定模式：广播题目（抢答禁用），然后开始滚动
+  document.getElementById('quizBuzzInfo').className='quiz-buzz-info';
+  document.getElementById('quizBuzzInfo').textContent='🎰 正在抽选学生…';
+  publishQuizState({type:'question',question:q,playMode:'assign'});
+  setTimeout(()=>startAssignRoll(),400);
+}else{
+  // 抢答模式
+  document.getElementById('quizBuzzInfo').className='quiz-buzz-info';
+  document.getElementById('quizBuzzInfo').textContent='等待学生抢答…';
+  publishQuizState({type:'question',question:q,playMode:'buzz'});
+}
+
 if(q.type==='sentence_listen'){setTimeout(()=>speakText(q.sentence),500)}
+}
+
+// ★★★ 指定模式：滚动抽选学生 ★★★
+function startAssignRoll(){
+if(assignIsRolling)return;
+// 候选池：来自未答错队伍的所有学生
+const pool=[];
+quizGroups.forEach(g=>{
+  if(quizWrongGroups.has(g.name))return;
+  g.members.forEach(m=>pool.push({group:g.name,color:g.color,student:m}));
+});
+if(pool.length===0){
+  const info=document.getElementById('quizBuzzInfo');
+  info.className='quiz-buzz-info wrong';
+  info.textContent='❌ 所有队伍已答错，本题结束';
+  quizQuestionLocked=true;
+  publishQuizState({type:'all_wrong'});
+  return;
+}
+const info=document.getElementById('quizBuzzInfo');
+info.className='quiz-buzz-info buzzed';
+assignIsRolling=true;
+
+assignRollInterval=setInterval(()=>{
+  const pick=pool[Math.floor(Math.random()*pool.length)];
+  info.textContent=`🎰 ${pick.group} · ${pick.student}`;
+},80);
+
+assignRollTimeout=setTimeout(()=>{
+  clearInterval(assignRollInterval);assignRollInterval=null;
+  assignIsRolling=false;
+  const finalPick=pool[Math.floor(Math.random()*pool.length)];
+  quizBuzzer={group:finalPick.group,student:finalPick.student};
+  info.className='quiz-buzz-info buzzed';
+  info.textContent=`👨‍🏫 指定：${finalPick.group} · ${finalPick.student}`;
+  // 广播给学生：谁被选中
+  publishQuizState({
+    type:'assign_pick',
+    group:finalPick.group,
+    student:finalPick.student
+  });
+  // 更新下拉框
+  const sel=document.getElementById('quizPickStudent');
+  sel.value=`${finalPick.group}|${finalPick.student}`;
+},1000);
 }
 
 function renderQuizQuestion(){const c=document.getElementById('quizQuestion');const q=quizCurrentQuestion;if(!q){c.innerHTML='<div class="q-content">请选择题目分值开始</div>';return}
@@ -644,6 +717,8 @@ c.innerHTML=html}
 function speakText(text){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=0.7;window.speechSynthesis.speak(u)}
 
 function handleQuizBuzz(data){
+// 指定模式下忽略抢答
+if(quizPlayMode==='assign')return;
 if(quizQuestionLocked||!quizCurrentQuestion)return;
 const groupName=data.group;
 if(quizWrongGroups.has(groupName)){return}
@@ -658,16 +733,23 @@ const sel=document.getElementById('quizPickStudent');
 sel.value=`${groupName}|${data.student}`;
 }
 
+// ★★★ 回答正确 ★★★
 document.getElementById('quizCorrectBtn').onclick=function(){
 if(!quizCurrentQuestion){alert('请先出题');return}
 let targetGroup=null,targetStudent=null;
 if(quizPlayMode==='assign'){
-const sel=document.getElementById('quizPickStudent');
-if(!sel.value){alert('请先指定学生');return}
-const parts=sel.value.split('|');targetGroup=parts[0];targetStudent=parts[1];
+  if(assignIsRolling){alert('正在抽选学生，请稍等…');return;}
+  if(!quizBuzzer){alert('请等待抽选结果');return;}
+  targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
 }else{
-if(!quizBuzzer){alert('等待学生抢答');return}
-targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
+  // 抢答模式：优先使用 quizBuzzer，其次用下拉框
+  if(quizBuzzer){
+    targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
+  }else{
+    const sel=document.getElementById('quizPickStudent');
+    if(!sel.value){alert('等待学生抢答或指定学生');return}
+    const parts=sel.value.split('|');targetGroup=parts[0];targetStudent=parts[1];
+  }
 }
 quizScores[targetGroup]=(quizScores[targetGroup]||0)+quizCurrentQuestion.points;
 renderQuizScoreboard();
@@ -678,32 +760,58 @@ publishQuizState({type:'correct',group:targetGroup,student:targetStudent,points:
 quizQuestionLocked=true;
 };
 
+// ★★★ 回答错误 ★★★
 document.getElementById('quizWrongBtn').onclick=function(){
 if(!quizCurrentQuestion){return}
 let targetGroup=null,targetStudent=null;
 if(quizPlayMode==='assign'){
-const sel=document.getElementById('quizPickStudent');
-if(!sel.value){alert('请先指定学生');return}
-const parts=sel.value.split('|');targetGroup=parts[0];targetStudent=parts[1];
+  if(assignIsRolling){alert('正在抽选学生，请稍等…');return;}
+  if(!quizBuzzer){alert('请等待抽选结果');return;}
+  targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
 }else{
-if(!quizBuzzer){alert('等待学生抢答');return}
-targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
+  if(quizBuzzer){
+    targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
+  }else{
+    const sel=document.getElementById('quizPickStudent');
+    if(!sel.value){alert('等待学生抢答或指定学生');return}
+    const parts=sel.value.split('|');targetGroup=parts[0];targetStudent=parts[1];
+  }
 }
 quizWrongGroups.add(targetGroup);
 quizBuzzer=null;
-const info=document.getElementById('quizBuzzInfo');
-info.className='quiz-buzz-info wrong';
-const remaining=quizGroups.filter(g=>!quizWrongGroups.has(g.name));
-info.textContent=`❌ ${targetGroup} 回答错误！${remaining.length>0?'其余组可继续抢答':'所有组已答错，本题结束'}`;
 document.getElementById('quizWrongGroups').textContent='已答错：'+Array.from(quizWrongGroups).join('、');
 publishQuizState({type:'wrong',group:targetGroup});
-if(remaining.length===0){quizQuestionLocked=true;info.textContent='❌ 所有组已答错，本题结束'}
+
+const remaining=quizGroups.filter(g=>!quizWrongGroups.has(g.name));
+if(quizPlayMode==='assign'){
+  if(remaining.length===0){
+    const info=document.getElementById('quizBuzzInfo');
+    info.className='quiz-buzz-info wrong';
+    info.textContent='❌ 所有队伍已答错，本题结束';
+    quizQuestionLocked=true;
+    publishQuizState({type:'all_wrong'});
+  }else{
+    // 再次抽选其他队伍的学生
+    const info=document.getElementById('quizBuzzInfo');
+    info.className='quiz-buzz-info wrong';
+    info.textContent='❌ 回答错误，正在抽选其他队伍…';
+    setTimeout(()=>startAssignRoll(),500);
+  }
+}else{
+  const info=document.getElementById('quizBuzzInfo');
+  info.className='quiz-buzz-info wrong';
+  info.textContent=`❌ ${targetGroup} 回答错误！${remaining.length>0?'其余组可继续抢答':'所有组已答错，本题结束'}`;
+  if(remaining.length===0){quizQuestionLocked=true;info.textContent='❌ 所有组已答错，本题结束'}
+}
 };
 
-document.getElementById('quizPickStudent').onchange=function(){if(this.value){const parts=this.value.split('|');document.getElementById('quizBuzzInfo').textContent=`👨‍🏫 教师指定：${parts[0]} · ${parts[1]}`}};
+document.getElementById('quizPickStudent').onchange=function(){if(this.value){const parts=this.value.split('|');document.getElementById('quizBuzzInfo').textContent=`👨‍🏫 教师指定：${parts[0]} · ${parts[1]}`;quizBuzzer={group:parts[0],student:parts[1]};}};
 
 document.getElementById('quizResetBtn').onclick=function(){
 if(!confirm('确定结束争霸赛吗？'))return;
+if(assignRollInterval){clearInterval(assignRollInterval);assignRollInterval=null;}
+if(assignRollTimeout){clearTimeout(assignRollTimeout);assignRollTimeout=null;}
+assignIsRolling=false;
 document.getElementById('quizSetup').style.display='block';
 document.getElementById('quizGame').style.display='none';
 quizGroups=[];quizScores={};quizBuzzedGroups=new Set();quizWrongGroups=new Set();quizBuzzer=null;quizCurrentQuestion=null;quizQuestionLocked=false;
@@ -801,7 +909,14 @@ echoSyncBtn.addEventListener('click',function(){
   }else if(active==='quiz'){
     if(quizGroups.length>0){
       publishQuizState({type:'groups',groups:quizGroups.map(g=>({name:g.name,color:g.color,members:g.members}))});
-      if(quizCurrentQuestion){setTimeout(()=>publishQuizState({type:'question',question:quizCurrentQuestion,playMode:quizPlayMode}),200);}
+      if(quizCurrentQuestion){
+        setTimeout(()=>{
+          publishQuizState({type:'question',question:quizCurrentQuestion,playMode:quizPlayMode});
+          if(quizPlayMode==='assign'&&quizBuzzer){
+            setTimeout(()=>publishQuizState({type:'assign_pick',group:quizBuzzer.group,student:quizBuzzer.student}),200);
+          }
+        },200);
+      }
       echoSyncStatus.textContent='✅ 已同步：学生端切换到「🏆 争霸赛」';
     }else{echoSyncStatus.textContent='⚠️ 争霸赛尚未开始';echoSyncStatus.style.color='#b91c1c';}
   }else{
@@ -814,7 +929,7 @@ setInterval(()=>{if(echoPanel.classList.contains('show'))updateEchoStudentList()
 
 initQuizAbsentList();
 updateCourseTriggerText();
-console.log('📘 教师端已加载');
+console.log('📘 教师端已加载（指定学生滚动 1 秒）');
 </script>
 </body>
 </html>
