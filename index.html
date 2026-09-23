@@ -184,6 +184,7 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 <label class="dropdown-item"><input type="checkbox" class="course-check" value="lesson5" checked><span>第5课</span></label>
 <label class="dropdown-item"><input type="checkbox" class="course-check" value="lesson6" checked><span>第6课</span></label>
 <label class="dropdown-item"><input type="checkbox" class="course-check" value="lesson7" checked><span>第7课</span></label>
+<label class="dropdown-item"><input type="checkbox" class="course-check" value="lesson8" checked><span>第8课</span></label>
 </div>
 </div>
 </div>
@@ -338,6 +339,7 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 <label><input type="checkbox" class="echo-course-cb" value="lesson5" checked> 第5课</label>
 <label><input type="checkbox" class="echo-course-cb" value="lesson6" checked> 第6课</label>
 <label><input type="checkbox" class="echo-course-cb" value="lesson7" checked> 第7课</label>
+<label><input type="checkbox" class="echo-course-cb" value="lesson8" checked> 第8课</label>
 </div>
 </div>
 <button class="echo-sync-btn" id="echoSyncBtn">🚀 同步当前模块到学生端</button>
@@ -356,8 +358,6 @@ body{font-family:'Segoe UI','PingFang SC',sans-serif;background:#f0f6fb;min-heig
 const LESSON4=[{word:'去',pinyin:'qù',en:'go',ru:'идти'},{word:'过',pinyin:'guò',en:'aspect',ru:'частица'},{word:'订',pinyin:'dìng',en:'order',ru:'заказать'},{word:'送',pinyin:'sòng',en:'deliver',ru:'доставить'},{word:'没',pinyin:'méi',en:'not',ru:'не'},{word:'试',pinyin:'shì',en:'try',ru:'попробовать'},{word:'辣',pinyin:'là',en:'spicy',ru:'острый'},{word:'菜',pinyin:'cài',en:'dish',ru:'блюдо'},{word:'假期',pinyin:'jià qī',en:'holiday',ru:'каникулы'},{word:'以前',pinyin:'yǐ qián',en:'before',ru:'раньше'},{word:'地方',pinyin:'dì fang',en:'place',ru:'место'},{word:'外卖',pinyin:'wài mài',en:'takeout',ru:'еда'},{word:'上网',pinyin:'shàng wǎng',en:'surf',ru:'интернет'},{word:'味道',pinyin:'wèi dào',en:'taste',ru:'вкус'},{word:'特别',pinyin:'tè bié',en:'particularly',ru:'особенно'},{word:'有名',pinyin:'yǒu míng',en:'famous',ru:'известный'},{word:'可以',pinyin:'kě yǐ',en:'can',ru:'можно'},{word:'西餐厅',pinyin:'xī cān tīng',en:'western restaurant',ru:'ресторан'},{word:'经常',pinyin:'jīng cháng',en:'often',ru:'часто'},{word:'东西',pinyin:'dōng xi',en:'thing',ru:'вещь'},{word:'北京',pinyin:'Běi jīng',en:'Beijing',ru:'Пекин'},{word:'上海',pinyin:'Shàng hǎi',en:'Shanghai',ru:'Шанхай'},{word:'旅游',pinyin:'lǚ yóu',en:'travel',ru:'путешествовать'},{word:'好吃',pinyin:'hǎo chī',en:'delicious',ru:'вкусный'},{word:'饭店',pinyin:'fàn diàn',en:'restaurant',ru:'ресторан'},{word:'我们',pinyin:'wǒ men',en:'we',ru:'мы'},{word:'比萨',pinyin:'bǐ sà',en:'pizza',ru:'пицца'},{word:'衣服',pinyin:'yī fu',en:'clothes',ru:'одежда'},{word:'好看',pinyin:'hǎo kàn',en:'good-looking',ru:'красивый'},{word:'今天',pinyin:'jīn tiān',en:'today',ru:'сегодня'},{word:'饺子',pinyin:'jiǎo zi',en:'dumpling',ru:'пельмени'}];
 const LESSON5=[{word:'了',pinyin:'le',en:'particle',ru:'частица'},{word:'跟',pinyin:'gēn',en:'with',ru:'с'},{word:'同学',pinyin:'tóng xué',en:'classmate',ru:'одноклассник'},{word:'郊区',pinyin:'jiāo qū',en:'suburb',ru:'пригород'},{word:'滑雪',pinyin:'huá xuě',en:'ski',ru:'лыжи'},{word:'那儿',pinyin:'nà er',en:'there',ru:'там'},{word:'滑雪场',pinyin:'huá xuě chǎng',en:'ski resort',ru:'курорт'},{word:'棒',pinyin:'bàng',en:'excellent',ru:'отличный'},{word:'难',pinyin:'nán',en:'difficult',ru:'трудный'},{word:'怕',pinyin:'pà',en:'fear',ru:'бояться'},{word:'摔',pinyin:'shuāi',en:'fall',ru:'падать'},{word:'就行',pinyin:'jiù xíng',en:'will do',ru:'подойдёт'},{word:'次',pinyin:'cì',en:'time',ru:'раз'},{word:'想',pinyin:'xiǎng',en:'think',ru:'думать'},{word:'干',pinyin:'gàn',en:'do',ru:'делать'},{word:'几',pinyin:'jǐ',en:'several',ru:'несколько'},{word:'朋友',pinyin:'péng you',en:'friend',ru:'друг'},{word:'来',pinyin:'lái',en:'come',ru:'приходить'},{word:'做饭',pinyin:'zuò fàn',en:'cook',ru:'готовить'},{word:'要求',pinyin:'yāo qiú',en:'require',ru:'требовать'},{word:'带',pinyin:'dài',en:'bring',ru:'приносить'},{word:'办法',pinyin:'bàn fǎ',en:'way',ru:'способ'},{word:'猜',pinyin:'cāi',en:'guess',ru:'угадывать'},{word:'一定',pinyin:'yí dìng',en:'certainly',ru:'определённо'},{word:'沙拉',pinyin:'shā lā',en:'salad',ru:'салат'},{word:'周末',pinyin:'zhōu mò',en:'weekend',ru:'выходные'},{word:'一起',pinyin:'yì qǐ',en:'together',ru:'вместе'},{word:'上课',pinyin:'shàng kè',en:'have class',ru:'урок'}];
 const LESSON6=[{word:'有点儿',pinyin:'yǒu diǎnr',en:'a little',ru:'немного'},{word:'舒服',pinyin:'shū fu',en:'comfortable',ru:'удобный'},{word:'头',pinyin:'tóu',en:'head',ru:'голова'},{word:'疼',pinyin:'téng',en:'painful',ru:'болит'},{word:'觉得',pinyin:'jué de',en:'feel',ru:'чувствовать'},{word:'冷',pinyin:'lěng',en:'cold',ru:'холодный'},{word:'发烧',pinyin:'fā shāo',en:'fever',ru:'температура'},{word:'量',pinyin:'liáng',en:'measure',ru:'измерять'},{word:'体温',pinyin:'tǐ wēn',en:'temperature',ru:'температура тела'},{word:'只',pinyin:'zhǐ',en:'only',ru:'только'},{word:'度',pinyin:'dù',en:'degree',ru:'градус'},{word:'感冒',pinyin:'gǎn mào',en:'cold',ru:'простуда'},{word:'药',pinyin:'yào',en:'medicine',ru:'лекарство'},{word:'片',pinyin:'piàn',en:'tablet',ru:'таблетка'},{word:'水',pinyin:'shuǐ',en:'water',ru:'вода'},{word:'先',pinyin:'xiān',en:'first',ru:'сначала'},{word:'验血',pinyin:'yàn xiě',en:'blood test',ru:'анализ'},{word:'大夫',pinyin:'dài fu',en:'doctor',ru:'врач'},{word:'病',pinyin:'bìng',en:'ill',ru:'болезнь'},{word:'能',pinyin:'néng',en:'can',ru:'мочь'},{word:'帮',pinyin:'bāng',en:'help',ru:'помогать'},{word:'请假',pinyin:'qǐng jià',en:'ask leave',ru:'отпроситься'},{word:'少',pinyin:'shǎo',en:'little',ru:'мало'},{word:'多',pinyin:'duō',en:'many',ru:'много'},{word:'休息',pinyin:'xiū xi',en:'rest',ru:'отдыхать'},{word:'医院',pinyin:'yī yuàn',en:'hospital',ru:'больница'}];
-
-// ==================== 第7课 词库 ====================
 const LESSON7=[
 {word:'喂',pinyin:'wèi',en:'hello',ru:'алло'},
 {word:'在',pinyin:'zài',en:'in the process of',ru:'сейчас, в процессе'},
@@ -383,6 +383,32 @@ const LESSON7=[
 {word:'得',pinyin:'děi',en:'need',ru:'нужно, надо'},
 {word:'机场',pinyin:'jī chǎng',en:'airport',ru:'аэропорт'},
 {word:'约',pinyin:'yuē',en:'to make an appointment',ru:'договариваться, назначать встречу'}
+];
+// ==================== 第8课 词库 ====================
+const LESSON8=[
+{word:'天气',pinyin:'tiān qì',en:'weather',ru:'погода'},
+{word:'热',pinyin:'rè',en:'hot',ru:'жаркий'},
+{word:'夏天',pinyin:'xià tiān',en:'summer',ru:'лето'},
+{word:'冬天',pinyin:'dōng tiān',en:'winter',ru:'зима'},
+{word:'比',pinyin:'bǐ',en:'than',ru:'чем'},
+{word:'凉快',pinyin:'liáng kuai',en:'cool',ru:'прохладный'},
+{word:'听说',pinyin:'tīng shuō',en:'to hear of',ru:'слышать'},
+{word:'极了',pinyin:'jí le',en:'extremely',ru:'чрезвычайно'},
+{word:'大概',pinyin:'dà gài',en:'roughly',ru:'примерно'},
+{word:'最',pinyin:'zuì',en:'most',ru:'самый'},
+{word:'低',pinyin:'dī',en:'low',ru:'низкий'},
+{word:'气温',pinyin:'qì wēn',en:'temperature',ru:'температура'},
+{word:'零下',pinyin:'líng xià',en:'below zero',ru:'ниже нуля'},
+{word:'习惯',pinyin:'xí guàn',en:'habit; accustomed',ru:'привычка'},
+{word:'又',pinyin:'yòu',en:'again',ru:'снова'},
+{word:'下雨',pinyin:'xià yǔ',en:'to rain',ru:'идёт дождь'},
+{word:'常常',pinyin:'cháng cháng',en:'frequently',ru:'часто'},
+{word:'预报',pinyin:'yù bào',en:'forecast',ru:'прогноз'},
+{word:'更',pinyin:'gèng',en:'more; -er',ru:'ещё более'},
+{word:'比赛',pinyin:'bǐ sài',en:'match; game',ru:'соревнование'},
+{word:'怎么办',pinyin:'zěn me bàn',en:'what to do',ru:'что делать'},
+{word:'周',pinyin:'zhōu',en:'week',ru:'неделя'},
+{word:'下周',pinyin:'xià zhōu',en:'next week',ru:'на следующей неделе'}
 ];
 
 const LESSON4_SENTENCES=[
@@ -429,8 +455,7 @@ const LESSON6_SENTENCES=[
 {sentence:'我________这个药很苦。',answer:'觉得',translation:'I think this medicine is bitter.'},
 {sentence:'她发烧了，去看________了。',answer:'大夫',translation:'She got a fever, she went to see the doctor.'}
 ];
-
-// ==================== 第7课 选词填空（用户指定题目） ====================
+// ==================== 第7课 选词填空 ====================
 const LESSON7_SENTENCES=[
 {sentence:'你在________？',answer:'干吗',translation:'What are you doing?'},
 {sentence:'我________周末和朋友去打篮球。',answer:'打算',translation:'I plan to play basketball with friends on the weekend.'},
@@ -446,8 +471,28 @@ const LESSON7_SENTENCES=[
 {sentence:'今天________，我有事。',answer:'不行',translation:'It won’t work today. I have things to do.'},
 {sentence:'明天六点，____________。',answer:'不见不散',translation:'See you at six, be there or be square.'}
 ];
+// ==================== 第8课 选词填空 ====================
+const LESSON8_SENTENCES=[
+{sentence:'今天真________！',answer:'热',translation:'It is so hot today!'},
+{sentence:'那儿________北京凉快。',answer:'比',translation:'That place is cooler than Beijing.'},
+{sentence:'________莫斯科的冬天冷极了。',answer:'听说',translation:'I heard Moscow’s winter is extremely cold.'},
+{sentence:'是，比北京________多了。',answer:'冷',translation:'Yes, much colder than Beijing.'},
+{sentence:'最低气温零下二十________度。',answer:'多',translation:'The lowest temperature is over minus twenty degrees.'},
+{sentence:'你看，又________了！',answer:'下雨',translation:'Look, it’s raining again!'},
+{sentence:'最近________下雨。',answer:'常常',translation:'It often rains recently.'},
+{sentence:'今年的雨比去年________多了。',answer:'多',translation:'This year’s rain is much more than last year’s.'},
+{sentence:'_________说，明天的雨比今天更大。',answer:'天气预报',translation:'The weather forecast says tomorrow’s rain will be even heavier than today’s.'},
+{sentence:'那咱们明天的足球比赛________啊？',answer:'怎么办',translation:'Then what should we do about tomorrow’s football match?'},
+{sentence:'那只能下________再比了。',answer:'周',translation:'Then we can only compete next week.'},
+{sentence:'西瓜________苹果大。',answer:'比',translation:'Watermelon is bigger than apple.'},
+{sentence:'莫斯科的冬天比北京冷________。',answer:'多了',translation:'Moscow’s winter is much colder than Beijing’s.'},
+{sentence:'今天________昨天冷得多。',answer:'比',translation:'Today is much colder than yesterday.'},
+{sentence:'现在二十________度。',answer:'多',translation:'It’s over twenty degrees now.'},
+{sentence:'这________我们学完了这本书。',answer:'周',translation:'We finished this book this week.'},
+{sentence:'________去哪儿玩？',answer:'周末',translation:'Where to go on the weekend?'}
+];
 
-// ★★★ 40分题：听后重复 + 排列句子（预定义分词）★★★
+// ★★★ 40分题：听后重复 + 排列句子 ★★★
 const QUIZ_SENTENCES={
 lesson4:[
 {full:'我喜欢上网买东西。',words:['我','喜欢','上网','买','东西']},
@@ -481,12 +526,32 @@ lesson7:[
 {full:'我和大卫打算晚上去看球。',words:['我','和','大卫','打算','晚上','去','看球']},
 {full:'我们现在在外边吃饭呢。',words:['我们','现在','在','外边','吃饭','呢']},
 {full:'六点半在宿舍门口见。',words:['六点半','在','宿舍','门口','见']},
-{full:'都十一点了，你还在玩儿吗？',words:['都','十一点','了','你','还','在','玩儿','吗']},
-{full:'我昨天睡得很晚。',words:['我','昨天','睡','得','很','晚']},
-{full:'我给你打电话，一直没人接。',words:['我','给','你','打电话','一直','没人','接']},
-{full:'我得去机场接朋友。',words:['我','得','去','机场','接','朋友']},
-{full:'我们下次再约。',words:['我们','下次','再','约']}
-]};  
+{full:'我们明天六点见，不见不散。',words:['我们','明天','六点','见','不见不散']},
+{full:'都十一点了，你还在睡觉吗？',words:['都','十一点','了','你','还','在','睡觉','吗']},
+{full:'我昨天去看球了，睡得很晚。',words:['我','昨天','去','看球','了','睡','得','很','晚']},
+{full:'昨天晚上我给你打电话一直没人接。',words:['昨天','晚上','我','给','你','打电话','一直','没人','接']},
+{full:'不好意思，你给我打电话的时候，我正在看球呢。',words:['不好意思','你','给','我','打电话','的','时候','我','正在','看球','呢']},
+{full:'下午两点跟我们一起去打篮球吧。',words:['下午','两点','跟','我们','一起','去','打篮球','吧']},
+{full:'不行啊，我得去机场接朋友。',words:['不行','啊','我','得','去','机场','接','朋友']},
+{full:'那好吧，我们下次再约。',words:['那','好吧','我们','下次','再','约']}
+],
+lesson8:[
+{full:'今天天气真热！',words:['今天','天气','真','热']},
+{full:'那儿比北京凉快。',words:['那儿','比','北京','凉快']},
+{full:'莫斯科的冬天冷极了。',words:['莫斯科','的','冬天','冷','极了']},
+{full:'莫斯科比北京冷多了。',words:['莫斯科','比','北京','冷','多了']},
+{full:'最低气温零下二十多度。',words:['最低','气温','零下','二十','多','度']},
+{full:'最近常常下雨。',words:['最近','常常','下雨']},
+{full:'明天的雨比今天更大。',words:['明天','的','雨','比','今天','更','大']},
+{full:'那咱们明天的足球比赛怎么办啊？',words:['那','咱们','明天','的','足球比赛','怎么办','啊']},
+{full:'只能下周再比了。',words:['只能','下周','再','比','了']},
+{full:'西瓜比苹果大。',words:['西瓜','比','苹果','大']},
+{full:'哥哥比弟弟大十岁。',words:['哥哥','比','弟弟','大','十岁']},
+{full:'今天比昨天冷得多。',words:['今天','比','昨天','冷','得','多']},
+{full:'现在二十多度。',words:['现在','二十','多','度']},
+{full:'我有十多块钱。',words:['我','有','十','多','块','钱']}
+]};
+
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function pickWords(pool,usedSet,count=5){const av=pool.filter(w=>!usedSet.has(w.word));let s=[];if(av.length>=count)s=shuffle(av).slice(0,count);else{usedSet.clear();s=shuffle([...pool]).slice(0,count)}s.forEach(w=>usedSet.add(w.word));return s}
 
@@ -495,16 +560,13 @@ const courseDropdown=document.getElementById('courseDropdown');
 const courseSelectedText=document.getElementById('courseSelectedText');
 courseTrigger.addEventListener('click',function(e){e.stopPropagation();courseTrigger.classList.toggle('open');courseDropdown.classList.toggle('show')});
 document.addEventListener('click',function(e){if(!courseDropdown.contains(e.target)&&!courseTrigger.contains(e.target)){courseTrigger.classList.remove('open');courseDropdown.classList.remove('show')}});
+function getLessonName(v){
+  const map={lesson4:'第4课',lesson5:'第5课',lesson6:'第6课',lesson7:'第7课',lesson8:'第8课'};
+  return map[v]||v;
+}
 function updateCourseTriggerText(){
   const checked=document.querySelectorAll('.course-check:checked');
-  const names=Array.from(checked).map(cb=>{
-    const v=cb.value;
-    if(v==='lesson4')return '第4课';
-    if(v==='lesson5')return '第5课';
-    if(v==='lesson6')return '第6课';
-    if(v==='lesson7')return '第7课';
-    return v;
-  });
+  const names=Array.from(checked).map(cb=>getLessonName(cb.value));
   const total=document.querySelectorAll('.course-check').length;
   if(names.length===0){courseSelectedText.textContent='请选择课程';courseSelectedText.style.color='#8a9aa8'}
   else if(names.length===total){courseSelectedText.textContent='全部课程';courseSelectedText.style.color='#1a2a3a'}
@@ -513,8 +575,28 @@ function updateCourseTriggerText(){
 }
 
 function getSelectedCourses(){return Array.from(document.querySelectorAll('.course-check:checked')).map(cb=>cb.value)}
-function getWordPool(){const cs=getSelectedCourses();let p=[];cs.forEach(c=>{if(c==='lesson4')p=p.concat(LESSON4);else if(c==='lesson5')p=p.concat(LESSON5);else if(c==='lesson6')p=p.concat(LESSON6);else if(c==='lesson7')p=p.concat(LESSON7)});return p}
-function getSentencePool(){const cs=getSelectedCourses();let p=[];cs.forEach(c=>{if(c==='lesson4')p=p.concat(LESSON4_SENTENCES);else if(c==='lesson5')p=p.concat(LESSON5_SENTENCES);else if(c==='lesson6')p=p.concat(LESSON6_SENTENCES);else if(c==='lesson7')p=p.concat(LESSON7_SENTENCES)});return p}
+function getWordPool(){
+  const cs=getSelectedCourses();let p=[];
+  cs.forEach(c=>{
+    if(c==='lesson4')p=p.concat(LESSON4);
+    else if(c==='lesson5')p=p.concat(LESSON5);
+    else if(c==='lesson6')p=p.concat(LESSON6);
+    else if(c==='lesson7')p=p.concat(LESSON7);
+    else if(c==='lesson8')p=p.concat(LESSON8);
+  });
+  return p;
+}
+function getSentencePool(){
+  const cs=getSelectedCourses();let p=[];
+  cs.forEach(c=>{
+    if(c==='lesson4')p=p.concat(LESSON4_SENTENCES);
+    else if(c==='lesson5')p=p.concat(LESSON5_SENTENCES);
+    else if(c==='lesson6')p=p.concat(LESSON6_SENTENCES);
+    else if(c==='lesson7')p=p.concat(LESSON7_SENTENCES);
+    else if(c==='lesson8')p=p.concat(LESSON8_SENTENCES);
+  });
+  return p;
+}
 function getQuizSentencePool(){const cs=getSelectedCourses();let p=[];cs.forEach(c=>{if(QUIZ_SENTENCES[c])p=p.concat(QUIZ_SENTENCES[c])});return p}
 
 // ==================== MQTT ====================
@@ -606,8 +688,10 @@ flipWords=[];flipStates=[];renderFlipCards();
 let fillSentences=[],fillCurrentIndex=0;
 function initFillSet(){
   const selected=getSelectedCourses();
-  // 用户指定：如果选中第7课，选词填空优先使用第7课指定题目
-  const source = selected.includes('lesson7') ? LESSON7_SENTENCES : getSentencePool();
+  let source;
+  if(selected.includes('lesson8')) source=LESSON8_SENTENCES;
+  else if(selected.includes('lesson7')) source=LESSON7_SENTENCES;
+  else source=getSentencePool();
   const p=shuffle([...source]);
   if(p.length===0)return;
   fillSentences=p.slice(0,Math.min(5,p.length));
@@ -696,7 +780,6 @@ document.querySelectorAll('[data-points]').forEach(btn=>btn.onclick=function(){g
 
 function generateQuizQuestion(points){
 if(quizGroups.length===0){alert('请先开始争霸赛');return}
-// 清除上一次滚动
 if(assignRollInterval){clearInterval(assignRollInterval);assignRollInterval=null;}
 if(assignRollTimeout){clearTimeout(assignRollTimeout);assignRollTimeout=null;}
 assignIsRolling=false;
@@ -727,18 +810,15 @@ document.getElementById('quizJudge').style.display='flex';
 document.getElementById('quizWrongGroups').textContent='';
 renderQuizQuestion();
 
-// 填充指定学生下拉框
 const sel=document.getElementById('quizPickStudent');sel.innerHTML='<option value="">— 指定学生回答 —</option>';
 quizGroups.forEach(g=>{g.members.forEach(m=>{const o=document.createElement('option');o.value=`${g.name}|${m}`;o.textContent=`${g.name} · ${m}`;sel.appendChild(o)})});
 
 if(quizPlayMode==='assign'){
-  // 指定模式：广播题目（抢答禁用），然后开始滚动
   document.getElementById('quizBuzzInfo').className='quiz-buzz-info';
   document.getElementById('quizBuzzInfo').textContent='🎰 正在抽选学生…';
   publishQuizState({type:'question',question:q,playMode:'assign'});
   setTimeout(()=>startAssignRoll(),400);
 }else{
-  // 抢答模式
   document.getElementById('quizBuzzInfo').className='quiz-buzz-info';
   document.getElementById('quizBuzzInfo').textContent='等待学生抢答…';
   publishQuizState({type:'question',question:q,playMode:'buzz'});
@@ -747,10 +827,9 @@ if(quizPlayMode==='assign'){
 if(q.type==='sentence_listen'){setTimeout(()=>speakText(q.sentence),500)}
 }
 
-// ★★★ 指定模式：滚动抽选学生（1秒）★★★
+// 指定模式：滚动抽选学生（1秒）
 function startAssignRoll(){
 if(assignIsRolling)return;
-// 候选池：来自未答错队伍的所有学生
 const pool=[];
 quizGroups.forEach(g=>{
   if(quizWrongGroups.has(g.name))return;
@@ -780,13 +859,11 @@ assignRollTimeout=setTimeout(()=>{
   quizBuzzer={group:finalPick.group,student:finalPick.student};
   info.className='quiz-buzz-info buzzed';
   info.textContent=`👨‍🏫 指定：${finalPick.group} · ${finalPick.student}`;
-  // 广播给学生：谁被选中
   publishQuizState({
     type:'assign_pick',
     group:finalPick.group,
     student:finalPick.student
   });
-  // 更新下拉框
   const sel=document.getElementById('quizPickStudent');
   sel.value=`${finalPick.group}|${finalPick.student}`;
 },1000);
@@ -803,7 +880,6 @@ c.innerHTML=html}
 function speakText(text){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=0.7;window.speechSynthesis.speak(u)}
 
 function handleQuizBuzz(data){
-// 指定模式下忽略抢答
 if(quizPlayMode==='assign')return;
 if(quizQuestionLocked||!quizCurrentQuestion)return;
 const groupName=data.group;
@@ -819,7 +895,6 @@ const sel=document.getElementById('quizPickStudent');
 sel.value=`${groupName}|${data.student}`;
 }
 
-// ★★★ 回答正确 ★★★
 document.getElementById('quizCorrectBtn').onclick=function(){
 if(!quizCurrentQuestion){alert('请先出题');return}
 let targetGroup=null,targetStudent=null;
@@ -828,7 +903,6 @@ if(quizPlayMode==='assign'){
   if(!quizBuzzer){alert('请等待抽选结果');return;}
   targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
 }else{
-  // 抢答模式：优先使用 quizBuzzer，其次用下拉框
   if(quizBuzzer){
     targetGroup=quizBuzzer.group;targetStudent=quizBuzzer.student;
   }else{
@@ -846,7 +920,6 @@ publishQuizState({type:'correct',group:targetGroup,student:targetStudent,points:
 quizQuestionLocked=true;
 };
 
-// ★★★ 回答错误 ★★★
 document.getElementById('quizWrongBtn').onclick=function(){
 if(!quizCurrentQuestion){return}
 let targetGroup=null,targetStudent=null;
@@ -877,7 +950,6 @@ if(quizPlayMode==='assign'){
     quizQuestionLocked=true;
     publishQuizState({type:'all_wrong'});
   }else{
-    // 再次抽选其他队伍的学生
     const info=document.getElementById('quizBuzzInfo');
     info.className='quiz-buzz-info wrong';
     info.textContent='❌ 回答错误，正在抽选其他队伍…';
@@ -1015,7 +1087,7 @@ setInterval(()=>{if(echoPanel.classList.contains('show'))updateEchoStudentList()
 
 initQuizAbsentList();
 updateCourseTriggerText();
-console.log('📘 标准汉语会话360句2 教师端已加载（含第7课，指定学生滚动 1 秒）');
+console.log('📘 标准汉语会话360句2 教师端已加载（含第7、8课，指定学生滚动 1 秒）');
 </script>
 </body>
 </html>
